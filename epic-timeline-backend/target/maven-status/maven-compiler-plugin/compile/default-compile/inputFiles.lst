@@ -1,0 +1,16 @@
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/package-info.java
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/controller/SongController.java
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/model/Location.java
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/model/enums/ComparisonType.java
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/controller/BaseController.java
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/controller/SagaController.java
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/model/Song.java
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/model/Event.java
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/model/enums/CharacterType.java
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/controller/CharacterController.java
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/config/WebConfig.java
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/model/Character.java
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/EpicTimelineApplication.java
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/controller/LocationController.java
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/model/Comparison.java
+/Users/anthony/Project/Epic-Timeline/epic-timeline-backend/src/main/java/com/epicstuff/model/Saga.java
