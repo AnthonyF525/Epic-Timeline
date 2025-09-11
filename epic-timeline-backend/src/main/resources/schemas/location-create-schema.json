@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Epic Timeline Location Create Request Schema",
+  "required": ["name"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Location name"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Location description"
+    },
+    "latitude": {
+      "type": "number",
+      "minimum": -90,
+      "maximum": 90,
+      "description": "Latitude coordinate"
+    },
+    "longitude": {
+      "type": "number",
+      "minimum": -180,
+      "maximum": 180,
+      "description": "Longitude coordinate"
+    },
+    "regionType": {
+      "type": "string",
+      "enum": ["city", "region", "country", "continent", "island", "mountain", "valley", "forest", "desert", "sea", "underworld", "heavenly_realm"],
+      "description": "Type of geographic region"
+    },
+    "isRealPlace": {
+      "type": "boolean",
+      "description": "Whether the location is a real place"
+    },
+    "isMythological": {
+      "type": "boolean",
+      "description": "Whether the location is mythological"
+    },
+    "isUnderwater": {
+      "type": "boolean",
+      "description": "Whether the location is underwater"
+    },
+    "isTouristDestination": {
+      "type": "boolean",
+      "description": "Whether the location is a tourist destination"
+    },
+    "culturalSignificance": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "legendary"],
+      "description": "Cultural significance level"
+    }
+  },
+  "additionalProperties": false,
+  "not": {
+    "allOf": [
+      {"properties": {"isRealPlace": {"const": true}}},
+      {"properties": {"isMythological": {"const": true}}}
+    ]
+  }
+}

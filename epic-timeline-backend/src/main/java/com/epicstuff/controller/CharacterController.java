@@ -1,3 +1,220 @@
+package com.epicstuff.controller;
+
+import com.epicstuff.model.Character;
+import com.epicstuff.model.Song;
+import com.epicstuff.model.Location;
+import com.epicstuff.service.CharacterService;
+import com.epicstuff.dto.*;
+import com.epicstuff.enums.CharacterType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/characters")
+@CrossOrigin(origins = "*")
 public class CharacterController {
-    
+
+    @Autowired
+    private CharacterService characterService;
+
+    // ✅ GET /api/characters - List all characters with filtering and pagination
+    @GetMapping
+    public ResponseEntity<Page<Character>> getAllCharacters(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(required = false) CharacterType characterType,
+            @RequestParam(required = false) Boolean isAlive,
+            @RequestParam(required = false) Boolean isImmortal,
+            @RequestParam(required = false) Boolean hasSpokenLines,
+            @RequestParam(required = false) Boolean isTitleCharacter,
+            @RequestParam(required = false) Boolean isAntagonist,
+            @RequestParam(required = false) Boolean isProtagonist,
+            @RequestParam(required = false) Boolean isHistoricalFigure,
+            @RequestParam(required = false) String role,
+            @RequestParam(required = false) String trait,
+            @RequestParam(required = false) String ability,
+            @RequestParam(required = false) String allegiance,
+            @RequestParam(required = false) Long songId,
+            @RequestParam(required = false) Long locationId,
+            @RequestParam(required = false) Long sagaId,
+            @RequestParam(required = false) String search
+    ) {
+        Sort sort = sortDir.equalsIgnoreCase("desc") ? 
+            Sort.by(sortBy).descending() : 
+            Sort.by(sortBy).ascending();
+        
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        
+        CharacterFilterRequest filter = CharacterFilterRequest.builder()
+            .characterType(characterType)
+            .isAlive(isAlive)
+            .isImmortal(isImmortal)
+            .hasSpokenLines(hasSpokenLines)
+            .isTitleCharacter(isTitleCharacter)
+            .isAntagonist(isAntagonist)
+            .isProtagonist(isProtagonist)
+            .isHistoricalFigure(isHistoricalFigure)
+            .role(role)
+            .trait(trait)
+            .ability(ability)
+            .allegiance(allegiance)
+            .songId(songId)
+            .locationId(locationId)
+            .sagaId(sagaId)
+            .search(search)
+            .build();
+        
+        Page<Character> characters = characterService.findAllWithFilter(filter, pageRequest);
+        return ResponseEntity.ok(characters);
+    }
+
+    // ✅ GET /api/characters/{id} - Get single character with populated relationships
+    @GetMapping("/{id}")
+    public ResponseEntity<Character> getCharacterById(@PathVariable Long id) {
+        Optional<Character> character = characterService.findByIdWithRelations(id);
+        return character.map(ResponseEntity::ok)
+                       .orElse(ResponseEntity.notFound().build());
+    }
+
+    // ✅ POST /api/characters - Create new character
+    @PostMapping
+    public ResponseEntity<Character> createCharacter(@Valid @RequestBody CharacterCreateRequest request) {
+        try {
+            Character createdCharacter = characterService.createCharacter(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdCharacter);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // ✅ PUT /api/characters/{id} - Update existing character
+    @PutMapping("/{id}")
+    public ResponseEntity<Character> updateCharacter(
+            @PathVariable Long id, 
+            @Valid @RequestBody CharacterUpdateRequest request
+    ) {
+        try {
+            Optional<Character> updatedCharacter = characterService.updateCharacter(id, request);
+            return updatedCharacter.map(ResponseEntity::ok)
+                                  .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // ✅ DELETE /api/characters/{id} - Delete character
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCharacter(@PathVariable Long id) {
+        boolean deleted = characterService.deleteCharacter(id);
+        return deleted ? ResponseEntity.noContent().build() : 
+                        ResponseEntity.notFound().build();
+    }
+
+    // ✅ GET /api/characters/type/{type} - Get characters by type (mortal|god|monster)
+    @GetMapping("/type/{type}")
+    public ResponseEntity<List<Character>> getCharactersByType(@PathVariable CharacterType type) {
+        List<Character> characters = characterService.findByCharacterType(type);
+        return ResponseEntity.ok(characters);
+    }
+
+    // ✅ GET /api/characters/mortals - Get all mortal characters
+    @GetMapping("/mortals")
+    public ResponseEntity<List<Character>> getMortalCharacters() {
+        List<Character> characters = characterService.findMortalCharacters();
+        return ResponseEntity.ok(characters);
+    }
+
+    // ✅ GET /api/characters/gods - Get all god characters
+    @GetMapping("/gods")
+    public ResponseEntity<List<Character>> getGodCharacters() {
+        List<Character> characters = characterService.findGodCharacters();
+        return ResponseEntity.ok(characters);
+    }
+
+    // ✅ GET /api/characters/monsters - Get all monster characters
+    @GetMapping("/monsters")
+    public ResponseEntity<List<Character>> getMonsterCharacters() {
+        List<Character> characters = characterService.findMonsterCharacters();
+        return ResponseEntity.ok(characters);
+    }
+
+    // ✅ GET /api/characters/alive - Get all alive characters
+    @GetMapping("/alive")
+    public ResponseEntity<List<Character>> getAliveCharacters() {
+        List<Character> characters = characterService.findAliveCharacters();
+        return ResponseEntity.ok(characters);
+    }
+
+    // ✅ GET /api/characters/immortal - Get all immortal characters
+    @GetMapping("/immortal")
+    public ResponseEntity<List<Character>> getImmortalCharacters() {
+        List<Character> characters = characterService.findImmortalCharacters();
+        return ResponseEntity.ok(characters);
+    }
+
+    // ✅ GET /api/characters/{id}/songs - Get all songs for character
+    @GetMapping("/{id}/songs")
+    public ResponseEntity<List<Song>> getCharacterSongs(@PathVariable Long id) {
+        List<Song> songs = characterService.getCharacterSongs(id);
+        return ResponseEntity.ok(songs);
+    }
+
+    // ✅ GET /api/characters/{id}/locations - Get all locations for character
+    @GetMapping("/{id}/locations")
+    public ResponseEntity<List<Location>> getCharacterLocations(@PathVariable Long id) {
+        List<Location> locations = characterService.getCharacterLocations(id);
+        return ResponseEntity.ok(locations);
+    }
+
+    // ✅ GET /api/characters/{id}/relationships - Get character relationships
+    @GetMapping("/{id}/relationships")
+    public ResponseEntity<List<CharacterRelationshipResponse>> getCharacterRelationships(@PathVariable Long id) {
+        List<CharacterRelationshipResponse> relationships = characterService.getCharacterRelationships(id);
+        return ResponseEntity.ok(relationships);
+    }
+
+    // ✅ POST /api/characters/{id}/relationships - Add character relationship
+    @PostMapping("/{id}/relationships")
+    public ResponseEntity<Character> addCharacterRelationship(
+            @PathVariable Long id,
+            @Valid @RequestBody CharacterRelationshipRequest request
+    ) {
+        try {
+            Optional<Character> updatedCharacter = characterService.addRelationship(id, request);
+            return updatedCharacter.map(ResponseEntity::ok)
+                                  .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // ✅ DELETE /api/characters/{id}/relationships/{relationshipId} - Remove relationship
+    @DeleteMapping("/{id}/relationships/{relationshipId}")
+    public ResponseEntity<Character> removeCharacterRelationship(
+            @PathVariable Long id,
+            @PathVariable Long relationshipId
+    ) {
+        Optional<Character> updatedCharacter = characterService.removeRelationship(id, relationshipId);
+        return updatedCharacter.map(ResponseEntity::ok)
+                              .orElse(ResponseEntity.notFound().build());
+    }
+
+    // ✅ GET /api/characters/{id}/stats - Get character statistics
+    @GetMapping("/{id}/stats")
+    public ResponseEntity<CharacterStatsResponse> getCharacterStats(@PathVariable Long id) {
+        Optional<CharacterStatsResponse> stats = characterService.getCharacterStats(id);
+        return stats.map(ResponseEntity::ok)
+                   .orElse(ResponseEntity.notFound().build());
+    }
 }

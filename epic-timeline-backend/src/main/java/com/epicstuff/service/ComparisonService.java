@@ -1,0 +1,1015 @@
+package com.epicstuff.service;
+
+import com.epicstuff.model.Comparison;
+import com.epicstuff.model.Character;
+import com.epicstuff.model.Location;
+import com.epicstuff.model.Event;
+import com.epicstuff.model.Song;
+import com.epicstuff.repository.ComparisonRepository;
+import com.epicstuff.repository.CharacterRepository;
+import com.epicstuff.repository.LocationRepository;
+import com.epicstuff.repository.EventRepository;
+import com.epicstuff.repository.SongRepository;
+import com.epicstuff.dto.*;
+import com.epicstuff.enums.ComparisonType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+@Transactional
+public class ComparisonService {
+
+    @Autowired
+    private ComparisonRepository comparisonRepository;
+    
+    @Autowired
+    private CharacterRepository characterRepository;
+    
+    @Autowired
+    private LocationRepository locationRepository;
+    
+    @Autowired
+    private EventRepository eventRepository;
+    
+    @Autowired
+    private SongRepository songRepository;
+
+    // ✅ Get all comparisons with filtering
+    public Page<Comparison> findAllWithFilter(ComparisonFilterRequest filter, Pageable pageable) {
+        return comparisonRepository.findAllWithFilter(filter, pageable);
+    }
+
+    // ✅ Get comparison by ID with populated relationships
+    public Optional<Comparison> findByIdWithRelations(Long id) {
+        return comparisonRepository.findByIdWithRelatedEntities(id);
+    }
+
+    // ✅ Create new comparison with type enum validation
+    public Comparison createComparison(ComparisonCreateRequest request) {
+        // ✅ Custom validation beyond annotations
+        validateComparisonRequest(request);
+        
+        Comparison comparison = Comparison.builder()
+            .title(request.getTitle())
+            .description(request.getDescription())
+            .comparisonType(request.getComparisonType())
+            .entityOneId(request.getEntityOneId())
+            .entityTwoId(request.getEntityTwoId())
+            .analysisType(request.getAnalysisType())
+            .conclusion(request.getConclusion())
+            .isPublic(request.getIsPublic())
+            .isDetailed(request.getIsDetailed())
+            
+            // ✅ Array fields with validation and cleaning
+            .themes(validateAndCleanStringList(request.getThemes()))
+            .tags(validateAndCleanStringList(request.getTags()))
+            .sources(validateAndCleanStringList(request.getSources()))
+            .keyInsights(validateAndCleanStringList(request.getKeyInsights()))
+            
+            // ✅ Related entity arrays
+            .relatedCharacterIds(request.getRelatedCharacterIds() != null ? new ArrayList<>(request.getRelatedCharacterIds()) : new ArrayList<>())
+            .relatedLocationIds(request.getRelatedLocationIds() != null ? new ArrayList<>(request.getRelatedLocationIds()) : new ArrayList<>())
+            .relatedEventIds(request.getRelatedEventIds() != null ? new ArrayList<>(request.getRelatedEventIds()) : new ArrayList<>())
+            .relatedSagaIds(request.getRelatedSagaIds() != null ? new ArrayList<>(request.getRelatedSagaIds()) : new ArrayList<>())
+            
+            // ✅ Criteria mapping
+            .criteria(mapComparisonCriteria(request.getCriteria()))
+            
+            // ✅ Nested objects
+            .metrics(mapComparisonMetrics(request.getMetrics()))
+            .context(mapComparisonContext(request.getContext()))
+            
+            .build();
+        
+        // ✅ Validate all entity relationships exist
+        validateAllEntityRelationships(request);
+        
+        // ✅ Auto-calculate overall scores if not provided
+        if (comparison.getMetrics() != null) {
+            calculateOverallScores(comparison);
+        }
+        
+        return comparisonRepository.save(comparison);
+    }
+
+    // ✅ Update existing comparison
+    public Optional<Comparison> updateComparison(Long id, ComparisonUpdateRequest request) {
+        return comparisonRepository.findById(id).map(existingComparison -> {
+            // ✅ Update basic fields if provided
+            if (request.getTitle() != null) {
+                existingComparison.setTitle(request.getTitle());
+            }
+            if (request.getDescription() != null) {
+                existingComparison.setDescription(request.getDescription());
+            }
+            if (request.getComparisonType() != null) {
+                validateComparisonTypeChange(existingComparison, request.getComparisonType());
+                existingComparison.setComparisonType(request.getComparisonType());
+            }
+            if (request.getAnalysisType() != null) {
+                existingComparison.setAnalysisType(request.getAnalysisType());
+            }
+            if (request.getConclusion() != null) {
+                existingComparison.setConclusion(request.getConclusion());
+            }
+            
+            // ✅ Update boolean flags if provided
+            if (request.getIsPublic() != null) {
+                existingComparison.setIsPublic(request.getIsPublic());
+            }
+            if (request.getIsDetailed() != null) {
+                existingComparison.setIsDetailed(request.getIsDetailed());
+            }
+            
+            // ✅ Update arrays if provided (with validation)
+            if (request.getThemes() != null) {
+                existingComparison.setThemes(validateAndCleanStringList(request.getThemes()));
+            }
+            if (request.getTags() != null) {
+                existingComparison.setTags(validateAndCleanStringList(request.getTags()));
+            }
+            if (request.getSources() != null) {
+                existingComparison.setSources(validateAndCleanStringList(request.getSources()));
+            }
+            if (request.getKeyInsights() != null) {
+                existingComparison.setKeyInsights(validateAndCleanStringList(request.getKeyInsights()));
+            }
+            
+            // ✅ Update related entities if provided
+            if (request.getRelatedCharacterIds() != null) {
+                validateCharacterIds(request.getRelatedCharacterIds());
+                existingComparison.setRelatedCharacterIds(new ArrayList<>(request.getRelatedCharacterIds()));
+            }
+            if (request.getRelatedLocationIds() != null) {
+                validateLocationIds(request.getRelatedLocationIds());
+                existingComparison.setRelatedLocationIds(new ArrayList<>(request.getRelatedLocationIds()));
+            }
+            if (request.getRelatedEventIds() != null) {
+                validateEventIds(request.getRelatedEventIds());
+                existingComparison.setRelatedEventIds(new ArrayList<>(request.getRelatedEventIds()));
+            }
+            if (request.getRelatedSagaIds() != null) {
+                validateSagaIds(request.getRelatedSagaIds());
+                existingComparison.setRelatedSagaIds(new ArrayList<>(request.getRelatedSagaIds()));
+            }
+            
+            // ✅ Update criteria if provided
+            if (request.getCriteria() != null) {
+                existingComparison.setCriteria(mapComparisonCriteria(request.getCriteria()));
+                calculateOverallScores(existingComparison);
+            }
+            
+            // ✅ Update nested objects if provided
+            if (request.getMetrics() != null) {
+                existingComparison.setMetrics(mapComparisonMetrics(request.getMetrics()));
+            }
+            if (request.getContext() != null) {
+                existingComparison.setContext(mapComparisonContext(request.getContext()));
+            }
+            
+            return comparisonRepository.save(existingComparison);
+        });
+    }
+
+    // ✅ Delete comparison
+    public boolean deleteComparison(Long id) {
+        if (comparisonRepository.existsById(id)) {
+            comparisonRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    // ✅ Find comparisons by type
+    public List<Comparison> findByComparisonType(ComparisonType type) {
+        return comparisonRepository.findByComparisonType(type);
+    }
+
+    // ✅ Find character comparisons
+    public List<Comparison> findCharacterComparisons() {
+        return comparisonRepository.findByComparisonType(ComparisonType.CHARACTER_VS_CHARACTER);
+    }
+
+    // ✅ Find location comparisons
+    public List<Comparison> findLocationComparisons() {
+        return comparisonRepository.findByComparisonType(ComparisonType.LOCATION_VS_LOCATION);
+    }
+
+    // ✅ Find event comparisons
+    public List<Comparison> findEventComparisons() {
+        return comparisonRepository.findByComparisonType(ComparisonType.EVENT_VS_EVENT);
+    }
+
+    // ✅ Find song comparisons
+    public List<Comparison> findSongComparisons() {
+        return comparisonRepository.findByComparisonType(ComparisonType.SONG_VS_SONG);
+    }
+
+    // ✅ Find saga comparisons
+    public List<Comparison> findSagaComparisons() {
+        return comparisonRepository.findByComparisonType(ComparisonType.SAGA_VS_SAGA);
+    }
+
+    // ✅ Add criteria to comparison
+    public Optional<Comparison> addCriteria(Long id, ComparisonCriteriaRequest request) {
+        validateCriteriaRequest(request);
+        
+        return comparisonRepository.findById(id).map(comparison -> {
+            ComparisonCriteria criteria = ComparisonCriteria.builder()
+                .criteriaName(request.getCriteriaName())
+                .description(request.getDescription())
+                .entityOneScore(request.getEntityOneScore())
+                .entityTwoScore(request.getEntityTwoScore())
+                .weight(request.getWeight())
+                .justification(request.getJustification())
+                .build();
+            
+            comparison.getCriteria().add(criteria);
+            calculateOverallScores(comparison);
+            return comparisonRepository.save(comparison);
+        });
+    }
+
+    // ✅ Remove criteria from comparison
+    public Optional<Comparison> removeCriteria(Long id, Long criteriaId) {
+        return comparisonRepository.findById(id).map(comparison -> {
+            comparison.getCriteria().removeIf(criteria -> criteria.getId().equals(criteriaId));
+            calculateOverallScores(comparison);
+            return comparisonRepository.save(comparison);
+        });
+    }
+
+    // ✅ Auto-generate comparison
+    public Comparison autoGenerateComparison(AutoComparisonRequest request) {
+        validateAutoComparisonRequest(request);
+        
+        // ✅ Get entity information
+        String entityOneName = getEntityName(request.getComparisonType(), request.getEntityOneId());
+        String entityTwoName = getEntityName(request.getComparisonType(), request.getEntityTwoId());
+        
+        // ✅ Generate title and description
+        String title = String.format("%s vs %s: %s Analysis", 
+            entityOneName, entityTwoName, formatAnalysisType(request.getAnalysisType()));
+        
+        String description = String.format("Auto-generated comparison between %s and %s focusing on %s. " +
+            "This analysis examines key differences, similarities, and characteristics.", 
+            entityOneName, entityTwoName, request.getAnalysisType().replace("_", " "));
+        
+        // ✅ Generate criteria based on comparison type and analysis type
+        List<ComparisonCriteriaRequest> generatedCriteria = generateCriteriaForType(
+            request.getComparisonType(), 
+            request.getAnalysisType(), 
+            request.getCriteriaCount(),
+            request.getEntityOneId(),
+            request.getEntityTwoId()
+        );
+        
+        // ✅ Create comparison request
+        ComparisonCreateRequest createRequest = ComparisonCreateRequest.builder()
+            .title(title)
+            .description(description)
+            .comparisonType(request.getComparisonType())
+            .entityOneId(request.getEntityOneId())
+            .entityTwoId(request.getEntityTwoId())
+            .analysisType(request.getAnalysisType())
+            .conclusion("context_dependent") // Default for auto-generated
+            .isPublic(true)
+            .isDetailed(request.getIncludeMetrics())
+            .criteria(generatedCriteria)
+            .themes(generateThemesForType(request.getComparisonType(), request.getAnalysisType()))
+            .tags(Arrays.asList("auto-generated", request.getAnalysisType().replace("_", "-")))
+            .sources(Arrays.asList("Epic Timeline Database", "Automated Analysis System"))
+            .keyInsights(generateKeyInsights(request.getComparisonType(), request.getAnalysisType()))
+            .metrics(request.getIncludeMetrics() ? generateDefaultMetrics() : null)
+            .context(request.getIncludeContext() ? generateDefaultContext(request.getAnalysisType()) : null)
+            .build();
+        
+        return createComparison(createRequest);
+    }
+
+    // ✅ Find comparisons for entity
+    public List<Comparison> findComparisonsForEntity(String entityType, Long entityId) {
+        ComparisonType comparisonType = parseEntityTypeToComparisonType(entityType);
+        return comparisonRepository.findByComparisonTypeAndEntityIds(comparisonType, entityId);
+    }
+
+    // ✅ Get comparison statistics
+    public Optional<ComparisonStatsResponse> getComparisonStats(Long id) {
+        return comparisonRepository.findByIdWithRelations(id).map(comparison -> {
+            return ComparisonStatsResponse.builder()
+                .comparisonId(comparison.getId())
+                .comparisonTitle(comparison.getTitle())
+                .comparisonType(comparison.getComparisonType())
+                .analysisType(comparison.getAnalysisType())
+                .conclusion(comparison.getConclusion())
+                .isPublic(comparison.getIsPublic())
+                .isDetailed(comparison.getIsDetailed())
+                
+                // Entity information
+                .entityOneId(comparison.getEntityOneId())
+                .entityOneName(getEntityName(comparison.getComparisonType(), comparison.getEntityOneId()))
+                .entityTwoId(comparison.getEntityTwoId())
+                .entityTwoName(getEntityName(comparison.getComparisonType(), comparison.getEntityTwoId()))
+                
+                // Criteria statistics
+                .criteriaCount(comparison.getCriteria().size())
+                .averageEntityOneScore(calculateAverageScore(comparison.getCriteria(), true))
+                .averageEntityTwoScore(calculateAverageScore(comparison.getCriteria(), false))
+                .totalWeightedEntityOneScore(calculateWeightedScore(comparison.getCriteria(), true))
+                .totalWeightedEntityTwoScore(calculateWeightedScore(comparison.getCriteria(), false))
+                .winningEntity(determineWinningEntity(comparison.getCriteria()))
+                .scoreDifference(calculateScoreDifference(comparison.getCriteria()))
+                
+                // Content statistics
+                .themeCount(comparison.getThemes().size())
+                .tagCount(comparison.getTags().size())
+                .sourceCount(comparison.getSources().size())
+                .keyInsightCount(comparison.getKeyInsights().size())
+                .relatedEntityCount(comparison.getRelatedCharacterIds().size() + 
+                                  comparison.getRelatedLocationIds().size() + 
+                                  comparison.getRelatedEventIds().size() + 
+                                  comparison.getRelatedSagaIds().size())
+                
+                // Array content
+                .allThemes(comparison.getThemes())
+                .allTags(comparison.getTags())
+                .themeFrequency(countStringOccurrences(comparison.getThemes()))
+                .tagFrequency(countStringOccurrences(comparison.getTags()))
+                
+                // Metrics information
+                .overallEntityOneScore(comparison.getMetrics() != null ? comparison.getMetrics().getOverallEntityOneScore() : null)
+                .overallEntityTwoScore(comparison.getMetrics() != null ? comparison.getMetrics().getOverallEntityTwoScore() : null)
+                .confidenceLevel(comparison.getMetrics() != null ? comparison.getMetrics().getConfidenceLevel() : null)
+                .analysisDepth(comparison.getMetrics() != null ? comparison.getMetrics().getAnalysisDepth() : null)
+                .biasLevel(comparison.getMetrics() != null ? comparison.getMetrics().getBiasLevel() : null)
+                
+                // Context information
+                .historicalPeriod(comparison.getContext() != null ? comparison.getContext().getHistoricalPeriod() : null)
+                .culturalContext(comparison.getContext() != null ? comparison.getContext().getCulturalContext() : null)
+                .comparisonPurpose(comparison.getContext() != null ? comparison.getContext().getComparisonPurpose() : null)
+                .targetAudience(comparison.getContext() != null ? comparison.getContext().getTargetAudience() : null)
+                .methodologies(comparison.getContext() != null ? comparison.getContext().getMethodologies() : null)
+                .limitations(comparison.getContext() != null ? comparison.getContext().getLimitations() : null)
+                
+                // Related entities
+                .relatedCharacterNames(getCharacterNames(comparison.getRelatedCharacterIds()))
+                .relatedLocationNames(getLocationNames(comparison.getRelatedLocationIds()))
+                .relatedEventTitles(getEventTitles(comparison.getRelatedEventIds()))
+                .relatedSagaTitles(getSagaTitles(comparison.getRelatedSagaIds()))
+                
+                // Detailed criteria breakdown
+                .criteriaBreakdown(buildCriteriaBreakdown(comparison.getCriteria()))
+                
+                .build();
+        });
+    }
+
+    // ✅ Private validation methods
+    private void validateComparisonRequest(ComparisonCreateRequest request) {
+        // ✅ Validate entities exist and match type
+        validateEntityExistsAndMatchesType(request.getComparisonType(), request.getEntityOneId());
+        validateEntityExistsAndMatchesType(request.getComparisonType(), request.getEntityTwoId());
+        
+        // ✅ Validate entities are different
+        if (request.getEntityOneId().equals(request.getEntityTwoId())) {
+            throw new IllegalArgumentException("Cannot compare an entity with itself");
+        }
+        
+        // ✅ Validate themes and tags don't have duplicates
+        if (hasDuplicates(request.getThemes())) {
+            throw new IllegalArgumentException("Themes cannot contain duplicates");
+        }
+        if (hasDuplicates(request.getTags())) {
+            throw new IllegalArgumentException("Tags cannot contain duplicates");
+        }
+        
+        // ✅ Validate criteria scores and weights
+        validateCriteriaList(request.getCriteria());
+        
+        // ✅ Validate comparison type specific rules
+        validateComparisonTypeSpecificRules(request);
+    }
+
+    private void validateEntityExistsAndMatchesType(ComparisonType comparisonType, Long entityId) {
+        switch (comparisonType) {
+            case CHARACTER_VS_CHARACTER:
+                if (!characterRepository.existsById(entityId)) {
+                    throw new IllegalArgumentException("Character not found: " + entityId);
+                }
+                break;
+            case LOCATION_VS_LOCATION:
+                if (!locationRepository.existsById(entityId)) {
+                    throw new IllegalArgumentException("Location not found: " + entityId);
+                }
+                break;
+            case EVENT_VS_EVENT:
+                if (!eventRepository.existsById(entityId)) {
+                    throw new IllegalArgumentException("Event not found: " + entityId);
+                }
+                break;
+            case SONG_VS_SONG:
+                if (!songRepository.existsById(entityId)) {
+                    throw new IllegalArgumentException("Song not found: " + entityId);
+                }
+                break;
+            case SAGA_VS_SAGA:
+                // Saga validation implementation depends on Saga repository
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported comparison type: " + comparisonType);
+        }
+    }
+
+    private void validateComparisonTypeChange(Comparison existing, ComparisonType newType) {
+        if (!existing.getComparisonType().equals(newType)) {
+            // Validate that the entities still match the new type
+            validateEntityExistsAndMatchesType(newType, existing.getEntityOneId());
+            validateEntityExistsAndMatchesType(newType, existing.getEntityTwoId());
+        }
+    }
+
+    private void validateComparisonTypeSpecificRules(ComparisonCreateRequest request) {
+        switch (request.getComparisonType()) {
+            case CHARACTER_VS_CHARACTER:
+                // Character comparisons should have character-relevant themes
+                validateCharacterComparisonThemes(request.getThemes());
+                break;
+            case LOCATION_VS_LOCATION:
+                // Location comparisons should have location-relevant themes
+                validateLocationComparisonThemes(request.getThemes());
+                break;
+            case EVENT_VS_EVENT:
+                // Event comparisons should have event-relevant themes
+                validateEventComparisonThemes(request.getThemes());
+                break;
+            case SONG_VS_SONG:
+                // Song comparisons should have musical themes
+                validateSongComparisonThemes(request.getThemes());
+                break;
+        }
+    }
+
+    // ✅ Continue in next part due to length...
+    
+    private void validateCriteriaList(List<ComparisonCriteriaRequest> criteria) {
+        for (ComparisonCriteriaRequest criterion : criteria) {
+            validateCriteriaRequest(criterion);
+        }
+        
+        // Check for duplicate criteria names
+        Set<String> criteriaNames = new HashSet<>();
+        for (ComparisonCriteriaRequest criterion : criteria) {
+            if (!criteriaNames.add(criterion.getCriteriaName().toLowerCase())) {
+                throw new IllegalArgumentException("Duplicate criteria name: " + criterion.getCriteriaName());
+            }
+        }
+    }
+
+    private void validateCriteriaRequest(ComparisonCriteriaRequest request) {
+        // Additional validation beyond annotations
+        if (request.getEntityOneScore().equals(request.getEntityTwoScore()) && 
+            request.getJustification() == null) {
+            throw new IllegalArgumentException("Equal scores require justification");
+        }
+    }
+
+    private void validateAutoComparisonRequest(AutoComparisonRequest request) {
+        validateEntityExistsAndMatchesType(request.getComparisonType(), request.getEntityOneId());
+        validateEntityExistsAndMatchesType(request.getComparisonType(), request.getEntityTwoId());
+        
+        if (request.getEntityOneId().equals(request.getEntityTwoId())) {
+            throw new IllegalArgumentException("Cannot auto-compare an entity with itself");
+        }
+    }
+
+    // ✅ Helper methods for entity validation and related operations
+    private void validateAllEntityRelationships(ComparisonCreateRequest request) {
+        if (request.getRelatedCharacterIds() != null && !request.getRelatedCharacterIds().isEmpty()) {
+            validateCharacterIds(request.getRelatedCharacterIds());
+        }
+        if (request.getRelatedLocationIds() != null && !request.getRelatedLocationIds().isEmpty()) {
+            validateLocationIds(request.getRelatedLocationIds());
+        }
+        if (request.getRelatedEventIds() != null && !request.getRelatedEventIds().isEmpty()) {
+            validateEventIds(request.getRelatedEventIds());
+        }
+        if (request.getRelatedSagaIds() != null && !request.getRelatedSagaIds().isEmpty()) {
+            validateSagaIds(request.getRelatedSagaIds());
+        }
+    }
+
+    private void validateCharacterIds(List<Long> characterIds) {
+        List<Long> existingIds = characterRepository.findAllById(characterIds)
+            .stream()
+            .map(Character::getId)
+            .collect(Collectors.toList());
+        
+        List<Long> invalidIds = characterIds.stream()
+            .filter(id -> !existingIds.contains(id))
+            .collect(Collectors.toList());
+        
+        if (!invalidIds.isEmpty()) {
+            throw new IllegalArgumentException("Invalid character IDs: " + invalidIds);
+        }
+    }
+
+    private void validateLocationIds(List<Long> locationIds) {
+        List<Long> existingIds = locationRepository.findAllById(locationIds)
+            .stream()
+            .map(Location::getId)
+            .collect(Collectors.toList());
+        
+        List<Long> invalidIds = locationIds.stream()
+            .filter(id -> !existingIds.contains(id))
+            .collect(Collectors.toList());
+        
+        if (!invalidIds.isEmpty()) {
+            throw new IllegalArgumentException("Invalid location IDs: " + invalidIds);
+        }
+    }
+
+    private void validateEventIds(List<Long> eventIds) {
+        List<Long> existingIds = eventRepository.findAllById(eventIds)
+            .stream()
+            .map(Event::getId)
+            .collect(Collectors.toList());
+        
+        List<Long> invalidIds = eventIds.stream()
+            .filter(id -> !existingIds.contains(id))
+            .collect(Collectors.toList());
+        
+        if (!invalidIds.isEmpty()) {
+            throw new IllegalArgumentException("Invalid event IDs: " + invalidIds);
+        }
+    }
+
+    private void validateSagaIds(List<Long> sagaIds) {
+        // Saga validation implementation depends on Saga repository
+    }
+
+    private List<String> validateAndCleanStringList(List<String> strings) {
+        if (strings == null) return new ArrayList<>();
+        
+        return strings.stream()
+            .filter(Objects::nonNull)
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .distinct() // Remove duplicates
+            .collect(Collectors.toList());
+    }
+
+    private boolean hasDuplicates(List<String> list) {
+        if (list == null) return false;
+        Set<String> seen = new HashSet<>();
+        return list.stream().anyMatch(item -> !seen.add(item.toLowerCase().trim()));
+    }
+
+    // ✅ Continue with mapping methods and utilities...
+    
+    private List<ComparisonCriteria> mapComparisonCriteria(List<ComparisonCriteriaRequest> requests) {
+        return requests.stream()
+            .map(request -> ComparisonCriteria.builder()
+                .criteriaName(request.getCriteriaName())
+                .description(request.getDescription())
+                .entityOneScore(request.getEntityOneScore())
+                .entityTwoScore(request.getEntityTwoScore())
+                .weight(request.getWeight())
+                .justification(request.getJustification())
+                .build())
+            .collect(Collectors.toList());
+    }
+
+    private ComparisonMetrics mapComparisonMetrics(ComparisonMetricsRequest request) {
+        if (request == null) return null;
+        
+        return ComparisonMetrics.builder()
+            .overallEntityOneScore(request.getOverallEntityOneScore())
+            .overallEntityTwoScore(request.getOverallEntityTwoScore())
+            .confidenceLevel(request.getConfidenceLevel())
+            .analysisDepth(request.getAnalysisDepth())
+            .biasLevel(request.getBiasLevel())
+            .build();
+    }
+
+    private ComparisonContext mapComparisonContext(ComparisonContextRequest request) {
+        if (request == null) return null;
+        
+        return ComparisonContext.builder()
+            .historicalPeriod(request.getHistoricalPeriod())
+            .culturalContext(request.getCulturalContext())
+            .comparisonPurpose(request.getComparisonPurpose())
+            .targetAudience(request.getTargetAudience())
+            .methodologies(validateAndCleanStringList(request.getMethodologies()))
+            .limitations(validateAndCleanStringList(request.getLimitations()))
+            .build();
+    }
+
+    // ✅ Auto-generation helper methods
+    private String getEntityName(ComparisonType comparisonType, Long entityId) {
+        switch (comparisonType) {
+            case CHARACTER_VS_CHARACTER:
+                return characterRepository.findById(entityId).map(Character::getName).orElse("Unknown Character");
+            case LOCATION_VS_LOCATION:
+                return locationRepository.findById(entityId).map(Location::getName).orElse("Unknown Location");
+            case EVENT_VS_EVENT:
+                return eventRepository.findById(entityId).map(Event::getTitle).orElse("Unknown Event");
+            case SONG_VS_SONG:
+                return songRepository.findById(entityId).map(Song::getTitle).orElse("Unknown Song");
+            case SAGA_VS_SAGA:
+                return "Unknown Saga"; // Implementation depends on Saga repository
+            default:
+                return "Unknown Entity";
+        }
+    }
+
+    private String formatAnalysisType(String analysisType) {
+        return Arrays.stream(analysisType.split("_"))
+            .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+            .collect(Collectors.joining(" "));
+    }
+
+    private ComparisonType parseEntityTypeToComparisonType(String entityType) {
+        switch (entityType.toLowerCase()) {
+            case "character":
+                return ComparisonType.CHARACTER_VS_CHARACTER;
+            case "location":
+                return ComparisonType.LOCATION_VS_LOCATION;
+            case "event":
+                return ComparisonType.EVENT_VS_EVENT;
+            case "song":
+                return ComparisonType.SONG_VS_SONG;
+            case "saga":
+                return ComparisonType.SAGA_VS_SAGA;
+            default:
+                throw new IllegalArgumentException("Unknown entity type: " + entityType);
+        }
+    }
+
+    // ✅ Calculation methods
+    private void calculateOverallScores(Comparison comparison) {
+        if (comparison.getCriteria().isEmpty()) return;
+        
+        double totalWeightedEntityOneScore = calculateWeightedScore(comparison.getCriteria(), true);
+        double totalWeightedEntityTwoScore = calculateWeightedScore(comparison.getCriteria(), false);
+        
+        if (comparison.getMetrics() != null) {
+            comparison.getMetrics().setOverallEntityOneScore(totalWeightedEntityOneScore);
+            comparison.getMetrics().setOverallEntityTwoScore(totalWeightedEntityTwoScore);
+        }
+    }
+
+    private double calculateWeightedScore(List<ComparisonCriteria> criteria, boolean entityOne) {
+        return criteria.stream()
+            .mapToDouble(criterion -> {
+                double score = entityOne ? criterion.getEntityOneScore() : criterion.getEntityTwoScore();
+                return score * criterion.getWeight();
+            })
+            .sum();
+    }
+
+    private double calculateAverageScore(List<ComparisonCriteria> criteria, boolean entityOne) {
+        return criteria.stream()
+            .mapToDouble(criterion -> entityOne ? criterion.getEntityOneScore() : criterion.getEntityTwoScore())
+            .average()
+            .orElse(0.0);
+    }
+
+    private String determineWinningEntity(List<ComparisonCriteria> criteria) {
+        double entityOneScore = calculateWeightedScore(criteria, true);
+        double entityTwoScore = calculateWeightedScore(criteria, false);
+        
+        if (Math.abs(entityOneScore - entityTwoScore) < 0.1) {
+            return "tie";
+        } else if (entityOneScore > entityTwoScore) {
+            return "entity_one";
+        } else {
+            return "entity_two";
+        }
+    }
+
+    private double calculateScoreDifference(List<ComparisonCriteria> criteria) {
+        double entityOneScore = calculateWeightedScore(criteria, true);
+        double entityTwoScore = calculateWeightedScore(criteria, false);
+        return Math.abs(entityOneScore - entityTwoScore);
+    }
+
+    // ✅ Statistical helper methods
+    private Map<String, Long> countStringOccurrences(List<String> strings) {
+        return strings.stream()
+            .collect(Collectors.groupingBy(
+                String::toLowerCase, 
+                Collectors.counting()
+            ));
+    }
+
+    private List<String> getCharacterNames(List<Long> characterIds) {
+        return characterRepository.findAllById(characterIds)
+            .stream()
+            .map(Character::getName)
+            .collect(Collectors.toList());
+    }
+
+    private List<String> getLocationNames(List<Long> locationIds) {
+        return locationRepository.findAllById(locationIds)
+            .stream()
+            .map(Location::getName)
+            .collect(Collectors.toList());
+    }
+
+    private List<String> getEventTitles(List<Long> eventIds) {
+        return eventRepository.findAllById(eventIds)
+            .stream()
+            .map(Event::getTitle)
+            .collect(Collectors.toList());
+    }
+
+    private List<String> getSagaTitles(List<Long> sagaIds) {
+        // Implementation depends on Saga repository
+        return new ArrayList<>();
+    }
+
+    // ✅ Complete the buildCriteriaBreakdown method that was cut off
+    private List<ComparisonCriteriaStatsResponse> buildCriteriaBreakdown(List<ComparisonCriteria> criteria) {
+        return criteria.stream()
+            .map(criterion -> ComparisonCriteriaStatsResponse.builder()
+                .criteriaName(criterion.getCriteriaName())
+                .description(criterion.getDescription())
+                .entityOneScore(criterion.getEntityOneScore())
+                .entityTwoScore(criterion.getEntityTwoScore())
+                .weight(criterion.getWeight())
+                .weightedEntityOneScore(criterion.getEntityOneScore() * criterion.getWeight())
+                .weightedEntityTwoScore(criterion.getEntityTwoScore() * criterion.getWeight())
+                .winner(criterion.getEntityOneScore() > criterion.getEntityTwoScore() ? "entity_one" : 
+                       criterion.getEntityTwoScore() > criterion.getEntityOneScore() ? "entity_two" : "tie")
+                .justification(criterion.getJustification())
+                .build())
+            .collect(Collectors.toList());
+    }
+
+    // ✅ Missing theme validation methods for each comparison type
+    private void validateCharacterComparisonThemes(List<String> themes) {
+        Set<String> allowedCharacterThemes = Set.of(
+            "personality", "abilities", "relationships", "character_development", "role_in_story",
+            "moral_alignment", "strength", "wisdom", "leadership", "heroism", "complexity",
+            "background", "motivations", "arc_completion", "influence", "legacy"
+        );
+        validateThemesAgainstAllowed(themes, allowedCharacterThemes, "character comparison");
+    }
+
+    private void validateLocationComparisonThemes(List<String> themes) {
+        Set<String> allowedLocationThemes = Set.of(
+            "geography", "cultural_significance", "historical_importance", "accessibility", 
+            "natural_features", "architecture", "strategic_value", "mystical_properties",
+            "tourist_appeal", "archaeological_value", "modern_relevance", "literary_significance"
+        );
+        validateThemesAgainstAllowed(themes, allowedLocationThemes, "location comparison");
+    }
+
+    private void validateEventComparisonThemes(List<String> themes) {
+        Set<String> allowedEventThemes = Set.of(
+            "historical_impact", "scale", "consequences", "participants", "duration",
+            "complexity", "cultural_impact", "strategic_importance", "moral_implications",
+            "narrative_significance", "character_development", "plot_advancement"
+        );
+        validateThemesAgainstAllowed(themes, allowedEventThemes, "event comparison");
+    }
+
+    private void validateSongComparisonThemes(List<String> themes) {
+        Set<String> allowedSongThemes = Set.of(
+            "musical_complexity", "lyrical_content", "emotional_impact", "narrative_importance",
+            "character_development", "themes", "instrumentation", "vocal_performance",
+            "production_quality", "memorability", "cultural_impact", "artistic_merit"
+        );
+        validateThemesAgainstAllowed(themes, allowedSongThemes, "song comparison");
+    }
+
+    private void validateThemesAgainstAllowed(List<String> themes, Set<String> allowedThemes, String comparisonType) {
+        if (themes == null || themes.isEmpty()) return;
+        
+        List<String> invalidThemes = themes.stream()
+            .filter(theme -> !allowedThemes.contains(theme.toLowerCase().trim()))
+            .collect(Collectors.toList());
+        
+        if (!invalidThemes.isEmpty()) {
+            throw new IllegalArgumentException(
+                String.format("Invalid themes for %s: %s. Allowed themes: %s", 
+                    comparisonType, invalidThemes, allowedThemes)
+            );
+        }
+    }
+
+    // ✅ Missing auto-generation methods
+    private List<ComparisonCriteriaRequest> generateCriteriaForType(
+            ComparisonType comparisonType, 
+            String analysisType, 
+            Integer criteriaCount,
+            Long entityOneId,
+            Long entityTwoId) {
+        
+        List<ComparisonCriteriaRequest> criteria = new ArrayList<>();
+        int count = criteriaCount != null ? criteriaCount : 5; // Default 5 criteria
+        
+        switch (comparisonType) {
+            case CHARACTER_VS_CHARACTER:
+                criteria = generateCharacterCriteria(analysisType, count, entityOneId, entityTwoId);
+                break;
+            case LOCATION_VS_LOCATION:
+                criteria = generateLocationCriteria(analysisType, count, entityOneId, entityTwoId);
+                break;
+            case EVENT_VS_EVENT:
+                criteria = generateEventCriteria(analysisType, count, entityOneId, entityTwoId);
+                break;
+            case SONG_VS_SONG:
+                criteria = generateSongCriteria(analysisType, count, entityOneId, entityTwoId);
+                break;
+            case SAGA_VS_SAGA:
+                criteria = generateSagaCriteria(analysisType, count, entityOneId, entityTwoId);
+                break;
+        }
+        
+        return criteria;
+    }
+
+    private List<ComparisonCriteriaRequest> generateCharacterCriteria(String analysisType, int count, Long entityOneId, Long entityTwoId) {
+        List<String> baseCriteria = Arrays.asList(
+            "Strength", "Wisdom", "Leadership", "Character Development", "Moral Complexity",
+            "Influence on Story", "Memorable Moments", "Relationship Depth", "Heroic Actions", "Flaws and Weaknesses"
+        );
+        
+        return baseCriteria.stream()
+            .limit(count)
+            .map(criteriaName -> ComparisonCriteriaRequest.builder()
+                .criteriaName(criteriaName)
+                .description(String.format("Comparison of %s between the two characters", criteriaName.toLowerCase()))
+                .entityOneScore(generateRandomScore())
+                .entityTwoScore(generateRandomScore())
+                .weight(1.0) // Default equal weight
+                .justification("Auto-generated comparison based on character analysis")
+                .build())
+            .collect(Collectors.toList());
+    }
+
+    private List<ComparisonCriteriaRequest> generateLocationCriteria(String analysisType, int count, Long entityOneId, Long entityTwoId) {
+        List<String> baseCriteria = Arrays.asList(
+            "Historical Significance", "Cultural Impact", "Accessibility", "Natural Beauty", "Strategic Importance",
+            "Mythological Relevance", "Modern Relevance", "Tourist Appeal", "Archaeological Value", "Literary Significance"
+        );
+        
+        return baseCriteria.stream()
+            .limit(count)
+            .map(criteriaName -> ComparisonCriteriaRequest.builder()
+                .criteriaName(criteriaName)
+                .description(String.format("Comparison of %s between the two locations", criteriaName.toLowerCase()))
+                .entityOneScore(generateRandomScore())
+                .entityTwoScore(generateRandomScore())
+                .weight(1.0)
+                .justification("Auto-generated comparison based on location analysis")
+                .build())
+            .collect(Collectors.toList());
+    }
+
+    private List<ComparisonCriteriaRequest> generateEventCriteria(String analysisType, int count, Long entityOneId, Long entityTwoId) {
+        List<String> baseCriteria = Arrays.asList(
+            "Historical Impact", "Scale of Event", "Number of Participants", "Long-term Consequences", "Narrative Importance",
+            "Character Development Impact", "Cultural Significance", "Dramatic Tension", "Moral Complexity", "Resolution Quality"
+        );
+        
+        return baseCriteria.stream()
+            .limit(count)
+            .map(criteriaName -> ComparisonCriteriaRequest.builder()
+                .criteriaName(criteriaName)
+                .description(String.format("Comparison of %s between the two events", criteriaName.toLowerCase()))
+                .entityOneScore(generateRandomScore())
+                .entityTwoScore(generateRandomScore())
+                .weight(1.0)
+                .justification("Auto-generated comparison based on event analysis")
+                .build())
+            .collect(Collectors.toList());
+    }
+
+    private List<ComparisonCriteriaRequest> generateSongCriteria(String analysisType, int count, Long entityOneId, Long entityTwoId) {
+        List<String> baseCriteria = Arrays.asList(
+            "Musical Complexity", "Lyrical Quality", "Emotional Impact", "Narrative Importance", "Vocal Performance",
+            "Instrumentation", "Memorability", "Character Development", "Cultural Impact", "Artistic Innovation"
+        );
+        
+        return baseCriteria.stream()
+            .limit(count)
+            .map(criteriaName -> ComparisonCriteriaRequest.builder()
+                .criteriaName(criteriaName)
+                .description(String.format("Comparison of %s between the two songs", criteriaName.toLowerCase()))
+                .entityOneScore(generateRandomScore())
+                .entityTwoScore(generateRandomScore())
+                .weight(1.0)
+                .justification("Auto-generated comparison based on musical analysis")
+                .build())
+            .collect(Collectors.toList());
+    }
+
+    private List<ComparisonCriteriaRequest> generateSagaCriteria(String analysisType, int count, Long entityOneId, Long entityTwoId) {
+        List<String> baseCriteria = Arrays.asList(
+            "Epic Scale", "Character Development", "Narrative Complexity", "Cultural Impact", "Historical Significance",
+            "Artistic Merit", "Emotional Depth", "Thematic Richness", "Innovation", "Legacy"
+        );
+        
+        return baseCriteria.stream()
+            .limit(count)
+            .map(criteriaName -> ComparisonCriteriaRequest.builder()
+                .criteriaName(criteriaName)
+                .description(String.format("Comparison of %s between the two sagas", criteriaName.toLowerCase()))
+                .entityOneScore(generateRandomScore())
+                .entityTwoScore(generateRandomScore())
+                .weight(1.0)
+                .justification("Auto-generated comparison based on saga analysis")
+                .build())
+            .collect(Collectors.toList());
+    }
+
+    private Double generateRandomScore() {
+        // Generate scores between 1.0 and 10.0 with realistic distribution
+        Random random = new Random();
+        return Math.round((3.0 + random.nextGaussian() * 2.0 + 4.0) * 10.0) / 10.0; // Bell curve centered around 7
+    }
+
+    private List<String> generateThemesForType(ComparisonType comparisonType, String analysisType) {
+        switch (comparisonType) {
+            case CHARACTER_VS_CHARACTER:
+                return Arrays.asList("character_development", "personality", "abilities", "relationships");
+            case LOCATION_VS_LOCATION:
+                return Arrays.asList("geography", "cultural_significance", "historical_importance", "accessibility");
+            case EVENT_VS_EVENT:
+                return Arrays.asList("historical_impact", "scale", "consequences", "participants");
+            case SONG_VS_SONG:
+                return Arrays.asList("musical_complexity", "lyrical_content", "emotional_impact", "narrative_importance");
+            case SAGA_VS_SAGA:
+                return Arrays.asList("epic_scale", "cultural_impact", "narrative_complexity", "artistic_merit");
+            default:
+                return Arrays.asList("general_comparison", "analysis", "evaluation");
+        }
+    }
+
+    private List<String> generateKeyInsights(ComparisonType comparisonType, String analysisType) {
+        switch (comparisonType) {
+            case CHARACTER_VS_CHARACTER:
+                return Arrays.asList(
+                    "Both characters show significant development throughout their stories",
+                    "Each character represents different aspects of heroism",
+                    "The comparison reveals contrasting approaches to similar challenges",
+                    "Character relationships influence their respective journeys differently"
+                );
+            case LOCATION_VS_LOCATION:
+                return Arrays.asList(
+                    "Both locations hold significant cultural and historical importance",
+                    "Geographic features influence the role each location plays in the narrative",
+                    "Modern accessibility varies significantly between the locations",
+                    "Each location offers unique insights into ancient civilizations"
+                );
+            case EVENT_VS_EVENT:
+                return Arrays.asList(
+                    "Both events demonstrate the complexity of historical conflicts",
+                    "The scale and consequences of each event shaped different outcomes",
+                    "Character development was significantly influenced by these events",
+                    "Long-term cultural impacts continue to resonate in modern times"
+                );
+            case SONG_VS_SONG:
+                return Arrays.asList(
+                    "Both songs showcase different aspects of musical storytelling",
+                    "Lyrical themes complement the overall narrative structure",
+                    "Musical complexity serves different narrative purposes",
+                    "Emotional impact varies based on context and performance"
+                );
+            default:
+                return Arrays.asList(
+                    "This comparison reveals important similarities and differences",
+                    "Each entity contributes uniquely to the overall narrative",
+                    "The analysis highlights key characteristics worth considering",
+                    "Context plays a crucial role in evaluation and interpretation"
+                );
+        }
+    }
+
+    private ComparisonMetricsRequest generateDefaultMetrics() {
+        return ComparisonMetricsRequest.builder()
+            .confidenceLevel("medium")
+            .analysisDepth("standard")
+            .biasLevel("low")
+            .build();
+    }
+
+    private ComparisonContextRequest generateDefaultContext(String analysisType) {
+        return ComparisonContextRequest.builder()
+            .historicalPeriod("ancient_greece")
+            .culturalContext("epic_literature")
+            .comparisonPurpose("educational_analysis")
+            .targetAudience("general_public")
+            .methodologies(Arrays.asList("narrative_analysis", "character_study", "thematic_comparison"))
+            .limitations(Arrays.asList("limited_source_material", "subjective_interpretation", "cultural_bias"))
+            .build();
+    }
+}

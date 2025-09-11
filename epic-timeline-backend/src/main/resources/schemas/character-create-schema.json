@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Epic Timeline Character Create Request Schema",
+  "required": ["name", "characterType"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[a-zA-Z\\s'-]+$",
+      "description": "Character name (letters, spaces, apostrophes, hyphens only)"
+    },
+    "characterType": {
+      "type": "string",
+      "enum": ["MORTAL", "GOD", "MONSTER"],
+      "description": "Epic Timeline character type enum"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Character description"
+    },
+    "origin": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Character origin or homeland"
+    },
+    "isImmortal": {
+      "type": "boolean",
+      "description": "Whether the character is immortal"
+    },
+    "isProtagonist": {
+      "type": "boolean",
+      "description": "Whether the character is a protagonist"
+    },
+    "isAntagonist": {
+      "type": "boolean",
+      "description": "Whether the character is an antagonist"
+    },
+    "isTitleCharacter": {
+      "type": "boolean",
+      "description": "Whether the character is a title character"
+    },
+    "hasSpokenLines": {
+      "type": "boolean",
+      "description": "Whether the character has spoken lines"
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["hero", "villain", "mentor", "ally", "guardian", "warrior", "ruler", "prophet", "trickster", "lover", "creator", "destroyer", "messenger", "healer", "guide", "wanderer", "protector", "avenger", "scholar", "artist", "leader", "follower"]
+      },
+      "maxItems": 10,
+      "uniqueItems": true,
+      "description": "Character roles in Epic Timeline"
+    },
+    "traits": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["brave", "wise", "loyal", "cunning", "strong", "compassionate", "proud", "humble", "fierce", "gentle", "determined", "patient", "impulsive", "cautious", "generous", "selfish", "honest", "deceptive", "noble", "vengeful", "forgiving", "ambitious", "mysterious", "charismatic", "stubborn", "adaptable", "passionate", "calculating"]
+      },
+      "maxItems": 15,
+      "uniqueItems": true,
+      "description": "Character personality traits"
+    },
+    "abilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 100
+      },
+      "maxItems": 20,
+      "uniqueItems": true,
+      "description": "Character abilities and powers"
+    },
+    "culturalSignificance": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "legendary"],
+      "description": "Cultural significance level"
+    }
+  },
+  "additionalProperties": false,
+  "if": {
+    "properties": {
+      "characterType": {"const": "GOD"}
+    }
+  },
+  "then": {
+    "properties": {
+      "isImmortal": {"const": true}
+    }
+  }
+}

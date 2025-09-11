@@ -1,0 +1,654 @@
+package com.epicstuff.service;
+
+import com.epicstuff.model.Character;
+import com.epicstuff.model.Song;
+import com.epicstuff.model.Location;
+import com.epicstuff.repository.CharacterRepository;
+import com.epicstuff.repository.SongRepository;
+import com.epicstuff.repository.LocationRepository;
+import com.epicstuff.dto.*;
+import com.epicstuff.enums.CharacterType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+@Transactional
+public class CharacterService {
+
+    @Autowired
+    private CharacterRepository characterRepository;
+    
+    @Autowired
+    private SongRepository songRepository;
+    
+    @Autowired
+    private LocationRepository locationRepository;
+
+    // ✅ Get all characters with filtering
+    public Page<Character> findAllWithFilter(CharacterFilterRequest filter, Pageable pageable) {
+        return characterRepository.findAllWithFilter(filter, pageable);
+    }
+
+    // ✅ Get character by ID with populated relationships
+    public Optional<Character> findByIdWithRelations(Long id) {
+        return characterRepository.findByIdWithSongsAndLocationsAndRelationships(id);
+    }
+
+    // ✅ Create new character with type enum validation
+    public Character createCharacter(CharacterCreateRequest request) {
+        // ✅ Custom validation beyond annotations
+        validateCharacterRequest(request);
+        
+        Character character = Character.builder()
+            .name(request.getName())
+            .description(request.getDescription())
+            
+            // ✅ Character type enum (required)
+            .characterType(request.getCharacterType())
+            
+            // ✅ Boolean flags (all required)
+            .isAlive(request.getIsAlive())
+            .isImmortal(request.getIsImmortal())
+            .hasSpokenLines(request.getHasSpokenLines())
+            .isTitleCharacter(request.getIsTitleCharacter())
+            .isAntagonist(request.getIsAntagonist())
+            .isProtagonist(request.getIsProtagonist())
+            .isHistoricalFigure(request.getIsHistoricalFigure())
+            
+            // ✅ Array fields with validation and cleaning
+            .roles(validateAndCleanStringList(request.getRoles()))
+            .traits(validateAndCleanStringList(request.getTraits()))
+            .abilities(validateAndCleanStringList(request.getAbilities()))
+            .weaknesses(validateAndCleanStringList(request.getWeaknesses()))
+            .allegiances(validateAndCleanStringList(request.getAllegiances()))
+            .alternativeNames(validateAndCleanStringList(request.getAlternativeNames()))
+            .titles(validateAndCleanStringList(request.getTitles()))
+            .epithets(validateAndCleanStringList(request.getEpithets()))
+            .weapons(validateAndCleanStringList(request.getWeapons()))
+            .memorableQuotes(validateAndCleanStringList(request.getMemorableQuotes()))
+            
+            // ✅ Entity relationships
+            .songIds(request.getSongIds() != null ? new ArrayList<>(request.getSongIds()) : new ArrayList<>())
+            .locationIds(request.getLocationIds() != null ? new ArrayList<>(request.getLocationIds()) : new ArrayList<>())
+            .sagaIds(request.getSagaIds() != null ? new ArrayList<>(request.getSagaIds()) : new ArrayList<>())
+            
+            // ✅ Nested objects
+            .physicalDescription(mapPhysicalDescription(request.getPhysicalDescription()))
+            .backgroundInfo(mapBackgroundInfo(request.getBackgroundInfo()))
+            .voiceActorInfo(mapVoiceActorInfo(request.getVoiceActorInfo()))
+            
+            // ✅ Initialize relationships as empty list for creation
+            .relationships(new ArrayList<>())
+            
+            .build();
+        
+        // ✅ Validate entity relationships exist
+        validateEntityRelationships(request.getSongIds(), request.getLocationIds(), request.getSagaIds());
+        
+        Character savedCharacter = characterRepository.save(character);
+        
+        // ✅ Add relationships after character is saved
+        if (request.getRelationships() != null && !request.getRelationships().isEmpty()) {
+            addCharacterRelationships(savedCharacter, request.getRelationships());
+        }
+        
+        return savedCharacter;
+    }
+
+    // ✅ Update existing character
+    public Optional<Character> updateCharacter(Long id, CharacterUpdateRequest request) {
+        return characterRepository.findById(id).map(existingCharacter -> {
+            // ✅ Update basic fields if provided
+            if (request.getName() != null) {
+                existingCharacter.setName(request.getName());
+            }
+            if (request.getDescription() != null) {
+                existingCharacter.setDescription(request.getDescription());
+            }
+            
+            // ✅ Update character type if provided (with validation)
+            if (request.getCharacterType() != null) {
+                validateCharacterTypeTransition(existingCharacter.getCharacterType(), request.getCharacterType());
+                existingCharacter.setCharacterType(request.getCharacterType());
+            }
+            
+            // ✅ Update boolean flags if provided
+            if (request.getIsAlive() != null) {
+                existingCharacter.setIsAlive(request.getIsAlive());
+            }
+            if (request.getIsImmortal() != null) {
+                existingCharacter.setIsImmortal(request.getIsImmortal());
+            }
+            if (request.getHasSpokenLines() != null) {
+                existingCharacter.setHasSpokenLines(request.getHasSpokenLines());
+            }
+            if (request.getIsTitleCharacter() != null) {
+                existingCharacter.setIsTitleCharacter(request.getIsTitleCharacter());
+            }
+            if (request.getIsAntagonist() != null) {
+                existingCharacter.setIsAntagonist(request.getIsAntagonist());
+            }
+            if (request.getIsProtagonist() != null) {
+                existingCharacter.setIsProtagonist(request.getIsProtagonist());
+            }
+            if (request.getIsHistoricalFigure() != null) {
+                existingCharacter.setIsHistoricalFigure(request.getIsHistoricalFigure());
+            }
+            
+            // ✅ Update arrays if provided (with validation)
+            if (request.getRoles() != null) {
+                existingCharacter.setRoles(validateAndCleanStringList(request.getRoles()));
+            }
+            if (request.getTraits() != null) {
+                existingCharacter.setTraits(validateAndCleanStringList(request.getTraits()));
+            }
+            if (request.getAbilities() != null) {
+                existingCharacter.setAbilities(validateAndCleanStringList(request.getAbilities()));
+            }
+            if (request.getWeaknesses() != null) {
+                existingCharacter.setWeaknesses(validateAndCleanStringList(request.getWeaknesses()));
+            }
+            if (request.getAllegiances() != null) {
+                existingCharacter.setAllegiances(validateAndCleanStringList(request.getAllegiances()));
+            }
+            if (request.getAlternativeNames() != null) {
+                existingCharacter.setAlternativeNames(validateAndCleanStringList(request.getAlternativeNames()));
+            }
+            if (request.getTitles() != null) {
+                existingCharacter.setTitles(validateAndCleanStringList(request.getTitles()));
+            }
+            if (request.getEpithets() != null) {
+                existingCharacter.setEpithets(validateAndCleanStringList(request.getEpithets()));
+            }
+            if (request.getWeapons() != null) {
+                existingCharacter.setWeapons(validateAndCleanStringList(request.getWeapons()));
+            }
+            if (request.getMemorableQuotes() != null) {
+                existingCharacter.setMemorableQuotes(validateAndCleanStringList(request.getMemorableQuotes()));
+            }
+            
+            // ✅ Update entity relationships if provided
+            if (request.getSongIds() != null) {
+                validateSongIds(request.getSongIds());
+                existingCharacter.setSongIds(new ArrayList<>(request.getSongIds()));
+            }
+            if (request.getLocationIds() != null) {
+                validateLocationIds(request.getLocationIds());
+                existingCharacter.setLocationIds(new ArrayList<>(request.getLocationIds()));
+            }
+            if (request.getSagaIds() != null) {
+                validateSagaIds(request.getSagaIds());
+                existingCharacter.setSagaIds(new ArrayList<>(request.getSagaIds()));
+            }
+            
+            // ✅ Update nested objects if provided
+            if (request.getPhysicalDescription() != null) {
+                existingCharacter.setPhysicalDescription(mapPhysicalDescription(request.getPhysicalDescription()));
+            }
+            if (request.getBackgroundInfo() != null) {
+                existingCharacter.setBackgroundInfo(mapBackgroundInfo(request.getBackgroundInfo()));
+            }
+            if (request.getVoiceActorInfo() != null) {
+                existingCharacter.setVoiceActorInfo(mapVoiceActorInfo(request.getVoiceActorInfo()));
+            }
+            
+            return characterRepository.save(existingCharacter);
+        });
+    }
+
+    // ✅ Delete character
+    public boolean deleteCharacter(Long id) {
+        if (characterRepository.existsById(id)) {
+            characterRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    // ✅ Find characters by type
+    public List<Character> findByCharacterType(CharacterType type) {
+        return characterRepository.findByCharacterType(type);
+    }
+
+    // ✅ Find mortal characters
+    public List<Character> findMortalCharacters() {
+        return characterRepository.findByCharacterType(CharacterType.MORTAL);
+    }
+
+    // ✅ Find god characters
+    public List<Character> findGodCharacters() {
+        return characterRepository.findByCharacterType(CharacterType.GOD);
+    }
+
+    // ✅ Find monster characters
+    public List<Character> findMonsterCharacters() {
+        return characterRepository.findByCharacterType(CharacterType.MONSTER);
+    }
+
+    // ✅ Find alive characters
+    public List<Character> findAliveCharacters() {
+        return characterRepository.findByIsAliveTrue();
+    }
+
+    // ✅ Find immortal characters
+    public List<Character> findImmortalCharacters() {
+        return characterRepository.findByIsImmortalTrue();
+    }
+
+    // ✅ Get character songs
+    public List<Song> getCharacterSongs(Long id) {
+        return characterRepository.findById(id)
+            .map(character -> songRepository.findAllById(character.getSongIds()))
+            .orElse(new ArrayList<>());
+    }
+
+    // ✅ Get character locations
+    public List<Location> getCharacterLocations(Long id) {
+        return characterRepository.findById(id)
+            .map(character -> locationRepository.findAllById(character.getLocationIds()))
+            .orElse(new ArrayList<>());
+    }
+
+    // ✅ Get character relationships
+    public List<CharacterRelationshipResponse> getCharacterRelationships(Long id) {
+        return characterRepository.findById(id)
+            .map(character -> character.getRelationships().stream()
+                .map(this::mapToCharacterRelationshipResponse)
+                .collect(Collectors.toList()))
+            .orElse(new ArrayList<>());
+    }
+
+    // ✅ Add character relationship
+    public Optional<Character> addRelationship(Long characterId, CharacterRelationshipRequest request) {
+        validateRelationshipRequest(request);
+        
+        return characterRepository.findById(characterId).map(character -> {
+            CharacterRelationship relationship = CharacterRelationship.builder()
+                .relatedCharacterId(request.getRelatedCharacterId())
+                .relationshipType(request.getRelationshipType())
+                .description(request.getDescription())
+                .build();
+            
+            character.getRelationships().add(relationship);
+            return characterRepository.save(character);
+        });
+    }
+
+    // ✅ Remove character relationship
+    public Optional<Character> removeRelationship(Long characterId, Long relationshipId) {
+        return characterRepository.findById(characterId).map(character -> {
+            character.getRelationships().removeIf(rel -> rel.getId().equals(relationshipId));
+            return characterRepository.save(character);
+        });
+    }
+
+    // ✅ Get character statistics
+    public Optional<CharacterStatsResponse> getCharacterStats(Long id) {
+        return characterRepository.findByIdWithRelations(id).map(character -> {
+            return CharacterStatsResponse.builder()
+                .characterId(character.getId())
+                .characterName(character.getName())
+                .characterType(character.getCharacterType())
+                
+                // Boolean flag statistics
+                .isAlive(character.getIsAlive())
+                .isImmortal(character.getIsImmortal())
+                .hasSpokenLines(character.getHasSpokenLines())
+                .isTitleCharacter(character.getIsTitleCharacter())
+                .isAntagonist(character.getIsAntagonist())
+                .isProtagonist(character.getIsProtagonist())
+                .isHistoricalFigure(character.getIsHistoricalFigure())
+                
+                // Relationship counts
+                .songCount(character.getSongIds().size())
+                .locationCount(character.getLocationIds().size())
+                .sagaCount(character.getSagaIds().size())
+                .relationshipCount(character.getRelationships().size())
+                
+                // Array statistics
+                .roleCount(character.getRoles().size())
+                .traitCount(character.getTraits().size())
+                .abilityCount(character.getAbilities().size())
+                .weaknessCount(character.getWeaknesses().size())
+                .allegianceCount(character.getAllegiances().size())
+                .alternativeNameCount(character.getAlternativeNames().size())
+                .titleCount(character.getTitles().size())
+                .epithetCount(character.getEpithets().size())
+                .weaponCount(character.getWeapons().size())
+                .memorableQuoteCount(character.getMemorableQuotes().size())
+                
+                // Array content
+                .allRoles(character.getRoles())
+                .allTraits(character.getTraits())
+                .allAbilities(character.getAbilities())
+                .allWeaknesses(character.getWeaknesses())
+                .allAllegiances(character.getAllegiances())
+                .roleFrequency(countStringOccurrences(character.getRoles()))
+                .traitFrequency(countStringOccurrences(character.getTraits()))
+                
+                // Physical description
+                .height(character.getPhysicalDescription() != null ? character.getPhysicalDescription().getHeight() : null)
+                .build(character.getPhysicalDescription() != null ? character.getPhysicalDescription().getBuild() : null)
+                .hairColor(character.getPhysicalDescription() != null ? character.getPhysicalDescription().getHairColor() : null)
+                .eyeColor(character.getPhysicalDescription() != null ? character.getPhysicalDescription().getEyeColor() : null)
+                .hasPortrait(character.getPhysicalDescription() != null && character.getPhysicalDescription().getPortraitUrl() != null)
+                
+                // Voice information
+                .voiceActorName(character.getVoiceActorInfo() != null ? character.getVoiceActorInfo().getVoiceActorName() : null)
+                .vocalRangeMin(character.getVoiceActorInfo() != null ? character.getVoiceActorInfo().getVocalRangeMin() : null)
+                .vocalRangeMax(character.getVoiceActorInfo() != null ? character.getVoiceActorInfo().getVocalRangeMax() : null)
+                .hasVoiceInfo(character.getVoiceActorInfo() != null)
+                
+                // Background information
+                .birthPlace(character.getBackgroundInfo() != null ? character.getBackgroundInfo().getBirthPlace() : null)
+                .familyOrigin(character.getBackgroundInfo() != null ? character.getBackgroundInfo().getFamilyOrigin() : null)
+                .familyMemberCount(character.getBackgroundInfo() != null ? character.getBackgroundInfo().getFamilyMembers().size() : 0)
+                .historicalEventCount(character.getBackgroundInfo() != null ? character.getBackgroundInfo().getHistoricalEvents().size() : 0)
+                .hasOriginStory(character.getBackgroundInfo() != null && character.getBackgroundInfo().getOriginStory() != null)
+                
+                // Related entities
+                .songTitles(getSongTitles(character.getSongIds()))
+                .locationNames(getLocationNames(character.getLocationIds()))
+                .sagaTitles(getSagaTitles(character.getSagaIds()))
+                .relationships(character.getRelationships().stream()
+                    .map(this::mapToCharacterRelationshipResponse)
+                    .collect(Collectors.toList()))
+                .relationshipTypeCount(getRelationshipTypeCount(character.getRelationships()))
+                
+                .build();
+        });
+    }
+
+    // ✅ Private validation methods
+    private void validateCharacterRequest(CharacterCreateRequest request) {
+        // ✅ Validate character type enum
+        validateCharacterType(request.getCharacterType());
+        
+        // ✅ Validate boolean flag logic
+        validateBooleanFlagLogic(request);
+        
+        // ✅ Validate arrays don't have duplicates
+        if (hasDuplicates(request.getRoles())) {
+            throw new IllegalArgumentException("Roles cannot contain duplicates");
+        }
+        if (hasDuplicates(request.getTraits())) {
+            throw new IllegalArgumentException("Traits cannot contain duplicates");
+        }
+        if (hasDuplicates(request.getAbilities())) {
+            throw new IllegalArgumentException("Abilities cannot contain duplicates");
+        }
+        
+        // ✅ Validate predefined lists
+        validateAgainstAllowedValues(request.getRoles(), getAllowedRoles(), "role");
+        validateAgainstAllowedValues(request.getTraits(), getAllowedTraits(), "trait");
+        
+        // ✅ Validate voice actor info consistency
+        if (request.getVoiceActorInfo() != null) {
+            validateVoiceActorInfo(request.getVoiceActorInfo());
+        }
+    }
+
+    private void validateCharacterType(CharacterType characterType) {
+        if (characterType == null) {
+            throw new IllegalArgumentException("Character type is required");
+        }
+        
+        // ✅ Epic Timeline uses specific character types
+        Set<CharacterType> allowedTypes = Set.of(
+            CharacterType.MORTAL, 
+            CharacterType.GOD, 
+            CharacterType.MONSTER
+        );
+        
+        if (!allowedTypes.contains(characterType)) {
+            throw new IllegalArgumentException("Invalid character type: " + characterType + 
+                ". Allowed values: " + allowedTypes);
+        }
+    }
+
+    private void validateCharacterTypeTransition(CharacterType currentType, CharacterType newType) {
+        // ✅ Business logic for character type changes
+        
+        // Gods cannot become mortals (but mortals can become gods through ascension)
+        if (currentType == CharacterType.GOD && newType == CharacterType.MORTAL) {
+            throw new IllegalArgumentException("Gods cannot become mortals");
+        }
+        
+        // Monsters can become mortals (through transformation) or gods (through ascension)
+        // Mortals can become gods (through ascension) or monsters (through corruption)
+        // All other transitions are allowed
+    }
+
+    private void validateBooleanFlagLogic(CharacterCreateRequest request) {
+        // ✅ Epic Timeline specific business logic validation
+        
+        // Gods are typically immortal
+        if (request.getCharacterType() == CharacterType.GOD && !Boolean.TRUE.equals(request.getIsImmortal())) {
+            // This is a warning, not an error - some gods can be killed
+        }
+        
+        // Immortal characters are typically alive
+        if (Boolean.TRUE.equals(request.getIsImmortal()) && !Boolean.TRUE.equals(request.getIsAlive())) {
+            throw new IllegalArgumentException("Immortal characters should typically be alive");
+        }
+        
+        // Characters cannot be both protagonist and antagonist
+        if (Boolean.TRUE.equals(request.getIsProtagonist()) && Boolean.TRUE.equals(request.getIsAntagonist())) {
+            throw new IllegalArgumentException("Character cannot be both protagonist and antagonist");
+        }
+        
+        // Title characters typically have spoken lines
+        if (Boolean.TRUE.equals(request.getIsTitleCharacter()) && !Boolean.TRUE.equals(request.getHasSpokenLines())) {
+            // This is a warning, not an error - some title characters might be silent
+        }
+    }
+
+    private void validateVoiceActorInfo(VoiceActorInfoRequest voiceInfo) {
+        if (voiceInfo.getVocalRangeMin() != null && voiceInfo.getVocalRangeMax() != null) {
+            if (voiceInfo.getVocalRangeMin() >= voiceInfo.getVocalRangeMax()) {
+                throw new IllegalArgumentException("Vocal range minimum must be less than maximum");
+            }
+        }
+    }
+
+    private void validateRelationshipRequest(CharacterRelationshipRequest request) {
+        if (!characterRepository.existsById(request.getRelatedCharacterId())) {
+            throw new IllegalArgumentException("Related character not found: " + request.getRelatedCharacterId());
+        }
+        
+        // ✅ Validate relationship type against allowed values
+        Set<String> allowedRelationshipTypes = Set.of(
+            "family", "friend", "enemy", "ally", "mentor", "student", "lover", "rival",
+            "parent", "child", "sibling", "spouse", "creator", "creation", "master", "servant"
+        );
+        
+        if (!allowedRelationshipTypes.contains(request.getRelationshipType().toLowerCase())) {
+            throw new IllegalArgumentException("Invalid relationship type: " + request.getRelationshipType() +
+                ". Allowed values: " + allowedRelationshipTypes);
+        }
+    }
+
+    private void validateEntityRelationships(List<Long> songIds, List<Long> locationIds, List<Long> sagaIds) {
+        if (songIds != null && !songIds.isEmpty()) {
+            validateSongIds(songIds);
+        }
+        if (locationIds != null && !locationIds.isEmpty()) {
+            validateLocationIds(locationIds);
+        }
+        if (sagaIds != null && !sagaIds.isEmpty()) {
+            validateSagaIds(sagaIds);
+        }
+    }
+
+    private void validateSongIds(List<Long> songIds) {
+        List<Long> existingIds = songRepository.findAllById(songIds)
+            .stream()
+            .map(Song::getId)
+            .collect(Collectors.toList());
+        
+        for (Long id : songIds) {
+            if (!existingIds.contains(id)) {
+                throw new IllegalArgumentException("Invalid song ID: " + id);
+            }
+        }
+    }
+
+    private void validateLocationIds(List<Long> locationIds) {
+        List<Long> existingIds = locationRepository.findAllById(locationIds)
+            .stream()
+            .map(Location::getId)
+            .collect(Collectors.toList());
+        
+        for (Long id : locationIds) {
+            if (!existingIds.contains(id)) {
+                throw new IllegalArgumentException("Invalid location ID: " + id);
+            }
+        }
+    }
+
+    private void validateSagaIds(List<Long> sagaIds) {
+        // Saga validation not implemented yet
+    }
+
+    // ✅ Helper methods for mapping and counting
+    private PhysicalDescription mapPhysicalDescription(PhysicalDescriptionRequest request) {
+        if (request == null) {
+            return null;
+        }
+        return PhysicalDescription.builder()
+            .height(request.getHeight())
+            .build(request.getBuild())
+            .hairColor(request.getHairColor())
+            .eyeColor(request.getEyeColor())
+            .portraitUrl(request.getPortraitUrl())
+            .build();
+    }
+
+    private BackgroundInfo mapBackgroundInfo(BackgroundInfoRequest request) {
+        if (request == null) {
+            return null;
+        }
+        return BackgroundInfo.builder()
+            .birthPlace(request.getBirthPlace())
+            .familyOrigin(request.getFamilyOrigin())
+            .familyMembers(request.getFamilyMembers())
+            .historicalEvents(request.getHistoricalEvents())
+            .originStory(request.getOriginStory())
+            .build();
+    }
+
+    private VoiceActorInfo mapVoiceActorInfo(VoiceActorInfoRequest request) {
+        if (request == null) {
+            return null;
+        }
+        return VoiceActorInfo.builder()
+            .voiceActorName(request.getVoiceActorName())
+            .vocalRangeMin(request.getVocalRangeMin())
+            .vocalRangeMax(request.getVocalRangeMax())
+            .build();
+    }
+
+    private CharacterRelationshipResponse mapToCharacterRelationshipResponse(CharacterRelationship relationship) {
+        return CharacterRelationshipResponse.builder()
+            .id(relationship.getId())
+            .relatedCharacterId(relationship.getRelatedCharacterId())
+            .relationshipType(relationship.getRelationshipType())
+            .description(relationship.getDescription())
+            .build();
+    }
+
+    private List<String> getSongTitles(List<Long> songIds) {
+        return songRepository.findAllById(songIds)
+            .stream()
+            .map(Song::getTitle)
+            .collect(Collectors.toList());
+    }
+
+    private List<String> getLocationNames(List<Long> locationIds) {
+        return locationRepository.findAllById(locationIds)
+            .stream()
+            .map(Location::getName)
+            .collect(Collectors.toList());
+    }
+
+    private List<String> getSagaTitles(List<Long> sagaIds) {
+        // Saga title retrieval not implemented yet
+        return new ArrayList<>();
+    }
+
+    private Map<String, Long> getRelationshipTypeCount(List<CharacterRelationship> relationships) {
+        return relationships.stream()
+            .collect(Collectors.groupingBy(CharacterRelationship::getRelationshipType, Collectors.counting()));
+    }
+
+    private <T> boolean hasDuplicates(List<T> list) {
+        return list != null && list.size() != new HashSet<>(list).size();
+    }
+
+    private <T> Map<T, Long> countStringOccurrences(List<T> list) {
+        return list.stream()
+            .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+    }
+
+    private void addCharacterRelationships(Character character, List<CharacterRelationshipRequest> relationships) {
+        for (CharacterRelationshipRequest request : relationships) {
+            CharacterRelationship relationship = CharacterRelationship.builder()
+                .relatedCharacterId(request.getRelatedCharacterId())
+                .relationshipType(request.getRelationshipType())
+                .description(request.getDescription())
+                .build();
+            character.getRelationships().add(relationship);
+        }
+        characterRepository.save(character);
+    }
+
+    private void validateAgainstAllowedValues(List<String> values, Set<String> allowedValues, String fieldName) {
+        if (values == null || allowedValues == null) return;
+        
+        List<String> invalid = values.stream()
+            .filter(value -> !allowedValues.contains(value.toLowerCase().trim()))
+            .collect(Collectors.toList());
+        
+        if (!invalid.isEmpty()) {
+            throw new IllegalArgumentException(
+                String.format("Invalid %s values: %s. Allowed values: %s", 
+                    fieldName, invalid, allowedValues)
+            );
+        }
+    }
+
+    private List<String> validateAndCleanStringList(List<String> strings) {
+        if (strings == null) return new ArrayList<>();
+        
+        return strings.stream()
+            .filter(Objects::nonNull)
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .distinct() // Remove duplicates
+            .collect(Collectors.toList());
+    }
+
+    // ✅ Epic Timeline specific allowed values for character validation
+    private Set<String> getAllowedRoles() {
+        return Set.of(
+            "hero", "villain", "mentor", "ally", "guardian", "warrior", "ruler", "prophet", 
+            "trickster", "lover", "creator", "destroyer", "messenger", "healer", "guide",
+            "wanderer", "protector", "avenger", "scholar", "artist", "leader", "follower"
+        );
+    }
+
+    private Set<String> getAllowedTraits() {
+        return Set.of(
+            "brave", "wise", "loyal", "cunning", "strong", "compassionate", "proud", "humble",
+            "fierce", "gentle", "determined", "patient", "impulsive", "cautious", "generous",
+            "selfish", "honest", "deceptive", "noble", "vengeful", "forgiving", "ambitious",
+            "mysterious", "charismatic", "stubborn", "adaptable", "passionate", "calculating"
+        );
+    }
+}
