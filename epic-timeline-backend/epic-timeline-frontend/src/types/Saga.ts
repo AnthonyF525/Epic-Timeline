@@ -1,4 +1,4 @@
-import { Character, Location, Event, Song, CharacterType } from './EntityInterfaceType.ts';
+import { Character, Location, Event, Song, CharacterType } from './EntityInterfaceType';
 
 // Enhanced Saga interface with array fields
 export interface Saga {
@@ -9,7 +9,7 @@ export interface Saga {
     episodeCount?: number;
 
     //Array fields - relationships
-    songs: song[];
+    songs: Song[];
     characters: Character[];
     locations: Location[];
     events: Event[];
@@ -20,7 +20,23 @@ export interface Saga {
     inspirations: string[];
 
     // Optional metadata
-    albumArlUrl?: string;
+    albumArtUrl?: string;
     amazonMusicUrl?: string;
-    youtubePlaylistUrl?
+    youtubePlaylistUrl?: string;
+    totalDurationSeconds?: number;
 }
+
+//Utility types for Saga
+export type SagaWithStats = Saga & {
+    totalSongs: number;
+    totalCharacters: number;
+    totalLocations: number;
+    totalEvents: number;
+    averageSongDuration: number;
+};
+
+export type SagaForCreation = Omit<Saga, 'id' | 'songs' | 'characters' | 'locations' | 'events'> & {
+    genres: string[];
+    themes: string[];
+    inspirations: string[];
+};

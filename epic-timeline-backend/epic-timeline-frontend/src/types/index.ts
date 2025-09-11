@@ -1,8 +1,16 @@
 // Export all enums
-export * from './EnumsIndex.ts';
+export * from './EnumsIndex';
 
 // Export all entity types
-export * from './EntityInterfaceType.ts/index.ts';
+export * from './EntityInterfaceType';
+
+export * from './Saga';
+export * from './Song';
+export * from './Location';
+export * from './Character';
+export * from './Event';
+export * from './Comparison';
+
 
 // Utility types
 export type ApiResponse<T> = {
