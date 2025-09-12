@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { TimelineMap, TimelineLocation, TimelineMapProps } from './Timeline/TimelineMap';
 import { PanGestureHandler, State, GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -559,11 +559,21 @@ export const EpicTimelineMap: React.FC<EpicTimelineMapProps> = ({
     }
   };
 
-  // Enhanced retry function
-  const retryOperation = () => {
-    clearErrors();
-    simulateMapInitialization();
-  };
+  // Add device dimension tracking to EpicTimelineMap.tsx
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
+  // Add performance monitoring state
+  const [performanceMetrics, setPerformanceMetrics] = React.useState({
+    renderTime: 0,
+    panResponsiveness: 0,
+    zoomSmoothness: 0,
+    locationCount: locations.length,
+    deviceInfo: {
+      width: screenWidth,
+      height: screenHeight,
+      pixelRatio: Dimensions.get('window').scale
+    }
+  });
 
   // Loading screen component
   const LoadingScreen = () => (
@@ -1514,3 +1524,210 @@ const styles = StyleSheet.create({
   noLocationsText: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: EPIC_THEME.colors.primaryText,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  noLocationsSubText: {
+    fontSize: 12,
+    color: EPIC_THEME.colors.mutedText,
+    textAlign: 'center',
+    marginBottom: 15,
+  },
+  
+  // Loading screen styles
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: EPIC_THEME.colors.darkBg,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  loadingContent: {
+    alignItems: 'center',
+    backgroundColor: EPIC_THEME.colors.lightBg,
+    padding: 30,
+    borderRadius: 15,
+    borderWidth: 2,
+    borderColor: EPIC_THEME.colors.epicBlue,
+    shadowColor: EPIC_THEME.colors.epicBlue,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  loadingTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: EPIC_THEME.colors.epicGold,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  loadingSubtitle: {
+    fontSize: 14,
+    color: EPIC_THEME.colors.mediterraneanTeal,
+    marginBottom: 20,
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
+  // Progress bar styles
+  progressContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+    width: 200,
+  },
+  progressBar: {
+    width: '100%',
+    height: 8,
+    backgroundColor: EPIC_THEME.colors.darkBg,
+    borderRadius: 4,
+    marginBottom: 8,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: EPIC_THEME.colors.epicBlue,
+    borderRadius: 4,
+  },
+  progressText: {
+    fontSize: 12,
+    color: EPIC_THEME.colors.secondaryText,
+    fontWeight: 'bold',
+  },
+  // Loading steps styles
+  loadingSteps: {
+    alignItems: 'flex-start',
+  },
+  loadingStep: {
+    fontSize: 12,
+    color: EPIC_THEME.colors.mutedText,
+    marginVertical: 2,
+    paddingLeft: 10,
+  },
+  loadingStepComplete: {
+    color: EPIC_THEME.colors.success,
+    fontWeight: 'bold',
+  },
+  
+  // Error screen styles
+  errorContainer: {
+    flex: 1,
+    backgroundColor: EPIC_THEME.colors.darkBg,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorContent: {
+    alignItems: 'center',
+    backgroundColor: EPIC_THEME.colors.lightBg,
+    padding: 30,
+    borderRadius: 15,
+    borderWidth: 2,
+    borderColor: EPIC_THEME.colors.danger,
+    maxWidth: 350,
+  },
+  errorIcon: {
+    fontSize: 48,
+    marginBottom: 15,
+  },
+  errorTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: EPIC_THEME.colors.danger,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  errorMessage: {
+    fontSize: 14,
+    color: EPIC_THEME.colors.secondaryText,
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 20,
+  },
+  errorsList: {
+    width: '100%',
+    marginBottom: 20,
+  },
+  errorsTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: EPIC_THEME.colors.mutedText,
+    marginBottom: 8,
+  },
+  errorItem: {
+    fontSize: 11,
+    color: EPIC_THEME.colors.mutedText,
+    marginVertical: 2,
+    paddingLeft: 5,
+  },
+  // Button styles
+  retryButton: {
+    backgroundColor: EPIC_THEME.colors.epicBlue,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginBottom: 10,
+  },
+  retryButtonText: {
+    color: EPIC_THEME.colors.primaryText,
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  clearErrorsButton: {
+    backgroundColor: EPIC_THEME.colors.success,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 15,
+  },
+  clearErrorsButtonText: {
+    color: EPIC_THEME.colors.primaryText,
+    fontSize: 12,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  
+  // Status indicators
+  errorIndicator: {
+    backgroundColor: 'rgba(220, 53, 69, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginTop: 4,
+    alignSelf: 'center',
+  },
+  errorIndicatorText: {
+    color: EPIC_THEME.colors.danger,
+    fontSize: 10,
+    textAlign: 'center',
+  },
+  statusIndicator: {
+    backgroundColor: EPIC_THEME.colors.darkBg,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: EPIC_THEME.colors.success,
+  },
+  statusText: {
+    color: EPIC_THEME.colors.success,
+    fontSize: 9,
+    fontWeight: 'bold',
+  },
+  
+  // Common styles for map and pannable container
+  pannableMapContainer: {
+    flex: 1,
+    borderRadius: 12,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  draggingMapContainer: {
+    // Styles while dragging
+    opacity: 0.9,
+  },
+  focusingMapContainer: {
+    // Styles while focusing
+    opacity: 0.8,
+  },
+});
