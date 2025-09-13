@@ -1,0 +1,208 @@
+package com.epicstuff.controller;
+
+import com.epicstuff.model.Comparison;
+import com.epicstuff.service.ComparisonService;
+import com.epicstuff.dto.*;
+import com.epicstuff.model.enums.ComparisonType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
+import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/comparisons")
+@CrossOrigin(origins = "*")
+public class ComparisonController {
+
+    @Autowired
+    private ComparisonService comparisonService;
+
+    // ✅ GET /api/comparisons - List all comparisons with filtering and pagination
+    @GetMapping
+    public ResponseEntity<Page<Comparison>> getAllComparisons(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "title") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(required = false) ComparisonType comparisonType,
+            @RequestParam(required = false) String analysisType,
+            @RequestParam(required = false) String conclusion,
+            @RequestParam(required = false) Boolean isPublic,
+            @RequestParam(required = false) Boolean isDetailed,
+            @RequestParam(required = false) String theme,
+            @RequestParam(required = false) String tag,
+            @RequestParam(required = false) Long entityId,
+            @RequestParam(required = false) String search
+    ) {
+        Sort sort = sortDir.equalsIgnoreCase("desc") ? 
+            Sort.by(sortBy).descending() : 
+            Sort.by(sortBy).ascending();
+        
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        
+        ComparisonFilterRequest filter = ComparisonFilterRequest.builder()
+            .comparisonType(comparisonType)
+            .analysisType(analysisType)
+            .conclusion(conclusion)
+            .isPublic(isPublic)
+            .isDetailed(isDetailed)
+            .theme(theme)
+            .tag(tag)
+            .entityId(entityId)
+            .search(search)
+            .build();
+        
+        Page<Comparison> comparisons = comparisonService.findAllWithFilter(filter, pageRequest);
+        return ResponseEntity.ok(comparisons);
+    }
+
+    // ✅ GET /api/comparisons/{id} - Get single comparison with populated relationships
+    @GetMapping("/{id}")
+    public ResponseEntity<Comparison> getComparisonById(@PathVariable Long id) {
+        Optional<Comparison> comparison = comparisonService.findByIdWithRelations(id);
+        return comparison.map(ResponseEntity::ok)
+                        .orElse(ResponseEntity.notFound().build());
+    }
+
+    // ✅ POST /api/comparisons - Create new comparison
+    @PostMapping
+    public ResponseEntity<Comparison> createComparison(@Valid @RequestBody ComparisonCreateRequest request) {
+        try {
+            Comparison createdComparison = comparisonService.createComparison(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdComparison);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // ✅ PUT /api/comparisons/{id} - Update existing comparison
+    @PutMapping("/{id}")
+    public ResponseEntity<Comparison> updateComparison(
+            @PathVariable Long id, 
+            @Valid @RequestBody ComparisonUpdateRequest request
+    ) {
+        try {
+            Optional<Comparison> updatedComparison = comparisonService.updateComparison(id, request);
+            return updatedComparison.map(ResponseEntity::ok)
+                                   .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // ✅ DELETE /api/comparisons/{id} - Delete comparison
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComparison(@PathVariable Long id) {
+        boolean deleted = comparisonService.deleteComparison(id);
+        return deleted ? ResponseEntity.noContent().build() : 
+                        ResponseEntity.notFound().build();
+    }
+
+    // ✅ GET /api/comparisons/type/{type} - Get comparisons by type enum
+    @GetMapping("/type/{type}")
+    public ResponseEntity<List<Comparison>> getComparisonsByType(@PathVariable ComparisonType type) {
+        List<Comparison> comparisons = comparisonService.findByComparisonType(type);
+        return ResponseEntity.ok(comparisons);
+    }
+
+    // ✅ GET /api/comparisons/characters - Get all character comparisons
+    @GetMapping("/characters")
+    public ResponseEntity<List<Comparison>> getCharacterComparisons() {
+        List<Comparison> comparisons = comparisonService.findCharacterComparisons();
+        return ResponseEntity.ok(comparisons);
+    }
+
+    // ✅ GET /api/comparisons/locations - Get all location comparisons
+    @GetMapping("/locations")
+    public ResponseEntity<List<Comparison>> getLocationComparisons() {
+        List<Comparison> comparisons = comparisonService.findLocationComparisons();
+        return ResponseEntity.ok(comparisons);
+    }
+
+    // ✅ GET /api/comparisons/events - Get all event comparisons
+    @GetMapping("/events")
+    public ResponseEntity<List<Comparison>> getEventComparisons() {
+        List<Comparison> comparisons = comparisonService.findEventComparisons();
+        return ResponseEntity.ok(comparisons);
+    }
+
+    // ✅ GET /api/comparisons/songs - Get all song comparisons
+    @GetMapping("/songs")
+    public ResponseEntity<List<Comparison>> getSongComparisons() {
+        List<Comparison> comparisons = comparisonService.findSongComparisons();
+        return ResponseEntity.ok(comparisons);
+    }
+
+    // ✅ GET /api/comparisons/sagas - Get all saga comparisons
+    @GetMapping("/sagas")
+    public ResponseEntity<List<Comparison>> getSagaComparisons() {
+        List<Comparison> comparisons = comparisonService.findSagaComparisons();
+        return ResponseEntity.ok(comparisons);
+    }
+
+    // ✅ POST /api/comparisons/{id}/criteria - Add criteria to comparison
+    @PostMapping("/{id}/criteria")
+    public ResponseEntity<Comparison> addCriteria(
+            @PathVariable Long id,
+            @Valid @RequestBody ComparisonCriteriaRequest request
+    ) {
+        try {
+            Optional<Comparison> updatedComparison = comparisonService.addCriteria(id, request);
+            return updatedComparison.map(ResponseEntity::ok)
+                                   .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // ✅ DELETE /api/comparisons/{id}/criteria/{criteriaId} - Remove criteria
+    @DeleteMapping("/{id}/criteria/{criteriaId}")
+    public ResponseEntity<Comparison> removeCriteria(
+            @PathVariable Long id,
+            @PathVariable Long criteriaId
+    ) {
+        Optional<Comparison> updatedComparison = comparisonService.removeCriteria(id, criteriaId);
+        return updatedComparison.map(ResponseEntity::ok)
+                               .orElse(ResponseEntity.notFound().build());
+    }
+
+    // ✅ POST /api/comparisons/auto-generate - Auto-generate comparison
+    @PostMapping("/auto-generate")
+    public ResponseEntity<Comparison> autoGenerateComparison(@Valid @RequestBody AutoComparisonRequest request) {
+        try {
+            Comparison generatedComparison = comparisonService.autoGenerateComparison(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(generatedComparison);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // ✅ GET /api/comparisons/for-entity/{entityType}/{entityId} - Get comparisons for entity
+    @GetMapping("/for-entity/{entityType}/{entityId}")
+    public ResponseEntity<List<Comparison>> getComparisonsForEntity(
+            @PathVariable String entityType,
+            @PathVariable Long entityId
+    ) {
+        try {
+            List<Comparison> comparisons = comparisonService.findComparisonsForEntity(entityType, entityId);
+            return ResponseEntity.ok(comparisons);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // ✅ GET /api/comparisons/{id}/stats - Get comparison statistics
+    @GetMapping("/{id}/stats")
+    public ResponseEntity<ComparisonStatsResponse> getComparisonStats(@PathVariable Long id) {
+        Optional<ComparisonStatsResponse> stats = comparisonService.getComparisonStats(id);
+        return stats.map(ResponseEntity::ok)
+                   .orElse(ResponseEntity.notFound().build());
+    }
+}

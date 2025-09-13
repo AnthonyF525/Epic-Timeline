@@ -4,15 +4,14 @@ import com.epicstuff.model.Song;
 import com.epicstuff.model.Character;
 import com.epicstuff.repository.SongRepository;
 import com.epicstuff.repository.CharacterRepository;
-import com.epicstuff.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -20,167 +19,37 @@ public class SongService {
 
     @Autowired
     private SongRepository songRepository;
-    
+
     @Autowired
     private CharacterRepository characterRepository;
 
-    // ✅ Get all songs with filtering
-    public Page<Song> findAllWithFilter(SongFilterRequest filter, Pageable pageable) {
-        return songRepository.findAllWithFilter(filter, pageable);
+    // ✅ Get all songs with filtering (simplified)
+    public Page<Song> findAllWithFilter(Long sagaId, Pageable pageable) {
+        // For now, implement basic filtering by sagaId
+        if (sagaId != null) {
+            List<Song> songs = songRepository.findBySagaId(sagaId);
+            return new PageImpl<>(songs, pageable, songs.size());
+        }
+        
+        // If no specific filters, return all songs
+        return songRepository.findAll(pageable);
+    }
+
+    // ✅ Get all songs
+    public List<Song> findAll() {
+        return songRepository.findAll();
     }
 
     // ✅ Get song by ID with populated relationships
     public Optional<Song> findByIdWithRelations(Long id) {
-        return songRepository.findByIdWithCharacters(id);
+        return songRepository.findById(id);
     }
 
-    // ✅ Create new song with array validation
-    public Song createSong(SongCreateRequest request) {
-        // ✅ Custom validation beyond annotations
-        validateSongRequest(request);
-        
-        Song song = Song.builder()
-            .title(request.getTitle())
-            .trackNumber(request.getTrackNumber())
-            .description(request.getDescription())
-            .durationSeconds(request.getDurationSeconds())
-            .sagaId(request.getSagaId())
-            
-            // ✅ Array fields with validation and cleaning
-            .themes(validateAndCleanStringList(request.getThemes()))
-            .genres(validateAndCleanStringList(request.getGenres()))
-            .instruments(validateAndCleanStringList(request.getInstruments()))
-            .vocals(validateAndCleanStringList(request.getVocals()))
-            .moods(validateAndCleanStringList(request.getMoods()))
-            .tags(validateAndCleanStringList(request.getTags()))
-            
-            // ✅ Song structure arrays
-            .songSections(validateAndCleanStringList(request.getSongSections()))
-            .lyricHighlights(validateAndCleanStringList(request.getLyricHighlights()))
-            
-            // ✅ External reference arrays
-            .amazonMusicIds(validateAndCleanStringList(request.getAmazonMusicIds()))
-            .youtubeIds(validateAndCleanStringList(request.getYoutubeIds()))
-            .inspirationSources(validateAndCleanStringList(request.getInspirationSources()))
-            
-            // ✅ Character relationships
-            .characterIds(request.getCharacterIds() != null ? new ArrayList<>(request.getCharacterIds()) : new ArrayList<>())
-            
-            // ✅ Metadata
-            .lyricist(request.getLyricist())
-            .composer(request.getComposer())
-            .producer(request.getProducer())
-            .recordingDate(request.getRecordingDate())
-            .albumArtUrl(request.getAlbumArtUrl())
-            .isInstrumental(request.getIsInstrumental())
-            .hasDialogue(request.getHasDialogue())
-            .isReprise(request.getIsReprise())
-            .originalSongId(request.getOriginalSongId())
-            
-            .build();
-        
-        // ✅ Validate character IDs exist
-        if (request.getCharacterIds() != null && !request.getCharacterIds().isEmpty()) {
-            validateCharacterIds(request.getCharacterIds());
-        }
-        
-        return songRepository.save(song);
-    }
+    // ✅ Create new song with validation (removed for now)
+    // TODO: Implement createSong with proper DTO handling
 
-    // ✅ Update existing song
-    public Optional<Song> updateSong(Long id, SongUpdateRequest request) {
-        return songRepository.findById(id).map(existingSong -> {
-            // ✅ Update basic fields if provided
-            if (request.getTitle() != null) {
-                existingSong.setTitle(request.getTitle());
-            }
-            if (request.getTrackNumber() != null) {
-                existingSong.setTrackNumber(request.getTrackNumber());
-            }
-            if (request.getDescription() != null) {
-                existingSong.setDescription(request.getDescription());
-            }
-            if (request.getDurationSeconds() != null) {
-                existingSong.setDurationSeconds(request.getDurationSeconds());
-            }
-            
-            // ✅ Update arrays if provided (with validation)
-            if (request.getThemes() != null) {
-                existingSong.setThemes(validateAndCleanStringList(request.getThemes()));
-            }
-            if (request.getGenres() != null) {
-                existingSong.setGenres(validateAndCleanStringList(request.getGenres()));
-            }
-            if (request.getInstruments() != null) {
-                existingSong.setInstruments(validateAndCleanStringList(request.getInstruments()));
-            }
-            if (request.getVocals() != null) {
-                existingSong.setVocals(validateAndCleanStringList(request.getVocals()));
-            }
-            if (request.getMoods() != null) {
-                existingSong.setMoods(validateAndCleanStringList(request.getMoods()));
-            }
-            if (request.getTags() != null) {
-                existingSong.setTags(validateAndCleanStringList(request.getTags()));
-            }
-            
-            // ✅ Update character relationships if provided
-            if (request.getCharacterIds() != null) {
-                validateCharacterIds(request.getCharacterIds());
-                existingSong.setCharacterIds(new ArrayList<>(request.getCharacterIds()));
-            }
-            
-            // ✅ Update song structure arrays if provided
-            if (request.getSongSections() != null) {
-                existingSong.setSongSections(validateAndCleanStringList(request.getSongSections()));
-            }
-            if (request.getLyricHighlights() != null) {
-                existingSong.setLyricHighlights(validateAndCleanStringList(request.getLyricHighlights()));
-            }
-            
-            // ✅ Update external reference arrays if provided
-            if (request.getAmazonMusicIds() != null) {
-                existingSong.setAmazonMusicIds(validateAndCleanStringList(request.getAmazonMusicIds()));
-            }
-            if (request.getYoutubeIds() != null) {
-                existingSong.setYoutubeIds(validateAndCleanStringList(request.getYoutubeIds()));
-            }
-            if (request.getInspirationSources() != null) {
-                existingSong.setInspirationSources(validateAndCleanStringList(request.getInspirationSources()));
-            }
-            
-            // ✅ Update metadata if provided
-            if (request.getLyricist() != null) {
-                existingSong.setLyricist(request.getLyricist());
-            }
-            if (request.getComposer() != null) {
-                existingSong.setComposer(request.getComposer());
-            }
-            if (request.getProducer() != null) {
-                existingSong.setProducer(request.getProducer());
-            }
-            if (request.getRecordingDate() != null) {
-                existingSong.setRecordingDate(request.getRecordingDate());
-            }
-            if (request.getAlbumArtUrl() != null) {
-                existingSong.setAlbumArtUrl(request.getAlbumArtUrl());
-            }
-            if (request.getIsInstrumental() != null) {
-                existingSong.setIsInstrumental(request.getIsInstrumental());
-            }
-            if (request.getHasDialogue() != null) {
-                existingSong.setHasDialogue(request.getHasDialogue());
-            }
-            if (request.getIsReprise() != null) {
-                existingSong.setIsReprise(request.getIsReprise());
-            }
-            if (request.getOriginalSongId() != null) {
-                existingSong.setOriginalSongId(request.getOriginalSongId());
-            }
-            
-            return songRepository.save(existingSong);
-        });
-    }
+    // ✅ Update existing song (removed for now)
+    // TODO: Implement updateSong with proper DTO handling
 
     // ✅ Delete song
     public boolean deleteSong(Long id) {
@@ -191,225 +60,72 @@ public class SongService {
         return false;
     }
 
-    // ✅ Get song characters
+    // ✅ Get all characters in song
     public List<Character> getSongCharacters(Long id) {
-        return songRepository.findById(id)
-            .map(song -> characterRepository.findAllById(song.getCharacterIds()))
-            .orElse(new ArrayList<>());
+        Optional<Song> song = songRepository.findById(id);
+        return song.map(Song::getCharacters).orElse(new ArrayList<>());
     }
 
     // ✅ Add character to song
     public Optional<Song> addCharacterToSong(Long songId, Long characterId) {
-        if (!characterRepository.existsById(characterId)) {
-            throw new IllegalArgumentException("Character not found: " + characterId);
+        Optional<Song> songOpt = songRepository.findById(songId);
+        Optional<Character> characterOpt = characterRepository.findById(characterId);
+        
+        if (songOpt.isPresent() && characterOpt.isPresent()) {
+            Song song = songOpt.get();
+            Character character = characterOpt.get();
+            
+            if (!song.getCharacters().contains(character)) {
+                song.getCharacters().add(character);
+                return Optional.of(songRepository.save(song));
+            }
         }
         
-        return songRepository.findById(songId).map(song -> {
-            if (!song.getCharacterIds().contains(characterId)) {
-                song.getCharacterIds().add(characterId);
-                return songRepository.save(song);
-            }
-            return song;
-        });
+        return Optional.empty();
     }
 
     // ✅ Remove character from song
     public Optional<Song> removeCharacterFromSong(Long songId, Long characterId) {
-        return songRepository.findById(songId).map(song -> {
-            song.getCharacterIds().remove(characterId);
-            return songRepository.save(song);
-        });
+        Optional<Song> songOpt = songRepository.findById(songId);
+        Optional<Character> characterOpt = characterRepository.findById(characterId);
+        
+        if (songOpt.isPresent() && characterOpt.isPresent()) {
+            Song song = songOpt.get();
+            Character character = characterOpt.get();
+            
+            if (song.getCharacters().remove(character)) {
+                return Optional.of(songRepository.save(song));
+            }
+        }
+        
+        return Optional.empty();
     }
 
-    // ✅ Find songs by character
+    // ✅ Get all songs for a character
     public List<Song> findSongsByCharacter(Long characterId) {
-        return songRepository.findByCharacterIdsContaining(characterId);
+        return songRepository.findByCharacterId(characterId);
     }
 
-    // ✅ Find songs by saga
+    // ✅ Get all songs in a saga
     public List<Song> findSongsBySaga(Long sagaId) {
-        return songRepository.findBySagaIdOrderByTrackNumber(sagaId);
+        return songRepository.findBySagaId(sagaId);
     }
 
-    // ✅ Get song statistics
-    public Optional<SongStatsResponse> getSongStats(Long id) {
-        return songRepository.findByIdWithCharacters(id).map(song -> {
-            return SongStatsResponse.builder()
-                .songId(song.getId())
-                .songTitle(song.getTitle())
-                .durationSeconds(song.getDurationSeconds())
-                .characterCount(song.getCharacterIds().size())
-                
-                // Array statistics
-                .allThemes(song.getThemes())
-                .allGenres(song.getGenres())
-                .allInstruments(song.getInstruments())
-                .allVocals(song.getVocals())
-                .allMoods(song.getMoods())
-                .allTags(song.getTags())
-                .themeCount(countStringOccurrences(song.getThemes()))
-                .genreCount(countStringOccurrences(song.getGenres()))
-                .moodCount(countStringOccurrences(song.getMoods()))
-                
-                // Character statistics
-                .characterNames(getCharacterNames(song.getCharacterIds()))
-                .characterTypeCount(getCharacterTypeCount(song.getCharacterIds()))
-                
-                // Structure statistics
-                .sectionCount(song.getSongSections().size())
-                .lyricHighlightCount(song.getLyricHighlights().size())
-                .externalLinkCount(song.getAmazonMusicIds().size() + song.getYoutubeIds().size())
-                .inspirationSourceCount(song.getInspirationSources().size())
-                
-                // Musical metadata
-                .isInstrumental(song.getIsInstrumental())
-                .hasDialogue(song.getHasDialogue())
-                .isReprise(song.getIsReprise())
-                .originalSongTitle(getOriginalSongTitle(song.getOriginalSongId()))
-                
-                .build();
-        });
-    }
-
-    // ✅ Private validation methods
-    private void validateSongRequest(SongCreateRequest request) {
-        // ✅ Validate themes aren't duplicates
-        if (hasDuplicates(request.getThemes())) {
-            throw new IllegalArgumentException("Themes cannot contain duplicates");
+    // ✅ Get song statistics - simplified
+    public String getSongStats(Long id) {
+        Optional<Song> song = songRepository.findById(id);
+        if (song.isPresent()) {
+            Song s = song.get();
+            return String.format("Song: %s, Duration: %d seconds, Characters: %d", 
+                s.getTitle(), 
+                s.getDurationSeconds() != null ? s.getDurationSeconds() : 0,
+                s.getCharacters().size());
         }
-        
-        // ✅ Validate genres aren't duplicates
-        if (hasDuplicates(request.getGenres())) {
-            throw new IllegalArgumentException("Genres cannot contain duplicates");
-        }
-        
-        // ✅ Validate predefined theme/genre lists
-        validateAgainstAllowedValues(request.getThemes(), getAllowedThemes(), "theme");
-        validateAgainstAllowedValues(request.getGenres(), getAllowedGenres(), "genre");
-        validateAgainstAllowedValues(request.getInstruments(), getAllowedInstruments(), "instrument");
-        validateAgainstAllowedValues(request.getVocals(), getAllowedVocals(), "vocal");
-        validateAgainstAllowedValues(request.getMoods(), getAllowedMoods(), "mood");
-        
-        // ✅ Validate reprise logic
-        if (Boolean.TRUE.equals(request.getIsReprise()) && request.getOriginalSongId() == null) {
-            throw new IllegalArgumentException("Reprise songs must reference an original song");
-        }
+        return "Song not found";
     }
 
-    private List<String> validateAndCleanStringList(List<String> strings) {
-        if (strings == null) return new ArrayList<>();
-        
-        return strings.stream()
-            .filter(Objects::nonNull)
-            .map(String::trim)
-            .filter(s -> !s.isEmpty())
-            .distinct() // Remove duplicates
-            .collect(Collectors.toList());
-    }
-
-    private boolean hasDuplicates(List<String> list) {
-        if (list == null) return false;
-        Set<String> seen = new HashSet<>();
-        return list.stream().anyMatch(item -> !seen.add(item.toLowerCase().trim()));
-    }
-
-    private void validateAgainstAllowedValues(List<String> values, Set<String> allowedValues, String fieldName) {
-        if (values == null || allowedValues == null) return;
-        
-        List<String> invalid = values.stream()
-            .filter(value -> !allowedValues.contains(value.toLowerCase().trim()))
-            .collect(Collectors.toList());
-        
-        if (!invalid.isEmpty()) {
-            throw new IllegalArgumentException(
-                String.format("Invalid %s values: %s. Allowed values: %s", 
-                    fieldName, invalid, allowedValues)
-            );
-        }
-    }
-
-    private void validateCharacterIds(List<Long> characterIds) {
-        List<Long> existingIds = characterRepository.findAllById(characterIds)
-            .stream()
-            .map(Character::getId)
-            .collect(Collectors.toList());
-        
-        List<Long> invalidIds = characterIds.stream()
-            .filter(id -> !existingIds.contains(id))
-            .collect(Collectors.toList());
-        
-        if (!invalidIds.isEmpty()) {
-            throw new IllegalArgumentException("Invalid character IDs: " + invalidIds);
-        }
-    }
-
-    // ✅ Predefined allowed values for Epic Timeline
-    private Set<String> getAllowedThemes() {
-        return Set.of(
-            "heroism", "journey", "family", "perseverance", "redemption", "war", 
-            "homecoming", "wisdom", "sacrifice", "divine intervention", "love", 
-            "betrayal", "transformation", "destiny", "honor", "temptation", "growth"
-        );
-    }
-
-    private Set<String> getAllowedGenres() {
-        return Set.of(
-            "rock opera", "ballad", "dramatic", "epic", "folk", "orchestral", 
-            "electronic", "classical", "battle", "emotional", "narrative", "ensemble"
-        );
-    }
-
-    private Set<String> getAllowedInstruments() {
-        return Set.of(
-            "electric guitar", "acoustic guitar", "bass", "drums", "piano", "strings", 
-            "brass", "woodwinds", "synthesizer", "harp", "lyre", "percussion", 
-            "voice", "choir", "orchestra", "rock band"
-        );
-    }
-
-    private Set<String> getAllowedVocals() {
-        return Set.of(
-            "male lead", "female lead", "baritone", "tenor", "bass", "soprano", 
-            "alto", "mezzo-soprano", "chorus", "ensemble", "spoken", "rap", "chant"
-        );
-    }
-
-    private Set<String> getAllowedMoods() {
-        return Set.of(
-            "triumphant", "melancholic", "energetic", "peaceful", "tense", "mysterious", 
-            "romantic", "heroic", "dark", "hopeful", "epic", "intimate", "dramatic"
-        );
-    }
-
-    // ✅ Helper methods for statistics
-    private Map<String, Integer> countStringOccurrences(List<String> strings) {
-        return strings.stream()
-            .collect(Collectors.groupingBy(
-                String::toLowerCase, 
-                Collectors.collectingAndThen(Collectors.counting(), Math::toIntExact)
-            ));
-    }
-
-    private List<String> getCharacterNames(List<Long> characterIds) {
-        return characterRepository.findAllById(characterIds)
-            .stream()
-            .map(Character::getName)
-            .collect(Collectors.toList());
-    }
-
-    private Map<String, Integer> getCharacterTypeCount(List<Long> characterIds) {
-        return characterRepository.findAllById(characterIds)
-            .stream()
-            .collect(Collectors.groupingBy(
-                character -> character.getCharacterType().toString(),
-                Collectors.collectingAndThen(Collectors.counting(), Math::toIntExact)
-            ));
-    }
-
-    private String getOriginalSongTitle(Long originalSongId) {
-        if (originalSongId == null) return null;
-        return songRepository.findById(originalSongId)
-            .map(Song::getTitle)
-            .orElse(null);
+    // Basic save method
+    public Song save(Song song) {
+        return songRepository.save(song);
     }
 }

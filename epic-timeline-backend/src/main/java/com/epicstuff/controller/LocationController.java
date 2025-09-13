@@ -1,185 +1,58 @@
 package com.epicstuff.controller;
 
 import com.epicstuff.model.Location;
-import com.epicstuff.service.LocationService;
-import com.epicstuff.dto.*;
+import com.epicstuff.repository.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/locations")
-@CrossOrigin(origins = "*")
+@RequestMapping("/locations")
+@CrossOrigin(origins = "*", allowCredentials = "false")
 public class LocationController {
 
     @Autowired
-    private LocationService locationService;
+    private LocationRepository locationRepository;
 
-    // ✅ GET /api/locations - List all locations with filtering and pagination
+    // ✅ GET /api/locations - List all locations
     @GetMapping
-    public ResponseEntity<Page<Location>> getAllLocations(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "name") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir,
-            @RequestParam(required = false) Boolean isRealPlace,
-            @RequestParam(required = false) Boolean isMythological,
-            @RequestParam(required = false) Boolean isModernLocation,
-            @RequestParam(required = false) Boolean isAccessibleToday,
-            @RequestParam(required = false) Boolean isTouristDestination,
-            @RequestParam(required = false) Boolean hasCoordinates,
-            @RequestParam(required = false) String regionType,
-            @RequestParam(required = false) String culturalImportance,
-            @RequestParam(required = false) Long characterId,
-            @RequestParam(required = false) Long sagaId,
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) Double centerLat,
-            @RequestParam(required = false) Double centerLng,
-            @RequestParam(required = false) Double radiusKm
-    ) {
-        Sort sort = sortDir.equalsIgnoreCase("desc") ? 
-            Sort.by(sortBy).descending() : 
-            Sort.by(sortBy).ascending();
-        
-        PageRequest pageRequest = PageRequest.of(page, size, sort);
-        
-        LocationFilterRequest filter = LocationFilterRequest.builder()
-            .isRealPlace(isRealPlace)
-            .isMythological(isMythological)
-            .isModernLocation(isModernLocation)
-            .isAccessibleToday(isAccessibleToday)
-            .isTouristDestination(isTouristDestination)
-            .hasCoordinates(hasCoordinates)
-            .regionType(regionType)
-            .culturalImportance(culturalImportance)
-            .characterId(characterId)
-            .sagaId(sagaId)
-            .search(search)
-            .centerLat(centerLat)
-            .centerLng(centerLng)
-            .radiusKm(radiusKm)
-            .build();
-        
-        Page<Location> locations = locationService.findAllWithFilter(filter, pageRequest);
+    public ResponseEntity<List<Location>> getAllLocations() {
+        List<Location> locations = locationRepository.findAll();
         return ResponseEntity.ok(locations);
     }
 
-    // ✅ GET /api/locations/{id} - Get single location with populated relationships
+    // ✅ GET /api/locations/{id} - Get location by ID
     @GetMapping("/{id}")
     public ResponseEntity<Location> getLocationById(@PathVariable Long id) {
-        Optional<Location> location = locationService.findByIdWithRelations(id);
-        return location.map(ResponseEntity::ok)
-                      .orElse(ResponseEntity.notFound().build());
-    }
-
-    // ✅ POST /api/locations - Create new location
-    @PostMapping
-    public ResponseEntity<Location> createLocation(@Valid @RequestBody LocationCreateRequest request) {
-        try {
-            Location createdLocation = locationService.createLocation(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdLocation);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+        Optional<Location> location = locationRepository.findById(id);
+        if (location.isPresent()) {
+            return ResponseEntity.ok(location.get());
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 
-    // ✅ PUT /api/locations/{id} - Update existing location
-    @PutMapping("/{id}")
-    public ResponseEntity<Location> updateLocation(
-            @PathVariable Long id, 
-            @Valid @RequestBody LocationUpdateRequest request
-    ) {
-        try {
-            Optional<Location> updatedLocation = locationService.updateLocation(id, request);
-            return updatedLocation.map(ResponseEntity::ok)
-                                 .orElse(ResponseEntity.notFound().build());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    // ✅ GET /api/locations/search - Simple search by name
+    @GetMapping("/search")
+    public ResponseEntity<List<Location>> searchLocations(@RequestParam String name) {
+        List<Location> locations = locationRepository.findByNameContainingIgnoreCase(name);
+        return ResponseEntity.ok(locations);
     }
 
-    // ✅ DELETE /api/locations/{id} - Delete location
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLocation(@PathVariable Long id) {
-        boolean deleted = locationService.deleteLocation(id);
-        return deleted ? ResponseEntity.noContent().build() : 
-                        ResponseEntity.notFound().build();
-    }
-
-    // ✅ GET /api/locations/nearby - Find locations within radius
-    @GetMapping("/nearby")
-    public ResponseEntity<List<Location>> findNearbyLocations(
-            @RequestParam Double latitude,
-            @RequestParam Double longitude,
-            @RequestParam(defaultValue = "50.0") Double radiusKm
-    ) {
-        List<Location> nearbyLocations = locationService.findNearbyLocations(latitude, longitude, radiusKm);
-        return ResponseEntity.ok(nearbyLocations);
-    }
-
-    // ✅ GET /api/locations/real - Get only real world locations
+    // ✅ GET /api/locations/real - Get real places only
     @GetMapping("/real")
-    public ResponseEntity<List<Location>> getRealLocations() {
-        List<Location> realLocations = locationService.findRealLocations();
-        return ResponseEntity.ok(realLocations);
+    public ResponseEntity<List<Location>> getRealPlaces() {
+        List<Location> locations = locationRepository.findByIsRealPlace(true);
+        return ResponseEntity.ok(locations);
     }
 
-    // ✅ GET /api/locations/mythological - Get only mythological locations
+    // ✅ GET /api/locations/mythological - Get mythological places only
     @GetMapping("/mythological")
-    public ResponseEntity<List<Location>> getMythologicalLocations() {
-        List<Location> mythologicalLocations = locationService.findMythologicalLocations();
-        return ResponseEntity.ok(mythologicalLocations);
-    }
-
-    // ✅ GET /api/locations/tourist - Get tourist destinations
-    @GetMapping("/tourist")
-    public ResponseEntity<List<Location>> getTouristDestinations() {
-        List<Location> touristDestinations = locationService.findTouristDestinations();
-        return ResponseEntity.ok(touristDestinations);
-    }
-
-    // ✅ GET /api/locations/{id}/characters - Get all characters at location
-    @GetMapping("/{id}/characters")
-    public ResponseEntity<List<Character>> getLocationCharacters(@PathVariable Long id) {
-        List<Character> characters = locationService.getLocationCharacters(id);
-        return ResponseEntity.ok(characters);
-    }
-
-    // ✅ GET /api/locations/{id}/events - Get all events at location
-    @GetMapping("/{id}/events")
-    public ResponseEntity<List<Event>> getLocationEvents(@PathVariable Long id) {
-        List<Event> events = locationService.getLocationEvents(id);
-        return ResponseEntity.ok(events);
-    }
-
-    // ✅ GET /api/locations/{id}/stats - Get location statistics
-    @GetMapping("/{id}/stats")
-    public ResponseEntity<LocationStatsResponse> getLocationStats(@PathVariable Long id) {
-        Optional<LocationStatsResponse> stats = locationService.getLocationStats(id);
-        return stats.map(ResponseEntity::ok)
-                   .orElse(ResponseEntity.notFound().build());
-    }
-
-    // ✅ POST /api/locations/{id}/coordinates - Update location coordinates
-    @PostMapping("/{id}/coordinates")
-    public ResponseEntity<Location> updateLocationCoordinates(
-            @PathVariable Long id,
-            @Valid @RequestBody CoordinatesUpdateRequest request
-    ) {
-        try {
-            Optional<Location> updatedLocation = locationService.updateCoordinates(id, request);
-            return updatedLocation.map(ResponseEntity::ok)
-                                 .orElse(ResponseEntity.notFound().build());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<List<Location>> getMythologicalPlaces() {
+        List<Location> locations = locationRepository.findByIsMythological(true);
+        return ResponseEntity.ok(locations);
     }
 }

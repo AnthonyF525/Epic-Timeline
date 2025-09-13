@@ -1,7 +1,9 @@
 package com.epicstuff.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "songs")
@@ -23,13 +25,14 @@ public class Song {
     @ElementCollection
     @CollectionTable(name = "song_themes", joinColumns = @JoinColumn(name = "song_id"))
     @Column(name = "theme")
-    private List<String> themes;
+    private List<String> themes = new ArrayList<>();
 
     @Column(name = "duration_seconds")
     private Integer durationSeconds;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "saga_id")
+    @JsonIgnoreProperties({"songs", "characters", "locations", "events"})
     private Saga saga;
 
     @ManyToMany
@@ -38,16 +41,12 @@ public class Song {
         joinColumns = @JoinColumn(name = "song_id"),
         inverseJoinColumns = @JoinColumn(name = "character_id")
     )
-    private List<Character> characters;
+    @JsonIgnoreProperties({"songs", "events", "saga"})
+    private List<Character> characters = new ArrayList<>();
 
     public Song() {}
 
-    public Song(String title, Integer trackNumber, String description) {
-        this.title = title;
-        this.trackNumber = trackNumber;
-        this.description = description;
-    }
-
+    // Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -64,11 +63,11 @@ public class Song {
     public void setThemes(List<String> themes) { this.themes = themes; }
 
     public Integer getDurationSeconds() { return durationSeconds; }
-    public void setDurationSeconds(Integer durationSeconds) { this.durationSeconds = durationSeconds;}
+    public void setDurationSeconds(Integer durationSeconds) { this.durationSeconds = durationSeconds; }
 
     public Saga getSaga() { return saga; }
     public void setSaga(Saga saga) { this.saga = saga; }
 
     public List<Character> getCharacters() { return characters; }
-    public void setCharacters(List<Character> characters) { this.characters= characters; }
+    public void setCharacters(List<Character> characters) { this.characters = characters; }
 }

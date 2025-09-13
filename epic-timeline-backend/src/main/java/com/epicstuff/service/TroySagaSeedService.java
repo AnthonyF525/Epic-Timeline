@@ -1,8 +1,12 @@
 package com.epicstuff.service;
 
-import com.epicstuff.model.*;
-import com.epicstuff.enums.*;
+import com.epicstuff.model.Saga;
+import com.epicstuff.model.Character;  // Keep this import
+import com.epicstuff.model.Location;
+import com.epicstuff.model.Event;
+import com.epicstuff.model.Song;
 import com.epicstuff.repository.*;
+import com.epicstuff.model.enums.CharacterType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
@@ -13,7 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
-@Service
+// @Service
+// Temporarily disabled due to compilation errors with builder patterns
+// Using simplified DataSeedService for basic song seeding instead
 @Transactional
 public class TroySagaSeedService implements CommandLineRunner {
 
@@ -548,89 +554,54 @@ public class TroySagaSeedService implements CommandLineRunner {
 
     private void createTroySagaSongs(Saga saga, List<Character> characters, List<Location> locations) {
         // 1. The Horse and the Infant
-        songRepository.save(Song.builder()
-            .title("The Horse and the Infant")
-            .duration(264)
-            .trackNumber(1)
-            .musicalStyle("dramatic")
-            .vocalStyle("narrative")
-            .instrumentalElements(Arrays.asList("orchestral", "strings", "dramatic_percussion"))
-            .narrativeFunction("exposition")
-            .characterFocus(Arrays.asList("Odysseus", "Athena"))
-            .themes(Arrays.asList("divine_guidance", "moral_choice", "prophecy", "war"))
-            .emotionalTone("contemplative")
-            .narrativeImportance("critical")
-            .relatedSagaIds(Arrays.asList(saga.getId()))
-            .createdAt(LocalDateTime.now())
-            .build());
+        Song song1 = new Song();
+        song1.setTitle("The Horse and the Infant");
+        song1.setTrackNumber(1);
+        song1.setDurationSeconds(264);
+        song1.setDescription("The Greek warriors celebrate their victory in Troy, but Odysseus faces a difficult decision about the infant prince Astyanax.");
+        song1.setThemes(Arrays.asList("War", "Moral Dilemma", "Prophecy", "Divine Guidance"));
+        song1.setSaga(saga);
+        songRepository.save(song1);
 
         // 2. Just a Man
-        songRepository.save(Song.builder()
-            .title("Just a Man")
-            .duration(237)
-            .trackNumber(2)
-            .musicalStyle("emotional")
-            .vocalStyle("introspective")
-            .instrumentalElements(Arrays.asList("acoustic_guitar", "strings", "soft_percussion"))
-            .narrativeFunction("character_development")
-            .characterFocus(Arrays.asList("Odysseus"))
-            .themes(Arrays.asList("humanity", "vulnerability", "family", "sacrifice"))
-            .emotionalTone("vulnerable")
-            .narrativeImportance("critical")
-            .relatedSagaIds(Arrays.asList(saga.getId()))
-            .createdAt(LocalDateTime.now())
-            .build());
+        Song song2 = new Song();
+        song2.setTitle("Just a Man");
+        song2.setTrackNumber(2);
+        song2.setDurationSeconds(237);
+        song2.setDescription("Odysseus grapples with his humanity and the weight of his choices as a leader and father.");
+        song2.setThemes(Arrays.asList("Humanity", "Vulnerability", "Family", "Sacrifice"));
+        song2.setSaga(saga);
+        songRepository.save(song2);
 
         // 3. Full Speed Ahead
-        songRepository.save(Song.builder()
-            .title("Full Speed Ahead")
-            .duration(201)
-            .trackNumber(3)
-            .musicalStyle("uplifting")
-            .vocalStyle("encouraging")
-            .instrumentalElements(Arrays.asList("upbeat_percussion", "brass", "strings"))
-            .narrativeFunction("transition")
-            .characterFocus(Arrays.asList("Polites", "Odysseus"))
-            .themes(Arrays.asList("optimism", "leadership", "friendship", "hope"))
-            .emotionalTone("hopeful")
-            .narrativeImportance("high")
-            .relatedSagaIds(Arrays.asList(saga.getId()))
-            .createdAt(LocalDateTime.now())
-            .build());
+        Song song3 = new Song();
+        song3.setTitle("Full Speed Ahead");
+        song3.setTrackNumber(3);
+        song3.setDurationSeconds(201);
+        song3.setDescription("The crew sets sail from Troy, eager to return home. Polites encourages optimism while Odysseus remains cautious.");
+        song3.setThemes(Arrays.asList("Optimism", "Leadership", "Friendship", "Hope"));
+        song3.setSaga(saga);
+        songRepository.save(song3);
 
         // 4. Open Arms
-        songRepository.save(Song.builder()
-            .title("Open Arms")
-            .duration(324)
-            .trackNumber(4)
-            .musicalStyle("philosophical")
-            .vocalStyle("wise")
-            .instrumentalElements(Arrays.asList("gentle_strings", "woodwinds", "harp"))
-            .narrativeFunction("character_development")
-            .characterFocus(Arrays.asList("Polites"))
-            .themes(Arrays.asList("optimism", "philosophy", "kindness", "worldview"))
-            .emotionalTone("wise")
-            .narrativeImportance("high")
-            .relatedSagaIds(Arrays.asList(saga.getId()))
-            .createdAt(LocalDateTime.now())
-            .build());
+        Song song4 = new Song();
+        song4.setTitle("Open Arms");
+        song4.setTrackNumber(4);
+        song4.setDurationSeconds(324);
+        song4.setDescription("Polites encourages kindness and openness, contrasting with Odysseus's caution.");
+        song4.setThemes(Arrays.asList("Kindness", "Philosophy", "Trust", "Worldview"));
+        song4.setSaga(saga);
+        songRepository.save(song4);
 
         // 5. Warrior of the Mind
-        songRepository.save(Song.builder()
-            .title("Warrior of the Mind")
-            .duration(251)
-            .trackNumber(5)
-            .musicalStyle("epic")
-            .vocalStyle("divine")
-            .instrumentalElements(Arrays.asList("powerful_orchestra", "choir", "epic_drums"))
-            .narrativeFunction("divine_intervention")
-            .characterFocus(Arrays.asList("Athena", "Odysseus"))
-            .themes(Arrays.asList("divine_wisdom", "mentorship", "strategic_thinking"))
-            .emotionalTone("powerful")
-            .narrativeImportance("critical")
-            .relatedSagaIds(Arrays.asList(saga.getId()))
-            .createdAt(LocalDateTime.now())
-            .build());
+        Song song5 = new Song();
+        song5.setTitle("Warrior of the Mind");
+        song5.setTrackNumber(5);
+        song5.setDurationSeconds(251);
+        song5.setDescription("Athena appears and challenges Odysseus to be the warrior she trained.");
+        song5.setThemes(Arrays.asList("Divine Intervention", "Training", "Warrior Spirit", "Mentorship"));
+        song5.setSaga(saga);
+        songRepository.save(song5);
     }
 
     private void createCyclopsSagaSongs(Saga saga, List<Character> characters, List<Location> locations) {

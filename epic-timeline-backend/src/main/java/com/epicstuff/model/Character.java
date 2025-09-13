@@ -2,7 +2,9 @@ package com.epicstuff.model;
 
 import com.epicstuff.model.enums.CharacterType;
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "characters")
@@ -28,35 +30,34 @@ public class Character {
     @ElementCollection
     @CollectionTable(name = "character_aliases", joinColumns = @JoinColumn(name = "character_id"))
     @Column(name = "alias")
-    private List<String> aliases;
+    private List<String> aliases = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "character_powers", joinColumns = @JoinColumn(name = "character_id"))
-    @Column(name = "power")    
-    private List<String> powers;
+    @Column(name = "power")
+    private List<String> powers = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "saga_id")
+    @JsonIgnore
+    private Saga saga;
 
     @ManyToMany(mappedBy = "characters")
-    private List<Song> songs;
+    @JsonIgnore
+    private List<Song> songs = new ArrayList<>();
 
     @ManyToMany(mappedBy = "characters")
-    private List<Event> events;
-
-    @ManyToMany(mappedBy = "characters")
-    private List<Saga> sagas;
+    @JsonIgnore
+    private List<Event> events = new ArrayList<>();
 
     public Character() {}
 
-    public Character(String name, String description, CharacterType characterType) {
-        this.name = name;
-        this.description = description;
-        this.characterType = characterType;
-    }
-
+    // Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
     public String getName() { return name; }
-    public void setName(String name) {this.name = name; }
+    public void setName(String name) { this.name = name; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
@@ -73,14 +74,12 @@ public class Character {
     public List<String> getPowers() { return powers; }
     public void setPowers(List<String> powers) { this.powers = powers; }
 
+    public Saga getSaga() { return saga; }
+    public void setSaga(Saga saga) { this.saga = saga; }
+
     public List<Song> getSongs() { return songs; }
     public void setSongs(List<Song> songs) { this.songs = songs; }
 
     public List<Event> getEvents() { return events; }
     public void setEvents(List<Event> events) { this.events = events; }
-
-    public List<Saga> getSagas() { return sagas; }
-    public void setSagas(List<Saga> sagas) { this.sagas = sagas; }
-
-
 }

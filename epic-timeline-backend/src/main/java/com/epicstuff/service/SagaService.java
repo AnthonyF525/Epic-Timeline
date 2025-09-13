@@ -120,10 +120,10 @@ public class SagaService {
             return SagaStatsResponse.builder()
                 .sagaId(saga.getId())
                 .sagaTitle(saga.getTitle())
-                .totalSongs(saga.getSongs().size())
-                .totalCharacters(saga.getCharacters().size())
-                .totalLocations(saga.getLocations().size())
-                .totalEvents(saga.getEvents().size())
+                .totalSongs((long) saga.getSongs().size())
+                .totalCharacters((long) saga.getCharacters().size())
+                .totalLocations((long) saga.getLocations().size())
+                .totalEvents((long) saga.getEvents().size())
                 .averageSongDuration(calculateAverageSongDuration(saga))
                 .totalDurationSeconds(saga.getTotalDurationSeconds())
                 .allGenres(saga.getGenres())
@@ -224,19 +224,19 @@ public class SagaService {
             .orElse(0.0);
     }
 
-    private Map<String, Integer> countStringOccurrences(List<String> strings) {
+    private Map<String, Long> countStringOccurrences(List<String> strings) {
         return strings.stream()
             .collect(Collectors.groupingBy(
                 String::toLowerCase, 
-                Collectors.collectingAndThen(Collectors.counting(), Math::toIntExact)
+                Collectors.counting()
             ));
     }
 
-    private Map<String, Integer> calculateCharacterTypeCount(Saga saga) {
+    private Map<String, Long> calculateCharacterTypeCount(Saga saga) {
         return saga.getCharacters().stream()
             .collect(Collectors.groupingBy(
                 character -> character.getCharacterType().toString(),
-                Collectors.collectingAndThen(Collectors.counting(), Math::toIntExact)
+                Collectors.counting()
             ));
     }
 
@@ -262,5 +262,10 @@ public class SagaService {
                            event.getEventContext().getImportance().equals("legendary"))
             .map(event -> event.getTitle())
             .collect(Collectors.toList());
+    }
+
+    // Just basic methods for now
+    public Saga save(Saga saga) {
+        return sagaRepository.save(saga);
     }
 }

@@ -2,6 +2,7 @@ package com.epicstuff.model;
 
 import jakarta.persistence.*;
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "locations")
@@ -35,28 +36,41 @@ public class Location {
     @ElementCollection
     @CollectionTable(name = "location_names", joinColumns = @JoinColumn(name = "location_id"))
     @Column(name = "alternative_name")
-    private List<String> alternativeNames;
+    private List<String> alternativeNames = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "location_features", joinColumns = @JoinColumn(name = "location_id"))
     @Column(name = "feature")
-    private List<String> notableFeatures;
+    private List<String> notableFeatures = new ArrayList<>();
 
     @OneToMany(mappedBy = "location")
-    private List<Event> events;
+    private List<Event> events = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "locations")
-    private List<Saga> sagas;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "saga_id")
+    private Saga saga;
+    
+    // For now, create a simple cultural significance structure
+    @Embedded
+    private CulturalSignificance culturalSignificance;
+    
+    @Embeddable
+    public static class CulturalSignificance {
+        private String importance; // legendary, high, medium, low
+
+        public CulturalSignificance() {}
+
+        public CulturalSignificance(String importance) {
+            this.importance = importance;
+        }
+
+        public String getImportance() { return importance; }
+        public void setImportance(String importance) { this.importance = importance; }
+    }
 
     public Location() {}
 
-    public Location(String name, String description, Double latitude, Double longitude) {
-        this.name = name;
-        this.description = description;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
-
+    // Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -90,7 +104,9 @@ public class Location {
     public List<Event> getEvents() { return events; }
     public void setEvents(List<Event> events) { this.events = events; }
 
-    public List<Saga> getSagas() { return sagas; }
-    public void setSagas(List<Saga> sagas) { this.sagas = sagas; }
+    public Saga getSaga() { return saga; }
+    public void setSaga(Saga saga) { this.saga = saga; }
 
+    public CulturalSignificance getCulturalSignificance() { return culturalSignificance; }
+    public void setCulturalSignificance(CulturalSignificance culturalSignificance) { this.culturalSignificance = culturalSignificance; }
 }

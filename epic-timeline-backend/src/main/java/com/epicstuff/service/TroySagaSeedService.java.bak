@@ -1,0 +1,1251 @@
+package com.epicstuff.service;
+
+import com.epicstuff.model.Saga;
+import com.epicstuff.model.Character;  // Keep this import
+import com.epicstuff.model.Location;
+import com.epicstuff.model.Event;
+import com.epicstuff.model.Song;
+import com.epicstuff.repository.*;
+import com.epicstuff.model.enums.CharacterType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
+
+@Service
+@Transactional
+public class TroySagaSeedService implements CommandLineRunner {
+
+    @Autowired private SagaRepository sagaRepository;
+    @Autowired private CharacterRepository characterRepository;
+    @Autowired private LocationRepository locationRepository;
+    @Autowired private EventRepository eventRepository;
+    @Autowired private SongRepository songRepository;
+
+    @Override
+    public void run(String... args) throws Exception {
+        if (sagaRepository.count() == 0) {
+            System.out.println(" Seeding EPIC: The Musical complete database...");
+            seedCompleteEpicMusical();
+            System.out.println(" EPIC: The Musical seeding complete!");
+        }
+    }
+
+    private void seedCompleteEpicMusical() {
+        //  Create all sagas
+        List<Saga> sagas = createAllSagas();
+        
+        //  Create main characters
+        List<Character> characters = createMainCharacters();
+        
+        //  Create key locations
+        List<Location> locations = createKeyLocations();
+        
+        // Create all songs
+        createAllSongs(sagas, characters, locations);
+        
+        // Create Troy events with character and song arrays
+        createTroyEvents(sagas, characters, locations);
+        
+        // Add comparison data for Epic vs Homer differences
+        createHomerComparisonData(sagas, characters, locations);
+    }
+
+    //  NEW METHOD: Create Homer vs EPIC Comparison Data
+    private void createHomerComparisonData(List<Saga> sagas, List<Character> characters, List<Location> locations) {
+        
+        //  CHARACTER ADAPTATIONS: How EPIC characters differ from Homer
+        updateCharacterWithHomerComparison(characters, "Odysseus", 
+            "In Homer: More brutal, less conflicted about violence. In EPIC: More humanized, struggles with moral choices, shows vulnerability and growth from 'Just a Man' to 'Monster'",
+            Arrays.asList("more_humanized", "moral_struggle", "character_growth", "vulnerability_shown"),
+            Arrays.asList("reduced_brutality", "added_internal_conflict", "modernized_psychology"));
+
+        updateCharacterWithHomerComparison(characters, "Athena",
+            "In Homer: More distant divine advisor. In EPIC: Personal mentor relationship, shows emotional investment, has falling out and reconciliation arc",
+            Arrays.asList("personal_relationship", "emotional_investment", "character_arc", "modern_mentorship"),
+            Arrays.asList("added_emotional_depth", "mentor_student_dynamic", "relationship_development"));
+
+        updateCharacterWithHomerComparison(characters, "Polites",
+            "In Homer: Minor crew member. In EPIC: Major moral compass, best friend, philosophy of 'Open Arms', death motivates Odysseus's character development",
+            Arrays.asList("major_character_expansion", "moral_philosophy", "best_friend_dynamic", "motivational_death"),
+            Arrays.asList("elevated_importance", "philosophical_voice", "emotional_anchor"));
+
+        updateCharacterWithHomerComparison(characters, "Eurylochus",
+            "In Homer: Crew member who opens wind bag and leads mutiny. In EPIC: Brother-in-law, voice of crew concerns, complex relationship with Odysseus, tragic arc",
+            Arrays.asList("family_connection", "crew_representative", "complex_relationship", "tragic_development"),
+            Arrays.asList("added_family_ties", "expanded_role", "emotional_complexity"));
+
+        updateCharacterWithHomerComparison(characters, "Penelope",
+            "In Homer: Patient wife waiting. In EPIC: Active character in final saga, questions if she can love changed Odysseus, more agency in reunion",
+            Arrays.asList("increased_agency", "questioning_love", "active_role", "realistic_concerns"),
+            Arrays.asList("modernized_relationship", "added_complexity", "realistic_psychology"));
+
+        // ✅ SAGA ADAPTATIONS: How EPIC sagas differ from Homer's books
+        updateSagaWithHomerComparison(sagas, "The Troy Saga",
+            "Homer barely covers Troy's fall. EPIC creates entire saga with moral dilemmas, Athena's guidance, crew dynamics, and philosophical foundation",
+            Arrays.asList("expanded_prequel", "moral_foundation", "character_establishment", "divine_relationships"),
+            Arrays.asList("added_trojan_war_content", "moral_complexity", "character_development_start"));
+
+        updateSagaWithHomerComparison(sagas, "The Cyclops Saga",
+            "Homer: Odysseus tells name from pride. EPIC: More complex - shows crew death impact, Athena's disappointment, sets up divine consequences",
+            Arrays.asList("emotional_consequences", "divine_relationship_impact", "crew_death_weight", "pride_complexity"),
+            Arrays.asList("added_emotional_depth", "divine_relationship_consequences", "humanized_pride"));
+
+        updateSagaWithHomerComparison(sagas, "The Ocean Saga",
+            "Homer: Crew opens bag, Poseidon attacks. EPIC: Adds Eurylochus betrayal complexity, leadership challenges, 'Ruthlessness' lesson",
+            Arrays.asList("leadership_challenges", "betrayal_complexity", "divine_lessons", "crew_dynamics"),
+            Arrays.asList("added_leadership_theme", "relationship_complexity", "educational_divine_wrath"));
+
+        updateSagaWithHomerComparison(sagas, "The Thunder Saga",
+            "Homer: Zeus kills crew for eating cattle. EPIC: Adds 'Monster' transformation, impossible choice, crew vs family dilemma",
+            Arrays.asList("monster_transformation", "impossible_choice", "family_vs_crew", "character_evolution"),
+            Arrays.asList("psychological_transformation", "moral_complexity", "impossible_decisions"));
+
+        updateSagaWithHomerComparison(sagas, "The Wisdom Saga",
+            "Homer: Minimal Telemachus, brief Athena interactions. EPIC: Full Telemachus arc, God Games, Calypso relationship depth",
+            Arrays.asList("telemachus_expansion", "divine_politics", "calypso_depth", "family_connections"),
+            Arrays.asList("next_generation_focus", "expanded_divine_world", "romantic_complexity"));
+
+        updateSagaWithHomerComparison(sagas, "The Vengeance Saga",
+            "Homer: Poseidon conflict resolved by Athena. EPIC: Direct confrontation, '600 Strike', Odysseus defeats Poseidon through power",
+            Arrays.asList("direct_divine_confrontation", "power_triumph", "personal_victory", "climactic_battle"),
+            Arrays.asList("action_climax", "power_fantasy", "direct_resolution"));
+
+        updateSagaWithHomerComparison(sagas, "The Ithaca Saga",
+            "Homer: Reunion through bed test. EPIC: Adds family healing, questioning love, realistic relationship restoration",
+            Arrays.asList("realistic_reunion", "relationship_healing", "questioning_love", "family_dynamics"),
+            Arrays.asList("psychological_realism", "modern_relationships", "emotional_complexity"));
+
+        // ✅ THEMATIC DIFFERENCES
+        createThematicComparisons();
+
+        // ✅ STRUCTURAL DIFFERENCES  
+        createStructuralComparisons();
+    }
+
+    // ✅ HELPER: Update Character with Homer Comparison
+    private void updateCharacterWithHomerComparison(List<Character> characters, String characterName, 
+            String comparisonDescription, List<String> epicAdaptations, List<String> keyDifferences) {
+        
+        Character character = characters.stream()
+            .filter(c -> c.getName().equals(characterName))
+            .findFirst()
+            .orElse(null);
+            
+        if (character != null) {
+            // Add comparison data to character description
+            character.setDescription(character.getDescription() + " | EPIC vs Homer: " + comparisonDescription);
+            
+            // Add adaptation metadata (assuming these fields exist or will be added)
+            character.setEpicAdaptations(epicAdaptations);
+            character.setHomerDifferences(keyDifferences);
+            
+            characterRepository.save(character);
+        }
+    }
+
+    // ✅ HELPER: Update Saga with Homer Comparison  
+    private void updateSagaWithHomerComparison(List<Saga> sagas, String sagaTitle,
+            String comparisonDescription, List<String> epicAdaptations, List<String> keyDifferences) {
+        
+        Saga saga = sagas.stream()
+            .filter(s -> s.getTitle().equals(sagaTitle))
+            .findFirst()
+            .orElse(null);
+            
+        if (saga != null) {
+            // Add comparison data to saga description
+            saga.setDescription(saga.getDescription() + " | EPIC vs Homer: " + comparisonDescription);
+            
+            // Add adaptation metadata
+            saga.setEpicAdaptations(epicAdaptations);
+            saga.setHomerDifferences(keyDifferences);
+            
+            sagaRepository.save(saga);
+        }
+    }
+
+    // ✅ THEMATIC COMPARISON DATA
+    private void createThematicComparisons() {
+        // Store as comparison entities or metadata
+        
+        System.out.println(" EPIC vs Homer - Key Thematic Differences:");
+        System.out.println(" Homer: Focuses on kleos (glory), nostos (homecoming), divine fate");
+        System.out.println(" EPIC: Focuses on moral growth, psychological transformation, modern relationships");
+        System.out.println(" Homer: Odysseus is cunning hero, less moral conflict");  
+        System.out.println(" EPIC: Odysseus evolves from 'Just a Man' to 'Monster' to redeemed hero");
+        System.out.println(" Homer: Divine interactions are formal, ritualistic");
+        System.out.println(" EPIC: Divine relationships are personal, emotional, complex");
+        System.out.println(" Homer: Crew are expendable background characters");
+        System.out.println(" EPIC: Crew members have personalities, relationships, moral weight");
+    }
+
+    // ✅ STRUCTURAL COMPARISON DATA
+    private void createStructuralComparisons() {
+        System.out.println(" EPIC vs Homer - Structural Adaptations:");
+        System.out.println(" Homer: Epic poem, 24 books, retrospective narrative");
+        System.out.println(" EPIC: Musical format, 40 songs, 9 concept albums, linear progression");
+        System.out.println(" Homer: Starts in medias res, flashback structure");
+        System.out.println(" EPIC: Chronological from Troy to Ithaca, clear saga progression");
+        System.out.println(" Homer: Oral tradition, repetitive epithets, formulaic language");
+        System.out.println(" EPIC: Modern musical theater, character leitmotifs, emotional songs");
+        System.out.println(" Homer: 20-year journey, many episodes");
+        System.out.println(" EPIC: Focused on key episodes, streamlined for musical narrative");
+    }
+
+    // ✅ UPDATE SONG METADATA WITH HOMER COMPARISONS
+    private void addSongHomerComparisons() {
+        // Example for key songs that have no Homer equivalent
+        
+        // "Just a Man" - EPIC original, shows Odysseus's humanity
+        // "Open Arms" - EPIC expansion of minor character  
+        // "Monster" - EPIC psychological development
+        // "Warrior of the Mind" - EPIC divine relationship depth
+        // "God Games" - EPIC creation for divine politics
+        // "600 Strike" - EPIC action climax vs Homer's divine intervention
+    }
+
+    private List<Saga> createAllSagas() {
+        List<Saga> sagas = new ArrayList<>();
+
+        // ✅ 1. The Troy Saga
+        sagas.add(sagaRepository.save(Saga.builder()
+            .title("The Troy Saga")
+            .description("The fall of Troy and Odysseus's first moral challenges")
+            .totalSongs(5)
+            .averageRating(9.2)
+            .isComplete(true)
+            .isCanon(true)
+            .narrativeImportance("critical")
+            .themes(Arrays.asList("war", "strategy", "moral_choice", "divine_intervention", "prophecy"))
+            .musicalStyles(Arrays.asList("epic", "dramatic", "orchestral", "emotional"))
+            .culturalSignificance("legendary")
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        // ✅ 2. The Cyclops Saga
+        sagas.add(sagaRepository.save(Saga.builder()
+            .title("The Cyclops Saga")
+            .description("Encounter with Polyphemus and the consequences of pride")
+            .totalSongs(4)
+            .averageRating(9.1)
+            .isComplete(true)
+            .isCanon(true)
+            .narrativeImportance("critical")
+            .themes(Arrays.asList("pride", "consequences", "monstrosity", "cleverness", "identity"))
+            .musicalStyles(Arrays.asList("intense", "primal", "dramatic", "aggressive"))
+            .culturalSignificance("legendary")
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        // ✅ 3. The Ocean Saga
+        sagas.add(sagaRepository.save(Saga.builder()
+            .title("The Ocean Saga")
+            .description("Poseidon's wrath and the storm that scatters the fleet")
+            .totalSongs(4)
+            .averageRating(9.3)
+            .isComplete(true)
+            .isCanon(true)
+            .narrativeImportance("critical")
+            .themes(Arrays.asList("divine_wrath", "sacrifice", "leadership", "loss", "betrayal"))
+            .musicalStyles(Arrays.asList("powerful", "oceanic", "emotional", "intense"))
+            .culturalSignificance("legendary")
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        // ✅ 4. The Circe Saga
+        sagas.add(sagaRepository.save(Saga.builder()
+            .title("The Circe Saga")
+            .description("Magical encounters and the cost of crew's betrayal")
+            .totalSongs(4)
+            .averageRating(9.0)
+            .isComplete(true)
+            .isCanon(true)
+            .narrativeImportance("critical")
+            .themes(Arrays.asList("magic", "betrayal", "transformation", "consequences", "temptation"))
+            .musicalStyles(Arrays.asList("mystical", "haunting", "dramatic", "seductive"))
+            .culturalSignificance("legendary")
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        // ✅ 5. The Underworld Saga
+        sagas.add(sagaRepository.save(Saga.builder()
+            .title("The Underworld Saga")
+            .description("Journey to Hades and confronting the past")
+            .totalSongs(4)
+            .averageRating(9.4)
+            .isComplete(true)
+            .isCanon(true)
+            .narrativeImportance("critical")
+            .themes(Arrays.asList("death", "regret", "sacrifice", "prophecy", "guilt"))
+            .musicalStyles(Arrays.asList("haunting", "emotional", "ethereal", "tragic"))
+            .culturalSignificance("legendary")
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        // ✅ 6. The Thunder Saga
+        sagas.add(sagaRepository.save(Saga.builder()
+            .title("The Thunder Saga")
+            .description("Zeus's judgment and ultimate sacrifice")
+            .totalSongs(5)
+            .averageRating(9.5)
+            .isComplete(true)
+            .isCanon(true)
+            .narrativeImportance("critical")
+            .themes(Arrays.asList("divine_judgment", "impossible_choice", "survival", "isolation", "sacrifice"))
+            .musicalStyles(Arrays.asList("thunderous", "dramatic", "intense", "epic"))
+            .culturalSignificance("legendary")
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        // ✅ 7. The Wisdom Saga
+        sagas.add(sagaRepository.save(Saga.builder()
+            .title("The Wisdom Saga")
+            .description("Athena's guidance and the path to redemption")
+            .totalSongs(5)
+            .averageRating(9.3)
+            .isComplete(true)
+            .isCanon(true)
+            .narrativeImportance("critical")
+            .themes(Arrays.asList("wisdom", "redemption", "divine_relationship", "growth", "reconciliation"))
+            .musicalStyles(Arrays.asList("wise", "ethereal", "uplifting", "emotional"))
+            .culturalSignificance("legendary")
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        // ✅ 8. The Vengeance Saga
+        sagas.add(sagaRepository.save(Saga.builder()
+            .title("The Vengeance Saga")
+            .description("Return to Ithaca and confronting the suitors")
+            .totalSongs(4)
+            .averageRating(9.2)
+            .isComplete(true)
+            .isCanon(true)
+            .narrativeImportance("critical")
+            .themes(Arrays.asList("vengeance", "justice", "homecoming", "transformation", "ruthlessness"))
+            .musicalStyles(Arrays.asList("intense", "triumphant", "dark", "aggressive"))
+            .culturalSignificance("legendary")
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        // ✅ 9. The Ithaca Saga
+        sagas.add(sagaRepository.save(Saga.builder()
+            .title("The Ithaca Saga")
+            .description("Reunion, forgiveness, and the end of the journey")
+            .totalSongs(5)
+            .averageRating(9.6)
+            .isComplete(true)
+            .isCanon(true)
+            .narrativeImportance("critical")
+            .themes(Arrays.asList("reunion", "forgiveness", "healing", "completion", "love"))
+            .musicalStyles(Arrays.asList("emotional", "triumphant", "peaceful", "uplifting"))
+            .culturalSignificance("legendary")
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        return sagas;
+    }
+
+    // ✅ Add Eurylochus to main characters first
+    private List<Character> createMainCharacters() {
+        List<Character> characters = new ArrayList<>();
+
+        // ✅ Odysseus - Appears in ALL sagas
+        characters.add(characterRepository.save(Character.builder()
+            .name("Odysseus")
+            .characterType(CharacterType.MORTAL)
+            .description("King of Ithaca, master strategist, and protagonist of the epic journey home")
+            .origin("Ithaca")
+            .isImmortal(false)
+            .isProtagonist(true)
+            .isTitleCharacter(true)
+            .hasSpokenLines(true)
+            .roles(Arrays.asList("hero", "king", "strategist", "warrior"))
+            .traits(Arrays.asList("cunning", "determined", "proud", "evolving", "ruthless", "loving"))
+            .abilities(Arrays.asList("strategic_thinking", "combat_skills", "leadership", "archery", "persuasion"))
+            .culturalSignificance("legendary")
+            .appearanceInSagas(Arrays.asList("The Troy Saga", "The Cyclops Saga", "The Ocean Saga", "The Circe Saga", "The Underworld Saga", "The Thunder Saga", "The Wisdom Saga", "The Vengeance Saga", "The Ithaca Saga")) // ✅ All 9 sagas
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        // ✅ Athena - Divine character (not mortal, but still needs appearanceInSagas)
+        characters.add(characterRepository.save(Character.builder()
+            .name("Athena")
+            .characterType(CharacterType.GOD)
+            .description("Goddess of wisdom and warfare, Odysseus's divine mentor and patron")
+            .origin("Mount Olympus")
+            .isImmortal(true)
+            .isProtagonist(true)
+            .hasSpokenLines(true)
+            .roles(Arrays.asList("goddess", "mentor", "guide", "warrior"))
+            .traits(Arrays.asList("wise", "strategic", "caring", "powerful", "protective"))
+            .abilities(Arrays.asList("divine_wisdom", "battle_strategy", "shape_shifting", "divine_intervention", "prophecy"))
+            .culturalSignificance("legendary")
+            .appearanceInSagas(Arrays.asList("The Troy Saga", "The Cyclops Saga", "The Wisdom Saga")) // ✅ Key divine intervention moments
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        // ✅ Poseidon - Divine antagonist
+        characters.add(characterRepository.save(Character.builder()
+            .name("Poseidon")
+            .characterType(CharacterType.GOD)
+            .description("God of the sea and earthquakes, primary divine antagonist seeking vengeance")
+            .origin("Mount Olympus")
+            .isImmortal(true)
+            .isAntagonist(true)
+            .hasSpokenLines(true)
+            .roles(Arrays.asList("god", "antagonist", "force_of_nature"))
+            .traits(Arrays.asList("wrathful", "powerful", "unforgiving", "prideful", "vengeful"))
+            .abilities(Arrays.asList("sea_control", "storm_creation", "earthquakes", "divine_wrath", "water_manipulation"))
+            .culturalSignificance("legendary")
+            .appearanceInSagas(Arrays.asList("The Ocean Saga", "The Vengeance Saga")) // ✅ Major antagonist role
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        // ✅ Penelope - MORTAL character
+        characters.add(characterRepository.save(Character.builder()
+            .name("Penelope")
+            .characterType(CharacterType.MORTAL) // ✅ Type: "mortal"
+            .description("Queen of Ithaca, Odysseus's faithful wife who waits for his return")
+            .origin("Ithaca")
+            .isImmortal(false)
+            .isProtagonist(true)
+            .hasSpokenLines(true)
+            .roles(Arrays.asList("queen", "wife", "ruler"))
+            .traits(Arrays.asList("faithful", "clever", "strong", "patient", "loving", "wise"))
+            .abilities(Arrays.asList("weaving", "strategic_thinking", "leadership", "emotional_strength"))
+            .culturalSignificance("legendary")
+            .appearanceInSagas(Arrays.asList("The Ithaca Saga")) // ✅ Primary appearance in final saga
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        // ✅ Telemachus - MORTAL character
+        characters.add(characterRepository.save(Character.builder()
+            .name("Telemachus")
+            .characterType(CharacterType.MORTAL) // ✅ Type: "mortal"
+            .description("Prince of Ithaca, son of Odysseus and Penelope, coming of age during his father's absence")
+            .origin("Ithaca")
+            .isImmortal(false)
+            .isProtagonist(true)
+            .hasSpokenLines(true)
+            .roles(Arrays.asList("prince", "son", "heir", "warrior"))
+            .traits(Arrays.asList("brave", "determined", "young", "eager", "loyal", "growing"))
+            .abilities(Arrays.asList("archery", "swordsmanship", "leadership_potential", "quick_learning"))
+            .culturalSignificance("high")
+            .appearanceInSagas(Arrays.asList("The Wisdom Saga", "The Ithaca Saga")) // ✅ Training and homecoming
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        // ✅ IMPORTANT SUPPORTING MORTAL CHARACTERS
+        
+        // ✅ Polites - MORTAL character
+        characters.add(characterRepository.save(Character.builder()
+            .name("Polites")
+            .characterType(CharacterType.MORTAL) // ✅ Type: "mortal"
+            .description("Odysseus's best friend and moral compass, whose philosophy of kindness deeply influences the narrative")
+            .origin("Ithaca")
+            .isImmortal(false)
+            .isProtagonist(true)
+            .hasSpokenLines(true)
+            .roles(Arrays.asList("friend", "advisor", "moral_guide"))
+            .traits(Arrays.asList("optimistic", "kind", "loyal", "compassionate", "wise", "encouraging"))
+            .abilities(Arrays.asList("moral_guidance", "emotional_support", "diplomacy"))
+            .culturalSignificance("high")
+            .appearanceInSagas(Arrays.asList("The Troy Saga", "The Cyclops Saga")) // ✅ Dies in Cyclops Saga, but influence continues
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        // ✅ Eurylochus - MORTAL character
+        characters.add(characterRepository.save(Character.builder()
+            .name("Eurylochus")
+            .characterType(CharacterType.MORTAL) // ✅ Type: "mortal"
+            .description("Odysseus's second-in-command and brother-in-law, voice of pragmatic skepticism and crew loyalty")
+            .origin("Ithaca")
+            .isImmortal(false)
+            .isProtagonist(true)
+            .hasSpokenLines(true)
+            .roles(Arrays.asList("second_in_command", "warrior", "brother_in_law", "crew_leader"))
+            .traits(Arrays.asList("skeptical", "practical", "loyal", "protective", "honest", "conflicted"))
+            .abilities(Arrays.asList("military_leadership", "combat_skills", "crew_management", "strategic_thinking"))
+            .culturalSignificance("high")
+            .appearanceInSagas(Arrays.asList("The Troy Saga", "The Ocean Saga", "The Circe Saga", "The Thunder Saga")) // ✅ Major role until Thunder Saga
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        return characters;
+    }
+
+    private List<Location> createKeyLocations() {
+        List<Location> locations = new ArrayList<>();
+
+        locations.add(locationRepository.save(Location.builder()
+            .name("Ithaca")
+            .description("Island kingdom of Odysseus, his home and ultimate destination")
+            .latitude(38.4333)
+            .longitude(20.6500)
+            .regionType("island")
+            .isRealPlace(true)
+            .isMythological(false)
+            .isTouristDestination(true)
+            .culturalSignificance("legendary")
+            .modernCountry("Greece")
+            .inEpic(true) 
+            .coordinateX(150) 
+            .coordinateY(200)
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+         
+        locations.add(locationRepository.save(Location.builder()
+            .name("Troy")
+            .description("The great city that fell after the ten-year Trojan War")
+            .latitude(39.9579)
+            .longitude(26.2369)
+            .regionType("city")
+            .isRealPlace(true)
+            .isMythological(false)
+            .isAncientRuin(true)
+            .culturalSignificance("legendary")
+            .modernCountry("Turkey")
+            .inEpic(true) //  Troy is featured in EPIC: The Musical
+            .coordinateX(350) // Map coordinates as specified
+            .coordinateY(80)
+            .createdAt(LocalDateTime.now())
+            .build()));
+
+        return locations;
+    }
+
+    private void createAllSongs(List<Saga> sagas, List<Character> characters, List<Location> locations) {
+        // ✅ THE TROY SAGA
+        createTroySagaSongs(sagas.get(0), characters, locations);
+        
+        // ✅ THE CYCLOPS SAGA
+        createCyclopsSagaSongs(sagas.get(1), characters, locations);
+        
+        // ✅ THE OCEAN SAGA
+        createOceanSagaSongs(sagas.get(2), characters, locations);
+        
+        // ✅ THE CIRCE SAGA
+        createCirceSagaSongs(sagas.get(3), characters, locations);
+        
+        // ✅ THE UNDERWORLD SAGA
+        createUnderworldSagaSongs(sagas.get(4), characters, locations);
+        
+        // ✅ THE THUNDER SAGA
+        createThunderSagaSongs(sagas.get(5), characters, locations);
+        
+        // ✅ THE WISDOM SAGA
+        createWisdomSagaSongs(sagas.get(6), characters, locations);
+        
+        // ✅ THE VENGEANCE SAGA
+        createVengeanceSagaSongs(sagas.get(7), characters, locations);
+        
+        // ✅ THE ITHACA SAGA
+        createIthacaSagaSongs(sagas.get(8), characters, locations);
+    }
+
+    private void createTroySagaSongs(Saga saga, List<Character> characters, List<Location> locations) {
+        // 1. The Horse and the Infant
+        songRepository.save(Song.builder()
+            .title("The Horse and the Infant")
+            .duration(264)
+            .trackNumber(1)
+            .musicalStyle("dramatic")
+            .vocalStyle("narrative")
+            .instrumentalElements(Arrays.asList("orchestral", "strings", "dramatic_percussion"))
+            .narrativeFunction("exposition")
+            .characterFocus(Arrays.asList("Odysseus", "Athena"))
+            .themes(Arrays.asList("divine_guidance", "moral_choice", "prophecy", "war"))
+            .emotionalTone("contemplative")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 2. Just a Man
+        songRepository.save(Song.builder()
+            .title("Just a Man")
+            .duration(237)
+            .trackNumber(2)
+            .musicalStyle("emotional")
+            .vocalStyle("introspective")
+            .instrumentalElements(Arrays.asList("acoustic_guitar", "strings", "soft_percussion"))
+            .narrativeFunction("character_development")
+            .characterFocus(Arrays.asList("Odysseus"))
+            .themes(Arrays.asList("humanity", "vulnerability", "family", "sacrifice"))
+            .emotionalTone("vulnerable")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 3. Full Speed Ahead
+        songRepository.save(Song.builder()
+            .title("Full Speed Ahead")
+            .duration(201)
+            .trackNumber(3)
+            .musicalStyle("uplifting")
+            .vocalStyle("encouraging")
+            .instrumentalElements(Arrays.asList("upbeat_percussion", "brass", "strings"))
+            .narrativeFunction("transition")
+            .characterFocus(Arrays.asList("Polites", "Odysseus"))
+            .themes(Arrays.asList("optimism", "leadership", "friendship", "hope"))
+            .emotionalTone("hopeful")
+            .narrativeImportance("high")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 4. Open Arms
+        songRepository.save(Song.builder()
+            .title("Open Arms")
+            .duration(324)
+            .trackNumber(4)
+            .musicalStyle("philosophical")
+            .vocalStyle("wise")
+            .instrumentalElements(Arrays.asList("gentle_strings", "woodwinds", "harp"))
+            .narrativeFunction("character_development")
+            .characterFocus(Arrays.asList("Polites"))
+            .themes(Arrays.asList("optimism", "philosophy", "kindness", "worldview"))
+            .emotionalTone("wise")
+            .narrativeImportance("high")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 5. Warrior of the Mind
+        songRepository.save(Song.builder()
+            .title("Warrior of the Mind")
+            .duration(251)
+            .trackNumber(5)
+            .musicalStyle("epic")
+            .vocalStyle("divine")
+            .instrumentalElements(Arrays.asList("powerful_orchestra", "choir", "epic_drums"))
+            .narrativeFunction("divine_intervention")
+            .characterFocus(Arrays.asList("Athena", "Odysseus"))
+            .themes(Arrays.asList("divine_wisdom", "mentorship", "strategic_thinking"))
+            .emotionalTone("powerful")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+    }
+
+    private void createCyclopsSagaSongs(Saga saga, List<Character> characters, List<Location> locations) {
+        // 6. Polyphemus
+        songRepository.save(Song.builder()
+            .title("Polyphemus")
+            .duration(298)
+            .trackNumber(1)
+            .musicalStyle("intense")
+            .vocalStyle("monstrous")
+            .instrumentalElements(Arrays.asList("heavy_percussion", "dark_orchestral", "primal_sounds"))
+            .narrativeFunction("conflict")
+            .characterFocus(Arrays.asList("Polyphemus", "Odysseus"))
+            .themes(Arrays.asList("monstrosity", "encounter", "danger", "cleverness"))
+            .emotionalTone("terrifying")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 7. Survive
+        songRepository.save(Song.builder()
+            .title("Survive")
+            .duration(243)
+            .trackNumber(2)
+            .musicalStyle("tactical")
+            .vocalStyle("strategic")
+            .instrumentalElements(Arrays.asList("rhythmic_percussion", "tense_strings", "brass"))
+            .narrativeFunction("conflict_resolution")
+            .characterFocus(Arrays.asList("Odysseus"))
+            .themes(Arrays.asList("survival", "strategy", "leadership", "cleverness"))
+            .emotionalTone("determined")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 8. Remember Them
+        songRepository.save(Song.builder()
+            .title("Remember Them")
+            .duration(287)
+            .trackNumber(3)
+            .musicalStyle("triumphant")
+            .vocalStyle("proud")
+            .instrumentalElements(Arrays.asList("triumphant_brass", "epic_percussion", "choir"))
+            .narrativeFunction("victory")
+            .characterFocus(Arrays.asList("Odysseus"))
+            .themes(Arrays.asList("victory", "pride", "honor", "remembrance"))
+            .emotionalTone("triumphant")
+            .narrativeImportance("high")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 9. My Goodbye
+        songRepository.save(Song.builder()
+            .title("My Goodbye")
+            .duration(256)
+            .trackNumber(4)
+            .musicalStyle("emotional")
+            .vocalStyle("divine")
+            .instrumentalElements(Arrays.asList("melancholic_strings", "ethereal_choir", "soft_percussion"))
+            .narrativeFunction("relationship_break")
+            .characterFocus(Arrays.asList("Athena", "Odysseus"))
+            .themes(Arrays.asList("disappointment", "separation", "consequences", "divine_relationship"))
+            .emotionalTone("melancholic")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+    }
+
+    // ✅ Continue with remaining sagas...
+    private void createOceanSagaSongs(Saga saga, List<Character> characters, List<Location> locations) {
+        // 10. Storm
+        songRepository.save(Song.builder()
+            .title("Storm")
+            .duration(240)
+            .trackNumber(1)
+            .musicalStyle("oceanic")
+            .vocalStyle("dramatic")
+            .instrumentalElements(Arrays.asList("thunderous_percussion", "storm_sounds", "intense_strings", "wind_instruments"))
+            .narrativeFunction("conflict")
+            .characterFocus(Arrays.asList("Odysseus", "Eurylochus"))
+            .themes(Arrays.asList("divine_wrath", "natural_forces", "survival", "leadership_pressure", "crew_fear"))
+            .emotionalTone("intense")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 11. Luck Runs Out
+        songRepository.save(Song.builder()
+            .title("Luck Runs Out")
+            .duration(250)
+            .trackNumber(2)
+            .musicalStyle("confrontational")
+            .vocalStyle("argumentative")
+            .instrumentalElements(Arrays.asList("tense_strings", "dramatic_percussion", "brass_confrontation"))
+            .narrativeFunction("character_conflict")
+            .characterFocus(Arrays.asList("Eurylochus", "Odysseus"))
+            .themes(Arrays.asList("leadership_challenge", "pragmatism_vs_idealism", "crew_concerns", "trust_erosion", "responsibility"))
+            .emotionalTone("tense")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 12. Keep Your Friends Close
+        songRepository.save(Song.builder()
+            .title("Keep Your Friends Close")
+            .duration(260)
+            .trackNumber(3)
+            .musicalStyle("suspenseful")
+            .vocalStyle("paranoid")
+            .instrumentalElements(Arrays.asList("sneaky_strings", "wind_sounds", "tension_building", "soft_percussion"))
+            .narrativeFunction("betrayal_setup")
+            .characterFocus(Arrays.asList("Odysseus", "Eurylochus"))
+            .themes(Arrays.asList("paranoia", "trust_issues", "divine_gifts", "temptation", "fatigue", "curiosity"))
+            .emotionalTone("paranoid")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 13. Ruthlessness
+        songRepository.save(Song.builder()
+            .title("Ruthlessness")
+            .duration(270)
+            .trackNumber(4)
+            .musicalStyle("powerful")
+            .vocalStyle("divine_wrath")
+            .instrumentalElements(Arrays.asList("oceanic_power", "divine_choir", "crushing_waves", "epic_orchestral"))
+            .narrativeFunction("divine_punishment")
+            .characterFocus(Arrays.asList("Poseidon", "Odysseus"))
+            .themes(Arrays.asList("divine_vengeance", "consequences_of_mercy", "ruthlessness_lesson", "power_demonstration", "crew_sacrifice"))
+            .emotionalTone("devastating")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+    }
+
+    private void createCirceSagaSongs(Saga saga, List<Character> characters, List<Location> locations) {
+        // 14. Puppeteer
+        songRepository.save(Song.builder()
+            .title("Puppeteer")
+            .duration(240)
+            .trackNumber(1)
+            .musicalStyle("mystical")
+            .vocalStyle("seductive")
+            .instrumentalElements(Arrays.asList("mystical_strings", "enchanting_melody", "magical_sounds", "hypnotic_rhythm"))
+            .narrativeFunction("magical_encounter")
+            .characterFocus(Arrays.asList("Circe", "Eurylochus"))
+            .themes(Arrays.asList("magic", "enchantment", "transformation", "crew_vulnerability", "supernatural_power"))
+            .emotionalTone("enchanting")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 15. Wouldn't You Like
+        songRepository.save(Song.builder()
+            .title("Wouldn't You Like")
+            .duration(250)
+            .trackNumber(2)
+            .musicalStyle("mischievous")
+            .vocalStyle("trickster")
+            .instrumentalElements(Arrays.asList("playful_winds", "mischievous_strings", "divine_mischief", "quick_tempo"))
+            .narrativeFunction("divine_assistance")
+            .characterFocus(Arrays.asList("Hermes", "Odysseus"))
+            .themes(Arrays.asList("divine_intervention", "trickery", "magical_aid", "family_relations", "mischief"))
+            .emotionalTone("playful")
+            .narrativeImportance("high")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 16. Done For
+        songRepository.save(Song.builder()
+            .title("Done For")
+            .duration(260)
+            .trackNumber(3)
+            .musicalStyle("seductive")
+            .vocalStyle("romantic")
+            .instrumentalElements(Arrays.asList("romantic_strings", "seductive_melody", "intimate_instruments", "flowing_rhythm"))
+            .narrativeFunction("temptation")
+            .characterFocus(Arrays.asList("Circe", "Odysseus"))
+            .themes(Arrays.asList("seduction", "temptation", "magical_attraction", "infidelity_temptation", "power_dynamics"))
+            .emotionalTone("seductive")
+            .narrativeImportance("high")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 17. There Are Other Ways
+        songRepository.save(Song.builder()
+            .title("There Are Other Ways")
+            .duration(270)
+            .trackNumber(4)
+            .musicalStyle("dramatic")
+            .vocalStyle("persuasive")
+            .instrumentalElements(Arrays.asList("dramatic_strings", "persuasive_melody", "tension_building", "resolution_themes"))
+            .narrativeFunction("negotiation")
+            .characterFocus(Arrays.asList("Circe", "Odysseus"))
+            .themes(Arrays.asList("negotiation", "alternative_solutions", "magical_bargaining", "crew_salvation", "wisdom_over_force"))
+            .emotionalTone("persuasive")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+    }
+
+    private void createUnderworldSagaSongs(Saga saga, List<Character> characters, List<Location> locations) {
+        // 18. The Underworld
+        songRepository.save(Song.builder()
+            .title("The Underworld")
+            .duration(240)
+            .trackNumber(1)
+            .musicalStyle("haunting")
+            .vocalStyle("ethereal")
+            .instrumentalElements(Arrays.asList("ghostly_choir", "haunting_strings", "underworld_ambiance", "ethereal_sounds"))
+            .narrativeFunction("realm_entry")
+            .characterFocus(Arrays.asList("Odysseus"))
+            .themes(Arrays.asList("death", "underworld_journey", "seeking_guidance", "confronting_mortality", "spiritual_journey"))
+            .emotionalTone("haunting")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 19. No Longer You
+        songRepository.save(Song.builder()
+            .title("No Longer You")
+            .duration(250)
+            .trackNumber(2)
+            .musicalStyle("prophetic")
+            .vocalStyle("oracle")
+            .instrumentalElements(Arrays.asList("prophetic_strings", "mystical_choir", "fortune_telling_ambiance", "ancient_wisdom"))
+            .narrativeFunction("prophecy")
+            .characterFocus(Arrays.asList("Tiresias", "Odysseus"))
+            .themes(Arrays.asList("prophecy", "future_revelation", "identity_loss", "transformation_warning", "fate_acceptance"))
+            .emotionalTone("ominous")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 20. Monster
+        songRepository.save(Song.builder()
+            .title("Monster")
+            .duration(260)
+            .trackNumber(3)
+            .musicalStyle("dark")
+            .vocalStyle("introspective")
+            .instrumentalElements(Arrays.asList("dark_orchestral", "self_reflection_melody", "moral_darkness", "internal_struggle"))
+            .narrativeFunction("character_transformation")
+            .characterFocus(Arrays.asList("Odysseus"))
+            .themes(Arrays.asList("moral_transformation", "becoming_monster", "necessary_evil", "survival_cost", "identity_crisis"))
+            .emotionalTone("dark")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+    }
+
+    private void createThunderSagaSongs(Saga saga, List<Character> characters, List<Location> locations) {
+        // 21. Suffering
+        songRepository.save(Song.builder()
+            .title("Suffering")
+            .duration(240)
+            .trackNumber(1)
+            .musicalStyle("epic")
+            .vocalStyle("powerful")
+            .instrumentalElements(Arrays.asList("epic_orchestral", "powerful_vocals", "dramatic_build", "heroic_themes"))
+            .narrativeFunction("power_demonstration")
+            .characterFocus(Arrays.asList("Odysseus"))
+            .themes(Arrays.asList("power_growth", "ruthless_efficiency", "monster_embrace", "strategic_dominance", "fear_inspiring"))
+            .emotionalTone("powerful")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 22. Different Beast
+        songRepository.save(Song.builder()
+            .title("Different Beast")
+            .duration(250)
+            .trackNumber(2)
+            .musicalStyle("intense")
+            .vocalStyle("transformed")
+            .instrumentalElements(Arrays.asList("beast_like_sounds", "transformation_music", "primal_orchestral", "savage_rhythm"))
+            .narrativeFunction("character_revelation")
+            .characterFocus(Arrays.asList("Odysseus"))
+            .themes(Arrays.asList("transformation_complete", "monster_unleashed", "survival_adaptation", "humanity_lost", "pragmatic_evil"))
+            .emotionalTone("savage")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 23. Scylla
+        songRepository.save(Song.builder()
+            .title("Scylla")
+            .duration(260)
+            .trackNumber(3)
+            .musicalStyle("monstrous")
+            .vocalStyle("terrifying")
+            .instrumentalElements(Arrays.asList("monster_sounds", "crew_terror", "sacrifice_music", "unavoidable_doom"))
+            .narrativeFunction("sacrifice")
+            .characterFocus(Arrays.asList("Scylla", "Odysseus", "Eurylochus"))
+            .themes(Arrays.asList("calculated_sacrifice", "leadership_burden", "crew_betrayal", "survival_cost", "monstrous_choice"))
+            .emotionalTone("terrifying")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 24. Mutiny
+        songRepository.save(Song.builder()
+            .title("Mutiny")
+            .duration(270)
+            .trackNumber(4)
+            .musicalStyle("confrontational")
+            .vocalStyle("rebellious")
+            .instrumentalElements(Arrays.asList("rebellion_music", "confrontation_themes", "crew_uprising", "betrayal_sounds"))
+            .narrativeFunction("crew_rebellion")
+            .characterFocus(Arrays.asList("Eurylochus", "Odysseus"))
+            .themes(Arrays.asList("mutiny", "trust_breakdown", "leadership_failure", "crew_desperation", "moral_reckoning"))
+            .emotionalTone("rebellious")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 25. Thunder Bringer
+        songRepository.save(Song.builder()
+            .title("Thunder Bringer")
+            .duration(280)
+            .trackNumber(5)
+            .musicalStyle("divine")
+            .vocalStyle("godly")
+            .instrumentalElements(Arrays.asList("divine_thunder", "godly_choir", "ultimate_power", "judgment_themes"))
+            .narrativeFunction("divine_judgment")
+            .characterFocus(Arrays.asList("Zeus", "Odysseus"))
+            .themes(Arrays.asList("divine_judgment", "impossible_choice", "crew_vs_family", "ultimate_sacrifice", "isolation_consequence"))
+            .emotionalTone("divine")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+    }
+
+    private void createWisdomSagaSongs(Saga saga, List<Character> characters, List<Location> locations) {
+        // 26. Legendary
+        songRepository.save(Song.builder()
+            .title("Legendary")
+            .duration(240)
+            .trackNumber(1)
+            .musicalStyle("heroic")
+            .vocalStyle("aspiring")
+            .instrumentalElements(Arrays.asList("heroic_themes", "youthful_energy", "aspiration_music", "epic_potential"))
+            .narrativeFunction("character_introduction")
+            .characterFocus(Arrays.asList("Telemachus"))
+            .themes(Arrays.asList("heroic_aspiration", "father_legacy", "coming_of_age", "legendary_destiny", "youthful_determination"))
+            .emotionalTone("inspiring")
+            .narrativeImportance("high")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 27. Little Wolf
+        songRepository.save(Song.builder()
+            .title("Little Wolf")
+            .duration(250)
+            .trackNumber(2)
+            .musicalStyle("training")
+            .vocalStyle("mentoring")
+            .instrumentalElements(Arrays.asList("training_rhythms", "wisdom_themes", "growth_music", "mentor_guidance"))
+            .narrativeFunction("character_development")
+            .characterFocus(Arrays.asList("Athena", "Telemachus"))
+            .themes(Arrays.asList("divine_training", "wisdom_learning", "father_son_connection", "mentor_relationship", "potential_unlocking"))
+            .emotionalTone("encouraging")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 28. We'll Be Fine
+        songRepository.save(Song.builder()
+            .title("We'll Be Fine")
+            .duration(260)
+            .trackNumber(3)
+            .musicalStyle("emotional")
+            .vocalStyle("reassuring")
+            .instrumentalElements(Arrays.asList("emotional_strings", "comfort_themes", "hope_music", "relationship_healing"))
+            .narrativeFunction("relationship_repair")
+            .characterFocus(Arrays.asList("Athena", "Telemachus"))
+            .themes(Arrays.asList("relationship_healing", "divine_compassion", "hope_restoration", "family_bonds", "forgiveness"))
+            .emotionalTone("hopeful")
+            .narrativeImportance("high")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 29. Love in Paradise
+        songRepository.save(Song.builder()
+            .title("Love in Paradise")
+            .duration(270)
+            .trackNumber(4)
+            .musicalStyle("romantic")
+            .vocalStyle("seductive")
+            .instrumentalElements(Arrays.asList("paradise_sounds", "romantic_themes", "captivity_undertones", "longing_music"))
+            .narrativeFunction("captivity_reveal")
+            .characterFocus(Arrays.asList("Calypso", "Odysseus"))
+            .themes(Arrays.asList("captive_love", "paradise_prison", "longing_for_home", "divine_obsession", "trapped_hero"))
+            .emotionalTone("bittersweet")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 30. God Games
+        songRepository.save(Song.builder()
+            .title("God Games")
+            .duration(280)
+            .trackNumber(5)
+            .musicalStyle("divine")
+            .vocalStyle("competitive")
+            .instrumentalElements(Arrays.asList("divine_competition", "godly_themes", "strategic_music", "olympian_power"))
+            .narrativeFunction("divine_negotiation")
+            .characterFocus(Arrays.asList("Athena", "Zeus", "Apollo", "Hephaestus", "Aphrodite", "Ares", "Hera"))
+            .themes(Arrays.asList("divine_politics", "family_loyalty", "strategic_negotiation", "godly_competition", "love_vs_wisdom"))
+            .emotionalTone("competitive")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+    }
+
+    private void createVengeanceSagaSongs(Saga saga, List<Character> characters, List<Location> locations) {
+        // 31. Not Sorry for Loving You
+        songRepository.save(Song.builder()
+            .title("Not Sorry for Loving You")
+            .duration(240)
+            .trackNumber(1)
+            .musicalStyle("emotional")
+            .vocalStyle("heartbroken")
+            .instrumentalElements(Arrays.asList("heartbreak_themes", "release_music", "emotional_strings", "goodbye_melody"))
+            .narrativeFunction("release")
+            .characterFocus(Arrays.asList("Calypso", "Odysseus"))
+            .themes(Arrays.asList("unrequited_love", "divine_heartbreak", "freedom_granted", "love_sacrifice", "letting_go"))
+            .emotionalTone("heartbroken")
+            .narrativeImportance("high")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 32. Dangerous
+        songRepository.save(Song.builder()
+            .title("Dangerous")
+            .duration(250)
+            .trackNumber(2)
+            .musicalStyle("intense")
+            .vocalStyle("threatening")
+            .instrumentalElements(Arrays.asList("danger_themes", "threat_music", "intense_orchestral", "warning_sounds"))
+            .narrativeFunction("threat_establishment")
+            .characterFocus(Arrays.asList("Odysseus"))
+            .themes(Arrays.asList("dangerous_reputation", "fear_inspiring", "monster_identity", "threat_projection", "power_demonstration"))
+            .emotionalTone("menacing")
+            .narrativeImportance("high")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 33. Charybdis
+        songRepository.save(Song.builder()
+            .title("Charybdis")
+            .duration(260)
+            .trackNumber(3)
+            .musicalStyle("chaotic")
+            .vocalStyle("desperate")
+            .instrumentalElements(Arrays.asList("whirlpool_sounds", "chaos_music", "survival_themes", "desperate_struggle"))
+            .narrativeFunction("obstacle")
+            .characterFocus(Arrays.asList("Odysseus"))
+            .themes(Arrays.asList("natural_chaos", "solo_survival", "determination", "obstacle_overcoming", "relentless_journey"))
+            .emotionalTone("chaotic")
+            .narrativeImportance("high")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 34. Get in the Water
+        songRepository.save(Song.builder()
+            .title("Get in the Water")
+            .duration(270)
+            .trackNumber(4)
+            .musicalStyle("confrontational")
+            .vocalStyle("wrathful")
+            .instrumentalElements(Arrays.asList("ocean_wrath", "divine_anger", "confrontation_themes", "final_battle_prep"))
+            .narrativeFunction("final_confrontation")
+            .characterFocus(Arrays.asList("Poseidon", "Odysseus"))
+            .themes(Arrays.asList("divine_confrontation", "vengeance_demand", "final_reckoning", "god_vs_mortal", "ultimate_challenge"))
+            .emotionalTone("wrathful")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 35. 600 Strike
+        songRepository.save(Song.builder()
+            .title("600 Strike")
+            .duration(280)
+            .trackNumber(5)
+            .musicalStyle("epic")
+            .vocalStyle("triumphant")
+            .instrumentalElements(Arrays.asList("epic_battle", "triumph_themes", "divine_defeat", "ultimate_victory"))
+            .narrativeFunction("climax")
+            .characterFocus(Arrays.asList("Odysseus", "Poseidon"))
+            .themes(Arrays.asList("ultimate_vengeance", "divine_defeat", "mortal_triumph", "power_reversal", "justice_served"))
+            .emotionalTone("triumphant")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+    }
+
+    private void createIthacaSagaSongs(Saga saga, List<Character> characters, List<Location> locations) {
+        // 36. The Challenge
+        songRepository.save(Song.builder()
+            .title("The Challenge")
+            .duration(240)
+            .trackNumber(1)
+            .musicalStyle("competitive")
+            .vocalStyle("confident")
+            .instrumentalElements(Arrays.asList("competition_themes", "bow_drawing_sounds", "challenge_music", "test_preparation"))
+            .narrativeFunction("contest")
+            .characterFocus(Arrays.asList("Penelope", "Telemachus", "Odysseus"))
+            .themes(Arrays.asList("marriage_contest", "impossible_challenge", "hidden_identity", "family_reunion_setup", "divine_intervention"))
+            .emotionalTone("anticipatory")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 37. Hold Them Down
+        songRepository.save(Song.builder()
+            .title("Hold Them Down")
+            .duration(250)
+            .trackNumber(2)
+            .musicalStyle("violent")
+            .vocalStyle("vengeful")
+            .instrumentalElements(Arrays.asList("violence_themes", "revenge_music", "battle_sounds", "suitor_destruction"))
+            .narrativeFunction("vengeance")
+            .characterFocus(Arrays.asList("Odysseus", "Telemachus"))
+            .themes(Arrays.asList("suitor_slaughter", "home_reclamation", "father_son_teamwork", "justified_vengeance", "palace_cleansing"))
+            .emotionalTone("vengeful")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 38. Odysseus
+        songRepository.save(Song.builder()
+            .title("Odysseus")
+            .duration(260)
+            .trackNumber(3)
+            .musicalStyle("revealing")
+            .vocalStyle("triumphant")
+            .instrumentalElements(Arrays.asList("identity_reveal", "heroic_themes", "recognition_music", "name_power"))
+            .narrativeFunction("identity_reveal")
+            .characterFocus(Arrays.asList("Odysseus"))
+            .themes(Arrays.asList("identity_revelation", "name_power", "heroic_return", "legend_fulfillment", "fear_inspiring"))
+            .emotionalTone("triumphant")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 39. I Can't Help But Wonder
+        songRepository.save(Song.builder()
+            .title("I Can't Help But Wonder")
+            .duration(270)
+            .trackNumber(4)
+            .musicalStyle("contemplative")
+            .vocalStyle("uncertain")
+            .instrumentalElements(Arrays.asList("uncertainty_themes", "contemplation_music", "doubt_strings", "questioning_melody"))
+            .narrativeFunction("doubt")
+            .characterFocus(Arrays.asList("Penelope"))
+            .themes(Arrays.asList("identity_doubt", "change_recognition", "stranger_husband", "time_consequences", "love_questioned"))
+            .emotionalTone("uncertain")
+            .narrativeImportance("high")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+
+        // 40. Would You Fall in Love with Me Again
+        songRepository.save(Song.builder()
+            .title("Would You Fall in Love with Me Again")
+            .duration(280)
+            .trackNumber(5)
+            .musicalStyle("romantic")
+            .vocalStyle("vulnerable")
+            .instrumentalElements(Arrays.asList("love_themes", "reunion_music", "emotional_strings", "healing_harmony"))
+            .narrativeFunction("resolution")
+            .characterFocus(Arrays.asList("Odysseus", "Penelope"))
+            .themes(Arrays.asList("love_renewal", "marriage_healing", "acceptance", "forgiveness", "journey_completion", "home_restored"))
+            .emotionalTone("loving")
+            .narrativeImportance("critical")
+            .relatedSagaIds(Arrays.asList(saga.getId()))
+            .createdAt(LocalDateTime.now())
+            .build());
+    }
+}

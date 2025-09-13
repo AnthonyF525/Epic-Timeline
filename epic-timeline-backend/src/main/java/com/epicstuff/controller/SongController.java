@@ -2,71 +2,33 @@ package com.epicstuff.controller;
 
 import com.epicstuff.model.Song;
 import com.epicstuff.service.SongService;
-import com.epicstuff.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/songs")
+@RequestMapping("/songs")
 @CrossOrigin(origins = "*")
 public class SongController {
 
     @Autowired
     private SongService songService;
 
-    // ✅ GET /api/songs - List all songs with filtering and pagination
+    // ✅ GET /api/songs - List all songs with basic filtering
     @GetMapping
-    public ResponseEntity<Page<Song>> getAllSongs(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "trackNumber") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir,
-            @RequestParam(required = false) Long sagaId,
-            @RequestParam(required = false) String theme,
-            @RequestParam(required = false) String genre,
-            @RequestParam(required = false) String mood,
-            @RequestParam(required = false) String instrument,
-            @RequestParam(required = false) String vocal,
-            @RequestParam(required = false) Long characterId,
-            @RequestParam(required = false) Boolean isInstrumental,
-            @RequestParam(required = false) Boolean hasDialogue,
-            @RequestParam(required = false) Boolean isReprise,
-            @RequestParam(required = false) Integer minDuration,
-            @RequestParam(required = false) Integer maxDuration,
-            @RequestParam(required = false) String search
+    public ResponseEntity<List<Song>> getAllSongs(
+            @RequestParam(required = false) Long sagaId
     ) {
-        Sort sort = sortDir.equalsIgnoreCase("desc") ? 
-            Sort.by(sortBy).descending() : 
-            Sort.by(sortBy).ascending();
-        
-        PageRequest pageRequest = PageRequest.of(page, size, sort);
-        
-        SongFilterRequest filter = SongFilterRequest.builder()
-            .sagaId(sagaId)
-            .theme(theme)
-            .genre(genre)
-            .mood(mood)
-            .instrument(instrument)
-            .vocal(vocal)
-            .characterId(characterId)
-            .isInstrumental(isInstrumental)
-            .hasDialogue(hasDialogue)
-            .isReprise(isReprise)
-            .minDuration(minDuration)
-            .maxDuration(maxDuration)
-            .search(search)
-            .build();
-        
-        Page<Song> songs = songService.findAllWithFilter(filter, pageRequest);
+        List<Song> songs;
+        if (sagaId != null) {
+            songs = songService.findSongsBySaga(sagaId);
+        } else {
+            songs = songService.findAll();
+        }
         return ResponseEntity.ok(songs);
     }
 
@@ -78,28 +40,36 @@ public class SongController {
                   .orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ POST /api/songs - Create new song
+    // ✅ POST /api/songs - Create new song (simplified)
     @PostMapping
-    public ResponseEntity<Song> createSong(@Valid @RequestBody SongCreateRequest request) {
+    public ResponseEntity<Song> createSong(@RequestBody Song song) {
         try {
-            Song createdSong = songService.createSong(request);
+            Song createdSong = songService.save(song);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdSong);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    // ✅ PUT /api/songs/{id} - Update existing song
+    // ✅ PUT /api/songs/{id} - Update existing song (simplified)
     @PutMapping("/{id}")
     public ResponseEntity<Song> updateSong(
             @PathVariable Long id, 
-            @Valid @RequestBody SongUpdateRequest request
+            @RequestBody Song updatedSong
     ) {
         try {
-            Optional<Song> updatedSong = songService.updateSong(id, request);
-            return updatedSong.map(ResponseEntity::ok)
-                             .orElse(ResponseEntity.notFound().build());
-        } catch (IllegalArgumentException e) {
+            Optional<Song> existingSong = songService.findByIdWithRelations(id);
+            if (existingSong.isPresent()) {
+                Song song = existingSong.get();
+                if (updatedSong.getTitle() != null) song.setTitle(updatedSong.getTitle());
+                if (updatedSong.getDescription() != null) song.setDescription(updatedSong.getDescription());
+                if (updatedSong.getDurationSeconds() != null) song.setDurationSeconds(updatedSong.getDurationSeconds());
+                if (updatedSong.getTrackNumber() != null) song.setTrackNumber(updatedSong.getTrackNumber());
+                Song savedSong = songService.save(song);
+                return ResponseEntity.ok(savedSong);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
@@ -114,8 +84,8 @@ public class SongController {
 
     // ✅ GET /api/songs/{id}/characters - Get all characters in song
     @GetMapping("/{id}/characters")
-    public ResponseEntity<List<Character>> getSongCharacters(@PathVariable Long id) {
-        List<Character> characters = songService.getSongCharacters(id);
+    public ResponseEntity<List<com.epicstuff.model.Character>> getSongCharacters(@PathVariable Long id) {
+        List<com.epicstuff.model.Character> characters = songService.getSongCharacters(id);
         return ResponseEntity.ok(characters);
     }
 
@@ -159,11 +129,10 @@ public class SongController {
         return ResponseEntity.ok(songs);
     }
 
-    // ✅ GET /api/songs/{id}/stats - Get song statistics
+    // ✅ GET /api/songs/{id}/stats - Get song statistics (simplified)
     @GetMapping("/{id}/stats")
-    public ResponseEntity<SongStatsResponse> getSongStats(@PathVariable Long id) {
-        Optional<SongStatsResponse> stats = songService.getSongStats(id);
-        return stats.map(ResponseEntity::ok)
-                   .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<String> getSongStats(@PathVariable Long id) {
+        String stats = songService.getSongStats(id);
+        return ResponseEntity.ok(stats);
     }
 }
