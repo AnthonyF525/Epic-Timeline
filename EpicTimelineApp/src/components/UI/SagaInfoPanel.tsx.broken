@@ -1,0 +1,2320 @@
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Animated,
+  Dimensions,
+  ViewStyle,
+  TextInput,
+} from 'react-native';
+import SongList from '../Audio/SongList';
+import { SongService } from '../../services/SongService';
+import SongDataService from '../../services/SongDataService';
+import EventService, { ApiEvent, Character } from '../../services/EventService';
+import { useAudioPlayer } from '../../contexts/AudioPlayerContext';
+import CharacterDetailModal from './CharacterDetailModal';
+
+// Skeleton loading components
+const SkeletonBox: React.FC<{
+  width: number | string;
+  height: number;
+  borderRadius?: number;
+  marginBottom?: number;
+}> = ({ width, height, borderRadius = 8, marginBottom = 0 }) => {
+  const shimmerAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const shimmer = Animated.loop(
+      Animated.sequence([
+        Animated.timing(shimmerAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: false,
+        }),
+        Animated.timing(shimmerAnim, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: false,
+        }),
+      ])
+    );
+    shimmer.start();
+    return () => shimmer.stop();
+  }, [shimmerAnim]);
+
+  return (
+    <View
+      style={{
+        width: width as any,
+        height,
+        backgroundColor: '#2c3e50',
+        borderRadius,
+        marginBottom,
+        overflow: 'hidden',
+      }}
+    >
+      <Animated.View
+        style={[
+          StyleSheet.absoluteFillObject,
+          {
+            backgroundColor: shimmerAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: ['#34495e', '#4a5568'],
+            }),
+          }
+        ]}
+      />
+    </View>
+  );
+};
+
+const SkeletonText: React.FC<{
+  lines?: number;
+  width?: (number | string)[];
+}> = ({ lines = 1, width = ['100%'] }) => {
+  return (
+    <View>
+      {Array.from({ length: lines }).map((_, index) => (
+        <SkeletonBox
+          key={index}
+          width={width[index] || width[0] || '100%'}
+          height={16}
+          marginBottom={8}
+        />
+      ))}
+    </View>
+  );
+};
+
+// Loading skeleton for overview tab
+const OverviewSkeleton: React.FC = () => (
+  <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
+    <View style={styles.descriptionContainer}>
+      <SkeletonText lines={4} width={['100%', '95%', '85%', '70%']} />
+    </View>
+    
+    {/* Progress section skeleton */}
+    <View style={styles.progressSection}>
+      <SkeletonBox width={200} height={24} marginBottom={16} />
+      <View style={styles.progressContainer}>
+        <View style={styles.progressHeader}>
+          <SkeletonBox width={120} height={16} />
+          <SkeletonBox width={40} height={16} />
+        </View>
+        <View style={styles.progressBarContainer}>
+          <SkeletonBox width="100%" height={8} borderRadius={4} />
+        </View>
+      </View>
+      
+      {/* Song timeline skeleton */}
+      <View style={styles.songProgressContainer}>
+        <SkeletonBox width={150} height={16} marginBottom={12} />
+        {Array.from({ length: 5 }).map((_, index) => (
+          <View key={index} style={styles.timelineItem}>
+            <SkeletonBox width={24} height={24} borderRadius={12} />
+            <View style={styles.timelineContent}>
+              <SkeletonBox width={180} height={16} marginBottom={4} />
+              <SkeletonBox width={60} height={12} />
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+    
+    {/* Key moments skeleton */}
+    <View style={styles.momentsContainer}>
+      <SkeletonBox width={160} height={24} marginBottom={16} />
+      {Array.from({ length: 3 }).map((_, index) => (
+        <View key={index} style={styles.momentItem}>
+          <SkeletonBox width={24} height={24} borderRadius={12} />
+          <SkeletonBox width="85%" height={16} />
+        </View>
+      ))}
+    </View>
+  </ScrollView>
+);
+
+// Loading skeleton for songs tab
+const SongsSkeleton: React.FC = () => (
+  <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
+    {Array.from({ length: 5 }).map((_, index) => (
+      <View key={index} style={styles.songCard}>
+        <View style={styles.songHeader}>
+          <SkeletonBox width={200} height={20} marginBottom={8} />
+          <SkeletonBox width={60} height={16} />
+        </View>
+        <SkeletonText lines={2} width={['100%', '80%']} />
+      </View>
+    ))}
+  </ScrollView>
+);
+
+// Loading skeleton for details tab
+const DetailsSkeleton: React.FC = () => (
+  <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
+    {/* Characters section skeleton */}
+    <View style={styles.detailsSection}>
+      <SkeletonBox width={150} height={24} marginBottom={16} />
+      <View style={styles.charactersGrid}>
+        {Array.from({ length: 4 }).map((_, index) => (
+          <SkeletonBox key={index} width={120} height={16} marginBottom={8} />
+        ))}
+      </View>
+    </View>
+    
+    {/* Locations section skeleton */}
+    <View style={styles.detailsSection}>
+      <SkeletonBox width={120} height={24} marginBottom={16} />
+      {Array.from({ length: 2 }).map((_, index) => (
+        <SkeletonBox key={index} width={160} height={16} marginBottom={8} />
+      ))}
+    </View>
+    
+    {/* Theme & tone section skeleton */}
+    <View style={styles.detailsSection}>
+      <SkeletonBox width={140} height={24} marginBottom={16} />
+      <SkeletonText lines={3} width={['100%', '90%', '75%']} />
+    </View>
+    
+    {/* Musical style section skeleton */}
+    <View style={styles.detailsSection}>
+      <SkeletonBox width={160} height={24} marginBottom={16} />
+      <SkeletonText lines={2} width={['100%', '85%']} />
+    </View>
+  </ScrollView>
+);
+
+// Loading skeleton for events tab
+const EventsSkeleton: React.FC = () => (
+  <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
+    {Array.from({ length: 4 }).map((_, index) => (
+      <View key={index} style={styles.eventCard}>
+        <SkeletonBox width="100%" height={24} marginBottom={8} />
+        <SkeletonText lines={2} width={['90%', '75%']} />
+        <View style={styles.eventMeta}>
+          <SkeletonBox width={80} height={14} marginBottom={4} />
+          <SkeletonBox width={60} height={14} />
+        </View>
+      </View>
+    ))}
+  </ScrollView>
+);
+
+// Define saga data structure
+export interface SagaInfo {
+  id: string;
+  name: string;
+  color: string;
+  description: string;
+  theme: string;
+  keyCharacters: string[];
+  songs: {
+    title: string;
+    description: string;
+    duration?: string;
+    completed?: boolean;
+  }[];
+  locations: string[];
+  emotionalTone: string;
+  musicalStyle: string;
+  keyMoments: string[];
+  symbolism?: string;
+  order: number;
+  progress?: {
+    currentSong: number;
+    totalSongs: number;
+    completedMoments: string[];
+    overallProgress: number; // 0-100
+  };
+}
+
+// Props interface for the component
+interface SagaInfoPanelProps {
+  saga: SagaInfo | null;
+  isVisible: boolean;
+  onClose: () => void;
+  onSagaSelect?: (sagaId: string) => void;
+  allSagas?: SagaInfo[];
+  style?: ViewStyle;
+  animationType?: 'slide-right' | 'slide-up' | 'slide-down' | 'slide-left';
+  isLoading?: boolean;
+}
+
+// Epic: The Musical saga data
+const EPIC_SAGAS: SagaInfo[] = [
+  {
+    id: 'troy',
+    name: 'The Troy Saga',
+    color: '#FF4500',
+    description: 'The beginning of Odysseus\'s epic journey, starting with the fall of Troy and his first moral challenges.',
+    theme: 'War, Strategy, and Moral Complexity',
+    keyCharacters: ['Odysseus', 'Astyanax', 'Polites', 'Eurylochus'],
+    songs: [
+      {
+        title: 'The Horse and the Infant',
+        description: 'Odysseus faces the prophecy about Astyanax and makes a devastating choice.',
+        duration: '4:15'
+      },
+      {
+        title: 'Just a Man',
+        description: 'Odysseus grapples with the weight of his decisions and their consequences.',
+        duration: '4:42'
+      },
+      {
+        title: 'Full Speed Ahead',
+        description: 'The crew sets sail from Troy, optimistic about their journey home.',
+        duration: '3:38'
+      },
+      {
+        title: 'Open Arms',
+        description: 'Polites encourages kindness and openness, contrasting with Odysseus\'s caution.',
+        duration: '3:21'
+      },
+      {
+        title: 'Warrior of the Mind',
+        description: 'Athena appears and challenges Odysseus to be the warrior she trained.',
+        duration: '4:07'
+      }
+    ],
+    locations: ['Troy', 'Aegean Sea'],
+    emotionalTone: 'Heroic yet morally complex',
+    musicalStyle: 'Epic orchestral with military percussion',
+    keyMoments: [
+      'The decision about Astyanax',
+      'Athena\'s first appearance',
+      'Polites\' philosophy of kindness'
+    ],
+    symbolism: 'The wooden horse represents deception and strategy',
+    order: 1,
+    progress: {
+      currentSong: 3,
+      totalSongs: 5,
+      completedMoments: [
+        'The decision about Astyanax',
+        'Athena\'s first appearance'
+      ],
+      overallProgress: 60
+    }
+  },
+  {
+    id: 'cyclops',
+    name: 'The Cyclops Saga',
+    color: '#8B0000',
+    description: 'Odysseus encounters Polyphemus and learns harsh lessons about pride and consequences.',
+    theme: 'Pride, Hubris, and Divine Retribution',
+    keyCharacters: ['Odysseus', 'Polyphemus', 'Polites', 'Eurylochus'],
+    songs: [
+      {
+        title: 'Polyphemus',
+        description: 'The crew encounters the terrifying cyclops in his cave.',
+        duration: '5:23'
+      },
+      {
+        title: 'Survive',
+        description: 'Odysseus devises a plan to escape the cyclops\' cave.',
+        duration: '3:45'
+      },
+      {
+        title: 'Remember Them',
+        description: 'Odysseus reveals his name, leading to devastating consequences.',
+        duration: '4:28'
+      },
+      {
+        title: 'My Goodbye',
+        description: 'Athena abandons Odysseus after his display of reckless pride.',
+        duration: '4:16'
+      }
+    ],
+    locations: ['Cyclops Island', 'Polyphemus\' Cave'],
+    emotionalTone: 'Tense, tragic, and regretful',
+    musicalStyle: 'Heavy rock with intense percussion',
+    keyMoments: [
+      'Polites\' death',
+      'The escape from the cave',
+      'Odysseus reveals his identity',
+      'Athena\'s departure'
+    ],
+    symbolism: 'The cyclops represents blind rage and the dangers of pride',
+    order: 2,
+    progress: {
+      currentSong: 2,
+      totalSongs: 4,
+      completedMoments: [
+        'Polites\' death'
+      ],
+      overallProgress: 50
+    }
+  },
+  {
+    id: 'ocean',
+    name: 'The Ocean Saga',
+    color: '#1E90FF',
+    description: 'Odysseus faces Poseidon\'s wrath and the challenge of the wind bag.',
+    theme: 'Divine Punishment and Trust',
+    keyCharacters: ['Odysseus', 'Poseidon', 'Eurylochus', 'Aeolus'],
+    songs: [
+      {
+        title: 'Storm',
+        description: 'A storm overtakes Odysseus and his crew. Is it nature, or Divine?',
+        duration: '3:52'
+      },
+      {
+        title: 'Luck Runs Out',
+        description: 'Eurylochus confronts Odysseus about his leadership and decisions.',
+        duration: '4:33'
+      },
+      {
+        title: 'Keep Your Friends Close',
+        description: 'Aeolus gives Odysseus the wind bag, but trust becomes an issue.',
+        duration: '5:47'
+      },
+      {
+        title: 'Ruthlessness',
+        description: 'Poseidon teaches Odysseus about the necessity of being ruthless.',
+        duration: '4:09'
+      }
+    ],
+    locations: ['The Ocean', 'Aeolus\' Island', 'Open Seas'],
+    emotionalTone: 'Stormy, confrontational, and desperate',
+    musicalStyle: 'Powerful orchestral with oceanic themes',
+    keyMoments: [
+      'Poseidon\'s first confrontation',
+      'The crew\'s betrayal with the wind bag',
+      'Poseidon\'s lesson about ruthlessness'
+    ],
+    symbolism: 'The ocean represents uncontrollable forces and divine power',
+    order: 3,
+    progress: {
+      currentSong: 1,
+      totalSongs: 4,
+      completedMoments: [],
+      overallProgress: 25
+    }
+  },
+  {
+    id: 'circe',
+    name: 'The Circe Saga',
+    color: '#9932CC',
+    description: 'Odysseus encounters the sorceress Circe and faces tests of wit and will.',
+    theme: 'Magic, Temptation, and Sacrifice',
+    keyCharacters: ['Odysseus', 'Circe', 'Eurylochus', 'Hermes'],
+    songs: [
+      {
+        title: 'Puppeteer',
+        description: 'Circe transforms Odysseus\'s men into pigs with her magic.',
+        duration: '3:34'
+      },
+      {
+        title: 'Wouldn\'t You Like',
+        description: 'Hermes offers Odysseus advice and magical assistance.',
+        duration: '3:28'
+      },
+      {
+        title: 'Done For',
+        description: 'Odysseus resists Circe\'s magic and they reach an understanding.',
+        duration: '4:51'
+      },
+      {
+        title: 'There Are Other Ways',
+        description: 'Circe tests Odysseus and offers guidance for his journey.',
+        duration: '4:19'
+      }
+    ],
+    locations: ['Circe\'s Island', 'Circe\'s Palace'],
+    emotionalTone: 'Mystical, seductive, and wise',
+    musicalStyle: 'Magical orchestration with exotic instruments',
+    keyMoments: [
+      'The crew\'s transformation',
+      'Hermes\' intervention',
+      'Odysseus\'s resistance to magic',
+      'Circe\'s guidance'
+    ],
+    symbolism: 'Magic represents transformation and the power of knowledge',
+    order: 4
+  },
+  {
+    id: 'underworld',
+    name: 'The Underworld Saga',
+    color: '#2F4F4F',
+    description: 'Odysseus journeys to the realm of the dead to seek prophecy and face his past.',
+    theme: 'Death, Prophecy, and Confronting the Past',
+    keyCharacters: ['Odysseus', 'Tiresias', 'Elpenor', 'Anticlea'],
+    songs: [
+      {
+        title: 'The Underworld',
+        description: 'Odysseus enters the realm of the dead seeking answers.',
+        duration: '4:12'
+      },
+      {
+        title: 'No Longer You',
+        description: 'Tiresias reveals Odysseus\'s dark future and the price of his journey.',
+        duration: '4:45'
+      },
+      {
+        title: 'Monster',
+        description: 'Odysseus embraces his darker nature to survive.',
+        duration: '5:03'
+      }
+    ],
+    locations: ['The Underworld', 'River Styx', 'Realm of the Dead'],
+    emotionalTone: 'Dark, prophetic, and transformative',
+    musicalStyle: 'Haunting orchestral with supernatural elements',
+    keyMoments: [
+      'Meeting with Tiresias',
+      'Seeing his mother\'s spirit',
+      'The prophecy of his future',
+      'Embracing his monster side'
+    ],
+    symbolism: 'Death represents transformation and the weight of destiny',
+    order: 5
+  },
+  {
+    id: 'thunder',
+    name: 'The Thunder Saga',
+    color: '#FFD700',
+    description: 'Odysseus faces the Sirens and Zeus\'s ultimate test of leadership.',
+    theme: 'Sacrifice, Leadership, and Divine Justice',
+    keyCharacters: ['Odysseus', 'Zeus', 'Eurylochus', 'Sirens'],
+    songs: [
+      {
+        title: 'Suffering',
+        description: 'Odysseus pushes through the sirens\' song with determination.',
+        duration: '3:47'
+      },
+      {
+        title: 'Different Beast',
+        description: 'Odysseus shows his transformed, ruthless nature.',
+        duration: '4:23'
+      },
+      {
+        title: 'Scylla',
+        description: 'Odysseus sacrifices six men to the monster Scylla.',
+        duration: '4:56'
+      },
+      {
+        title: 'Mutiny',
+        description: 'Eurylochus leads a mutiny against Odysseus\'s leadership.',
+        duration: '4:02'
+      },
+      {
+        title: 'Thunder Bringer',
+        description: 'Zeus forces Odysseus to choose between his crew and his life.',
+        duration: '5:34'
+      }
+    ],
+    locations: ['Siren Island', 'Strait of Scylla', 'Sacred Island'],
+    emotionalTone: 'Intense, sacrificial, and decisive',
+    musicalStyle: 'Thunderous orchestral with divine majesty',
+    keyMoments: [
+      'Resisting the Sirens',
+      'Sacrificing crew to Scylla',
+      'The crew\'s mutiny',
+      'Zeus\'s ultimatum',
+      'Choosing survival over crew'
+    ],
+    symbolism: 'Thunder represents divine judgment and the weight of impossible choices',
+    order: 6
+  },
+  {
+    id: 'wisdom',
+    name: 'The Wisdom Saga',
+    color: '#00CED1',
+    description: 'Odysseus encounters new challenges and divine intervention on his path home.',
+    theme: 'Wisdom, Strategy, and Divine Guidance',
+    keyCharacters: ['Odysseus', 'Athena', 'Calypso', 'Antinous'],
+    songs: [
+      {
+        title: 'Legendary',
+        description: 'Telemachus seeks to prove himself and find his father.',
+        duration: '4:18'
+      },
+      {
+        title: 'Little Wolf',
+        description: 'Antinous challenges and threatens Telemachus.',
+        duration: '3:55'
+      },
+      {
+        title: 'We\'ll Be Fine',
+        description: 'Athena and Telemachus form an alliance.',
+        duration: '4:41'
+      },
+      {
+        title: 'Love in Paradise',
+        description: 'Odysseus struggles with Calypso\'s island paradise.',
+        duration: '5:12'
+      },
+      {
+        title: 'God Games',
+        description: 'Athena plays divine politics to help Odysseus.',
+        duration: '6:23'
+      }
+    ],
+    locations: ['Ithaca Palace', 'Calypso\'s Island', 'Mount Olympus'],
+    emotionalTone: 'Strategic, hopeful, and divine',
+    musicalStyle: 'Wise orchestration with divine harmonies',
+    keyMoments: [
+      'Telemachus\'s coming of age',
+      'Athena\'s return',
+      'Odysseus\'s despair on Calypso\'s island',
+      'The divine games'
+    ],
+    symbolism: 'Wisdom represents growth, strategy, and divine favor',
+    order: 7
+  },
+  {
+    id: 'vengeance',
+    name: 'The Vengeance Saga',
+    color: '#008B8B',
+    description: 'Odysseus returns home to face the suitors and reclaim his throne.',
+    theme: 'Justice, Revenge, and Homecoming',
+    keyCharacters: ['Odysseus', 'Poseidon', 'Calypso', 'Antinous'],
+    songs: [
+      {
+        title: 'Not Sorry for Loving You',
+        description: 'Calypso\'s final plea to Odysseus before he leaves.',
+        duration: '3:42'
+      },
+      {
+        title: 'Dangerous',
+        description: 'Hermes warns of the dangers ahead.',
+        duration: '3:28'
+      },
+      {
+        title: 'Charybdis',
+        description: 'Odysseus faces the deadly whirlpool monster.',
+        duration: '4:15'
+      },
+      {
+        title: 'Get in the Water',
+        description: 'Poseidon\'s final confrontation with Odysseus.',
+        duration: '5:47'
+      },
+      {
+        title: '600 Strike',
+        description: 'Odysseus\'s ultimate battle and victory.',
+        duration: '6:08'
+      }
+    ],
+    locations: ['Calypso\'s Island', 'Open Ocean', 'Charybdis'],
+    emotionalTone: 'Vengeful, intense, and triumphant',
+    musicalStyle: 'Aggressive orchestral with battle themes',
+    keyMoments: [
+      'Leaving Calypso',
+      'Facing Charybdis',
+      'Final battle with Poseidon',
+      'Odysseus\'s ultimate victory'
+    ],
+    symbolism: 'Vengeance represents justice and the price of defying gods',
+    order: 8
+  },
+  {
+    id: 'ithaca',
+    name: 'The Ithaca Saga',
+    color: '#DC143C',
+    description: 'The final chapter - Odysseus returns home to reclaim his kingdom and reunite with his family.',
+    theme: 'Homecoming, Family, and Restoration',
+    keyCharacters: ['Odysseus', 'Penelope', 'Telemachus', 'Suitors'],
+    songs: [
+      {
+        title: 'The Challenge',
+        description: 'Odysseus faces the suitors\' challenge in disguise.',
+        duration: '4:33'
+      },
+      {
+        title: 'Hold Them Down',
+        description: 'The violent confrontation with the suitors begins.',
+        duration: '3:56'
+      },
+      {
+        title: 'Odysseus',
+        description: 'The hero reveals his identity and claims victory.',
+        duration: '4:24'
+      },
+      {
+        title: 'I Can\'t Help But Wonder',
+        description: 'Telemachus\'s perspective on Odysseus\'s return.',
+        duration: '4:07'
+      },
+      {
+        title: 'Would You Fall in Love with Me Again',
+        description: 'The reunion of Odysseus and Penelope.',
+        duration: '5:15'
+      }
+    ],
+    locations: ['Ithaca Palace', 'Odysseus\'s Home', 'Royal Court'],
+    emotionalTone: 'Triumphant, emotional, and conclusive',
+    musicalStyle: 'Majestic orchestral with intimate moments',
+    keyMoments: [
+      'The archery contest',
+      'Revealing his identity',
+      'Defeating the suitors',
+      'Reuniting with Penelope',
+      'Family restoration'
+    ],
+    symbolism: 'Home represents completion, love, and the end of the journey',
+    order: 9
+  }
+];
+
+// Main SagaInfoPanel component
+const SagaInfoPanel: React.FC<SagaInfoPanelProps> = ({
+  saga,
+  isVisible,
+  onClose,
+  onSagaSelect,
+  allSagas = EPIC_SAGAS,
+  style,
+  animationType = 'slide-right',
+  isLoading = false
+}) => {
+  // Audio player integration
+  const { playSong } = useAudioPlayer();
+  
+  // P2: Song search state for Troy Saga
+  const [songSearchQuery, setSongSearchQuery] = useState('');
+  
+  // Debug logging for loading state
+  useEffect(() => {
+    if (isVisible) {
+      console.log('🎭 SagaInfoPanel props:', { 
+        sagaName: saga?.name || 'null',
+        isLoading,
+        isVisible,
+        animationType 
+      });
+    }
+  }, [isVisible, isLoading, saga?.name, animationType]);
+
+  const [activeTab, setActiveTab] = useState<'overview' | 'songs' | 'details' | 'events'>('overview');
+  const [isTabChanging, setIsTabChanging] = useState(false);
+  
+  // P2: Events state
+  const [events, setEvents] = useState<ApiEvent[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
+  const [eventsError, setEventsError] = useState<string | null>(null);
+  
+  // P2: Character Detail Modal state
+  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
+  const [isCharacterModalVisible, setIsCharacterModalVisible] = useState(false);
+  
+  // Enhanced animation system
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const contentFadeAnim = useRef(new Animated.Value(0)).current;
+  const headerSlideAnim = useRef(new Animated.Value(-50)).current;
+  const tabContentAnim = useRef(new Animated.Value(1)).current;
+  
+  const screenWidth = Dimensions.get('window').width;
+  const screenHeight = Dimensions.get('window').height;
+
+  // Enhanced animation effects with multiple animation types
+  useEffect(() => {
+    if (isVisible) {
+      // Reset animations first
+      slideAnim.setValue(0);
+      fadeAnim.setValue(0);
+      scaleAnim.setValue(0.9);
+      contentFadeAnim.setValue(0);
+      headerSlideAnim.setValue(-50);
+
+      // Entry animations with staggered sequence
+      Animated.sequence([
+        // First: Panel entrance with spring
+        Animated.parallel([
+          Animated.spring(slideAnim, {
+            toValue: 1,
+            tension: 80,
+            friction: 8,
+            useNativeDriver: true,
+          }),
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 400,
+            useNativeDriver: true,
+          }),
+          Animated.spring(scaleAnim, {
+            toValue: 1,
+            tension: 100,
+            friction: 8,
+            useNativeDriver: true,
+          }),
+            toValue: 1,
+            tension: 80,lide in
+            friction: 8,headerSlideAnim, {
+            useNativeDriver: true,
+          }),sion: 120,
+          Animated.timing(fadeAnim, {riction: 8,
+            toValue: 1,
+            duration: 400,
+            useNativeDriver: true,
+          }),tent fade in with bounce
+          Animated.spring(scaleAnim, {g(contentFadeAnim, {
+            toValue: 1,
+            tension: 100,00,
+            friction: 8,riction: 8,
+            useNativeDriver: true,
+          }),
+        ]),
+        // Then: Header slide in
+        Animated.spring(headerSlideAnim, {
+          toValue: 0,r and smoother
+          tension: 120,el([
+          friction: 8,mated.timing(slideAnim, {
+          useNativeDriver: true,: 0,
+          delay: 50,ration: 250,
+        }),
+        // Finally: Content fade in with bounce
+        Animated.spring(contentFadeAnim, {
+          toValue: 1,
+          tension: 100,
+          friction: 8,
+          useNativeDriver: true,
+          delay: 100,{
+        }),85,
+      ]).start();
+    } else {
+      // Exit animations - faster and smoother
+      Animated.parallel([nim, {
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {0,
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 0.85,im, fadeAnim, scaleAnim, contentFadeAnim, headerSlideAnim, animationType]);
+          duration: 250,
+          useNativeDriver: true, function to get transform based on animation type
+        }),ormStyle = () => {
+        Animated.timing(contentFadeAnim, {witch (animationType) {
+          toValue: 0,
+          duration: 150,        return {
+          useNativeDriver: true,
+        }),
+        Animated.timing(headerSlideAnim, {ideAnim.interpolate({
+          toValue: -30,ange: [0, 1],
+          duration: 200,outputRange: [screenHeight, 0],
+          useNativeDriver: true,
+        }),,
+      ]).start();
+    }
+  }, [isVisible, slideAnim, fadeAnim, scaleAnim, contentFadeAnim, headerSlideAnim, animationType]);
+-down':
+  // Helper function to get transform based on animation type {
+  const getTransformStyle = () => {
+    switch (animationType) {{
+      case 'slide-up':    translateY: slideAnim.interpolate({
+        return {ge: [0, 1],
+          transform: [outputRange: [-screenHeight, 0],
+            {
+              translateY: slideAnim.interpolate({,
+                inputRange: [0, 1],
+                outputRange: [screenHeight, 0],
+              }),
+            },-left':
+            { scale: scaleAnim }, {
+          ],
+        };{
+      case 'slide-down':    translateX: slideAnim.interpolate({
+        return {ge: [0, 1],
+          transform: [outputRange: [-screenWidth, 0],
+            {
+              translateY: slideAnim.interpolate({,
+                inputRange: [0, 1],
+                outputRange: [-screenHeight, 0],
+              }),
+            },-right':
+            { scale: scaleAnim },
+          ],
+        };ansform: [
+      case 'slide-left':  {
+        return { slideAnim.interpolate({
+          transform: [  inputRange: [0, 1],
+            {outputRange: [screenWidth, 0],
+              translateX: slideAnim.interpolate({
+                inputRange: [0, 1],,
+                outputRange: [-screenWidth, 0],
+              }),
+            },
+            { scale: scaleAnim },
+          ],
+        };
+      case 'slide-right':function to get panel style based on animation type
+      default:tPanelStyle = () => {
+        return {onst baseStyle = styles.panel;
+          transform: [switch (animationType) {
+            {      case 'slide-up':
+              translateX: slideAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [screenWidth, 0],anelSlideDown];
+              }),
+            },yle, styles.panelSlideLeft];
+            { scale: scaleAnim },
+          ],
+        };;
+    }
+  };
+
+  // Helper function to get panel style based on animation typeb transition
+  const getPanelStyle = () => {ngs' | 'details' | 'events') => {
+    const baseStyle = styles.panel;f (newTab === activeTab || isTabChanging) return;
+    switch (animationType) {
+      case 'slide-up':    setIsTabChanging(true);
+        return [baseStyle, styles.panelSlideUp];
+      case 'slide-down':
+        return [baseStyle, styles.panelSlideDown];
+      case 'slide-left':  toValue: 0,
+        return [baseStyle, styles.panelSlideLeft];
+      case 'slide-right':  useNativeDriver: true,
+      default:
+        return [baseStyle, styles.panelSlideRight];
+    }b(newTab);
+  };
+
+  // Smooth tab transitiong(tabContentAnim, {
+  const handleTabChange = (newTab: 'overview' | 'songs' | 'details' | 'events') => {
+    if (newTab === activeTab || isTabChanging) return;
+      friction: 8,
+    setIsTabChanging(true);e,
+    
+    // Fade out current contentnging(false);
+    Animated.timing(tabContentAnim, {
+      toValue: 0,
+      duration: 150,
+      useNativeDriver: true,
+    }).start(() => {on
+      // Change taboadTroyEvents = async () => {
+      setActiveTab(newTab);(eventsLoading) return;
+      
+      // Fade in new content    setEventsLoading(true);
+      Animated.spring(tabContentAnim, {
+        toValue: 1,
+        tension: 100,
+        friction: 8,  console.log('🏛️ Loading Troy events for saga info panel...');
+        useNativeDriver: true,ait EventService.getTroyEvents();
+      }).start(() => {s);
+        setIsTabChanging(false);  console.log(`✅ Loaded ${troyEvents.length} Troy events`);
+      });ch (error) {
+    });
+  };n.');
+
+  // P2: Load Troy events function
+  const loadTroyEvents = async () => {
+    if (eventsLoading) return;
+    
+    setEventsLoading(true);s when component mounts or when Troy saga is shown
+    setEventsError(null);
+    f (isVisible && saga && saga.name.toLowerCase().includes('troy')) {
+    try {  loadTroyEvents();
+      console.log('🏛️ Loading Troy events for saga info panel...');    }
+      const troyEvents = await EventService.getTroyEvents();
+      setEvents(troyEvents);
+      console.log(`✅ Loaded ${troyEvents.length} Troy events`);
+    } catch (error) {
+      console.error('❌ Error loading Troy events:', error);
+      setEventsError('Failed to load events. Please try again.');
+    } finally {  const handleSagaNavigation = (direction: 'prev' | 'next') => {
+      setEventsLoading(false);Sagas.findIndex(s => s.id === saga.id);
+    };
+  }; 
+    if (direction === 'prev') {
+  // Load events when component mounts or when Troy saga is shownlength - 1;
+  useEffect(() => {
+    if (isVisible && saga && saga.name.toLowerCase().includes('troy')) {currentIndex < allSagas.length - 1 ? currentIndex + 1 : 0;
+      loadTroyEvents();}
+    }
+  }, [isVisible, saga]);
+gaSelect && newSaga) {
+  if (!isVisible || !saga) {
+    return null;
+  }
+
+  const handleSagaNavigation = (direction: 'prev' | 'next') => {(
+    const currentIndex = allSagas.findIndex(s => s.id === saga.id);
+    let newIndex; style={styles.tabContent}
+      showsVerticalScrollIndicator={false}
+    if (direction === 'prev') {      accessible={true}
+      newIndex = currentIndex > 0 ? currentIndex - 1 : allSagas.length - 1;
+    } else {ityLabel={`Overview of ${saga.name}`}
+      newIndex = currentIndex < allSagas.length - 1 ? currentIndex + 1 : 0;
+    }iner}>
+    
+    const newSaga = allSagas[newIndex];ption}
+    if (onSagaSelect && newSaga) {
+      onSagaSelect(newSaga.id);     accessibilityRole="text"
+    }
+  };a.description}
+
+  const renderOverviewTab = () => (
+    <ScrollView 
+      style={styles.tabContent} Timeline Progress Indicator */}
+      showsVerticalScrollIndicator={false}
+      accessible={true}tyle={styles.progressSection}>
+      accessibilityRole="text"xt 
+      accessibilityLabel={`Overview of ${saga.name}`}            style={styles.sectionTitle}
+    >
+      <View style={styles.descriptionContainer}>Role="header"
+        <Text 
+          style={styles.description}ourney Progress
+          accessible={true}
+          accessibilityRole="text"
+        >
+          {saga.description}View style={styles.progressContainer}>
+        </Text>.progressHeader}>
+      </View>xt style={styles.progressLabel}>Overall Progress</Text>
+    <Text style={styles.progressPercent}>{saga.progress.overallProgress}%</Text>
+      {/* Timeline Progress Indicator */}
+      {saga.progress && (ner}>
+        <View style={styles.progressSection}>
+          <Text 
+            style={styles.sectionTitle}
+            accessible={true} 
+            accessibilityRole="header"gress}%`,
+          >backgroundColor: saga.color 
+            📈 Journey Progress
+          </Text>
+          
+          {/* Overall Progress Bar */}
+          <View style={styles.progressContainer}>
+            <View style={styles.progressHeader}>
+              <Text style={styles.progressLabel}>Overall Progress</Text>Progress */}
+              <Text style={styles.progressPercent}>{saga.progress.overallProgress}%</Text>style={styles.songProgressContainer}>
+            </View>tyle={styles.progressLabel}>
+            <View style={styles.progressBarContainer}>gs: {saga.progress.currentSong} of {saga.progress.totalSongs}
+              <View             </Text>
+                style={[.songTimeline}>
+                  styles.progressBar, 
+                  { a.progress!.currentSong;
+                    width: `${saga.progress.overallProgress}%`,
+                    backgroundColor: saga.color urn (
+                  }
+                ]} 
+              />
+            </View>
+          </View>ssibilityRole="text"
+ssibilityLabel={`Song ${index + 1}: ${song.title}. ${isCompleted ? 'Completed' : isCurrent ? 'Current' : 'Not started'}`}
+          {/* Song Progress */}
+          <View style={styles.songProgressContainer}>
+            <Text style={styles.progressLabel}>Node,
+              Songs: {saga.progress.currentSong} of {saga.progress.totalSongs}roundColor: saga.color },
+            </Text>
+            <View style={styles.songTimeline}>   !isCompleted && !isCurrent && { backgroundColor: '#666' }
+              {saga.songs.map((song, index) => {
+                const isCompleted = index < saga.progress!.currentSong;
+                const isCurrent = index === saga.progress!.currentSong - 1;
+                return (
+                  <View 
+                    key={index} <Text style={styles.currentIndicator}>♪</Text>
+                    style={styles.timelineItem}
+                    accessible={true}
+                    accessibilityRole="text"w style={styles.timelineContent}>
+                    accessibilityLabel={`Song ${index + 1}: ${song.title}. ${isCompleted ? 'Completed' : isCurrent ? 'Current' : 'Not started'}`}
+                  >
+                    <View style={[isCompleted && { color: saga.color },
+                      styles.timelineNode,urrent && { color: saga.color, fontWeight: 'bold' }
+                      isCompleted && { backgroundColor: saga.color },
+                      isCurrent && { backgroundColor: saga.color, transform: [{ scale: 1.2 }] },
+                      !isCompleted && !isCurrent && { backgroundColor: '#666' }
+                    ]}>
+                      {isCompleted && (/Text>
+                        <Text style={styles.checkmark}>✓</Text>
+                      )}
+                      {isCurrent && (saga.songs.length - 1 && (
+                        <Text style={styles.currentIndicator}>♪</Text>
+                      )}
+                    </View>isCompleted && { backgroundColor: saga.color }
+                    <View style={styles.timelineContent}>
+                      <Text style={[
+                        styles.timelineSongTitle,
+                        isCompleted && { color: saga.color },
+                        isCurrent && { color: saga.color, fontWeight: 'bold' }
+                      ]}>
+                        {song.title}
+                      </Text>
+                      {song.duration && (Moments Progress */}
+                        <Text style={styles.timelineDuration}>{song.duration}</Text>rogress.completedMoments.length > 0 && (
+                      )}tyle={styles.momentsContainer}>
+                    </View>xt style={styles.progressLabel}>Completed Moments</Text>
+                    {index < saga.songs.length - 1 && (              <View style={styles.momentsList}>
+                      <View style={[edMoments.map((moment, index) => (
+                        styles.timelineConnector,
+                        isCompleted && { backgroundColor: saga.color }
+                      ]} />}]}
+                    )}
+                  </View>
+                );ssibilityLabel={`Completed moment: ${moment}`}
+              })}
+            </View>
+          </View>les.momentText, { color: saga.color }]}>{moment}</Text>
+
+          {/* Key Moments Progress */}
+          {saga.progress.completedMoments.length > 0 && (w>
+            <View style={styles.momentsContainer}>
+              <Text style={styles.progressLabel}>Completed Moments</Text>
+              <View style={styles.momentsList}>
+                {saga.progress.completedMoments.map((moment, index) => (
+                  <View 
+                    key={index}styles.infoSection}>
+                    style={[styles.momentChip, { borderColor: saga.color }]}t 
+                    accessible={true}={styles.sectionTitle}
+                    accessibilityRole="text"  accessible={true}
+                    accessibilityLabel={`Completed moment: ${moment}`}          accessibilityRole="header"
+                  >
+                    <Text style={styles.checkmark}>✓</Text>ore Theme
+                    <Text style={[styles.momentText, { color: saga.color }]}>{moment}</Text>
+                  </View>
+                ))}nt}
+              </View> accessible={true}
+            </View>Role="text"
+          )}
+        </View>a.theme}
+      )}
+
+      <View style={styles.infoSection}>
+        <Text ew style={styles.infoSection}>
+          style={styles.sectionTitle}
+          accessible={true}={styles.sectionTitle}
+          accessibilityRole="header"essible={true}
+        >          accessibilityRole="header"
+          🎭 Core Theme
+        </Text>ey Characters
+        <Text 
+          style={styles.sectionContent}.characterList}>
+          accessible={true}haracter, index) => (
+          accessibilityRole="text"   <View 
+        >
+          {saga.theme}tyle={[styles.characterChip, { borderColor: saga.color }]}
+        </Text>
+      </View>
+ssibilityLabel={`Character: ${character}`}
+      <View style={styles.infoSection}>
+        <Text >
+          style={styles.sectionTitle}
+          accessible={true}
+          accessibilityRole="header"
+        >
+          👥 Key Characters
+        </Text>
+        <View style={styles.characterList}>
+          {saga.keyCharacters.map((character, index) => (styles.infoSection}>
+            <View  
+              key={index} ={styles.sectionTitle}
+              style={[styles.characterChip, { borderColor: saga.color }]}essible={true}
+              accessible={true}          accessibilityRole="header"
+              accessibilityRole="text"
+              accessibilityLabel={`Character: ${character}`}ocations
+            >
+              <Text style={[styles.characterText, { color: saga.color }]}>
+                {character}nt}
+              </Text> accessible={true}
+            </View>yRole="text"
+          ))}
+        </View>a.locations.join(' • ')}
+      </View>
+
+      <View style={styles.infoSection}>
+        <Text ew style={styles.infoSection}>
+          style={styles.sectionTitle}
+          accessible={true}={styles.sectionTitle}
+          accessibilityRole="header"essible={true}
+        >          accessibilityRole="header"
+          📍 Locations
+        </Text>usical Style
+        <Text 
+          style={styles.sectionContent}
+          accessible={true}nt}
+          accessibilityRole="text" accessible={true}
+        >e="text"
+          {saga.locations.join(' • ')}
+        </Text>a.musicalStyle}
+      </View>
+
+      <View style={styles.infoSection}>
+        <Text ew style={styles.infoSection}>
+          style={styles.sectionTitle}
+          accessible={true}={styles.sectionTitle}
+          accessibilityRole="header"essible={true}
+        >          accessibilityRole="header"
+          🎵 Musical Style
+        </Text>motional Tone
+        <Text 
+          style={styles.sectionContent}
+          accessible={true}nt}
+          accessibilityRole="text" accessible={true}
+        >="text"
+          {saga.musicalStyle}
+        </Text>a.emotionalTone}
+      </View>
+
+      <View style={styles.infoSection}>
+        <Text ga.symbolism && (
+          style={styles.sectionTitle}foSection}>
+          accessible={true} 
+          accessibilityRole="header"tyle={styles.sectionTitle}
+        >            accessible={true}
+          💭 Emotional Toneole="header"
+        </Text>
+        <Text ymbolism
+          style={styles.sectionContent}
+          accessible={true}
+          accessibilityRole="text"nt}
+        > accessible={true}
+          {saga.emotionalTone}yRole="text"
+        </Text>
+      </View>a.symbolism}
+
+      {saga.symbolism && (
+        <View style={styles.infoSection}>
+          <Text lView>
+            style={styles.sectionTitle}
+            accessible={true}
+            accessibilityRole="header"ongsTab = () => {
+          >et enhanced songs with perspective data from SongDataService
+            🔮 Symbolisms = SongDataService.getMockSongs();
+          </Text>const sagaSongs = allSongs.filter(song => 
+          <Text       song.saga.title === saga.name || song.saga.title.includes(saga.name.replace(' Saga', ''))
+            style={styles.sectionContent}
+            accessible={true}
+            accessibilityRole="text"
+          >
+            {saga.symbolism}
+          </Text>  <View style={styles.songSearchContainer}>
+        </View>      <Text style={styles.songSearchLabel}>Search {saga.name} Songs</Text>
+      )}extInput
+    </ScrollView>put}
+  );.name}...`}
+
+  const renderSongsTab = () => {
+    // Get enhanced songs with perspective data from SongDataServiceText={setSongSearchQuery}
+    const allSongs = SongDataService.getMockSongs();
+    const sagaSongs = allSongs.filter(song => 
+      song.saga.title === saga.name || song.saga.title.includes(saga.name.replace(' Saga', ''))
+    );archButton}
+    ry('')}
+    return (>
+      <View style={styles.tabContent}>rchText}>Clear</Text>
+        {/* P2: Song Search within Troy Saga */}y>
+        <View style={styles.songSearchContainer}>
+          <Text style={styles.songSearchLabel}>Search {saga.name} Songs</Text>
+          <TextInput P2: Troy Saga specific search suggestions */}
+            style={styles.songSearchInput}Saga' && (
+            placeholder={`Search songs in ${saga.name}...`}.searchSuggestions}>
+            placeholderTextColor="#888"  <Text style={styles.suggestionsLabel}>Try searching:</Text>
+            value={songSearchQuery}    <View style={styles.suggestionsRow}>
+            onChangeText={setSongSearchQuery}r'].map((suggestion) => (
+          />
+          {songSearchQuery.length > 0 && (
+            <TouchableOpacity
+              style={styles.clearSearchButton}ery(suggestion)}
+              onPress={() => setSongSearchQuery('')}
+            >yles.suggestionText}>{suggestion}</Text>
+              <Text style={styles.clearSearchText}>Clear</Text>>
+            </TouchableOpacity>
+          )}
+          
+          {/* P2: Troy Saga specific search suggestions */}
+          {songSearchQuery.length === 0 && saga.name === 'Troy Saga' && (
+            <View style={styles.searchSuggestions}>
+              <Text style={styles.suggestionsLabel}>Try searching:</Text>
+              <View style={styles.suggestionsRow}>gaSongs}
+                {['Odysseus', 'Athena', 'Horse', 'Man', 'War'].map((suggestion) => (rrentSaga={saga.name}
+                  <TouchableOpacityagaFilter={false}
+                    key={suggestion}          showPerspectiveFilter={true}
+                    style={styles.suggestionChip}ioControls={true}
+                    onPress={() => setSongSearchQuery(suggestion)}}
+                  >
+                    <Text style={styles.suggestionText}>{suggestion}</Text>hQuery} // P2: Pass search query to SongList
+                  </TouchableOpacity>
+                ))}sed:', song.title);
+              </View>
+            </View>) => {
+          )}
+        </View> saga playlist
+
+        <SongList
+          songs={sagaSongs}ce height to accommodate search
+          currentSaga={saga.name}
+          showSagaFilter={false}
+          showPerspectiveFilter={true}
+          showAudioControls={true}Enhanced fallback with search context */}
+          showDetails={true}
+          showThemes={true}ainer}>
+          searchQuery={songSearchQuery} // P2: Pass search query to SongList  <Text style={styles.tabText}>
+          onSongPress={(song) => {      🎵 No songs available for {saga.name}
+            console.log('Song pressed:', song.title);
+          }}ext}>
+          onSongPlay={(song) => {e released
+            console.log('Song play requested:', song.title);
+            // Play song with full saga playlist
+            playSong(song, sagaSongs);
+          }}
+          maxHeight={350} // Reduce height to accommodate search
+          style={styles.songListContainer}Query.length > 0 && (
+        />tyle={styles.searchResultsInfo}>
+          <Text style={styles.searchResultsText}>
+        {/* Enhanced fallback with search context */}              🔍 Search: "{songSearchQuery}" in {saga.name}
+        {sagaSongs.length === 0 && (
+          <View style={styles.songListContainer}>
+            <Text style={styles.tabText}>
+              🎵 No songs available for {saga.name}
+            </Text>
+            <Text style={styles.tabText}>
+              Songs will appear here when they are released
+            </Text>nderDetailsTab = () => (
+          </View>ew 
+        )}style={styles.tabContent}
+  showsVerticalScrollIndicator={false}
+        {/* Search results info */}      accessible={true}
+        {songSearchQuery.length > 0 && (
+          <View style={styles.searchResultsInfo}>ityLabel={`Detailed information about ${saga.name}`}
+            <Text style={styles.searchResultsText}>
+              🔍 Search: "{songSearchQuery}" in {saga.name}
+            </Text>
+          </View>nTitle}
+        )}
+      </View>     accessibilityRole="header"
+    );
+  };y Moments
+
+  const renderDetailsTab = () => (p((moment, index) => (
+    <ScrollView 
+      style={styles.tabContent}   key={index} 
+      showsVerticalScrollIndicator={false}es.momentItem}
+      accessible={true}essible={true}
+      accessibilityRole="text"
+      accessibilityLabel={`Detailed information about ${saga.name}`}ssibilityLabel={`Key moment ${index + 1}: ${moment}`}
+    >
+      <View style={styles.infoSection}>tBullet}>•</Text>
+        <Text es.momentText}>{moment}</Text>
+          style={styles.sectionTitle}
+          accessible={true}
+          accessibilityRole="header"w>
+        >
+          ⭐ Key Moments
+        </Text>
+        {saga.keyMoments.map((moment, index) => (tyle={styles.sectionTitle}
+          <View essible={true}
+            key={index}           accessibilityRole="header"
+            style={styles.momentItem}
+            accessible={true}aga Navigation
+            accessibilityRole="text"
+            accessibilityLabel={`Key moment ${index + 1}: ${moment}`}
+          >t}
+            <Text style={styles.momentBullet}>•</Text> accessible={true}
+            <Text style={styles.momentText}>{moment}</Text>"text"
+          </View>
+        ))} {saga.order} of {allSagas.length}
+      </View>
+
+      <View style={styles.sagaNavSection}>tionButtons}>
+        <Text  <TouchableOpacity
+          style={styles.sectionTitle}lor: saga.color }]}
+          accessible={true}ress={() => handleSagaNavigation('prev')}
+          accessibilityRole="header"    accessible={true}
+        >
+          📚 Saga Navigationbel="Go to previous saga"
+        </Text> sequence"
+        <Text 
+          style={styles.sagaOrderText}les.navButtonText, { color: saga.color }]}>
+          accessible={true}
+          accessibilityRole="text"
+        >
+          Saga {saga.order} of {allSagas.length}
+        </Text>
+        s.navButton, { borderColor: saga.color }]}
+        <View style={styles.navigationButtons}>={() => handleSagaNavigation('next')}
+          <TouchableOpacity
+            style={[styles.navButton, { borderColor: saga.color }]}  accessibilityRole="button"
+            onPress={() => handleSagaNavigation('prev')}bel="Go to next saga"
+            accessible={true}uence"
+            accessibilityRole="button"
+            accessibilityLabel="Go to previous saga"les.navButtonText, { color: saga.color }]}>
+            accessibilityHint="Navigate to the previous saga in the sequence"
+          >
+            <Text style={[styles.navButtonText, { color: saga.color }]}>
+              ⬅️ Previousiew>
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[styles.navButton, { borderColor: saga.color }]} functions for chronological display
+            onPress={() => handleSagaNavigation('next')}portanceColor = (importance: string): string => {
+            accessible={true}tance.toLowerCase()) {
+            accessibilityRole="button"  case 'pivotal': return '#FF4757'; // Red for most important
+            accessibilityLabel="Go to next saga"      case 'legendary': return '#FFB347'; // Orange for legendary
+            accessibilityHint="Navigate to the next saga in the sequence"ajor
+          >
+            <Text style={[styles.navButtonText, { color: saga.color }]}>y for unknown
+              Next ➡️
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </ScrollView> const date = new Date(timestamp);
+  );  const year = Math.abs(date.getFullYear());
+      const month = date.toLocaleDateString('en-US', { month: 'long' });
+  // P2: Helper functions for chronological display
+  const getImportanceColor = (importance: string): string => {
+    switch (importance.toLowerCase()) {"April 23, 1184 BCE")
+      case 'pivotal': return '#FF4757'; // Red for most important
+      case 'legendary': return '#FFB347'; // Orange for legendary
+      case 'major': return '#4A90E2'; // Blue for major
+      case 'minor': return '#B0C4DE'; // Light blue for minor
+      default: return '#888888'; // Gray for unknown
+    }
+  };s Tab with Chronological Timeline
+=> (
+  const formatEventDate = (timestamp: string): string => {ScrollView 
+    try {  style={styles.tabContent}
+      const date = new Date(timestamp);      showsVerticalScrollIndicator={false}
+      const year = Math.abs(date.getFullYear());
+      const month = date.toLocaleDateString('en-US', { month: 'long' });
+      const day = date.getDate();ityLabel={`Events from ${saga.name} in chronological order`}
+      
+      // Format as ancient date (e.g., "April 23, 1184 BCE")
+      return `${month} ${day}, ${year} BCE`;yles.errorContainer}>
+    } catch (error) {errorText}>⚠️ {eventsError}</Text>
+      return 'Ancient Times';
+    }       style={styles.retryButton} 
+  };oadTroyEvents}
+
+  // P2: Render Events Tab with Chronological Timeline
+  const renderEventsTab = () => (el="Retry loading events"
+    <ScrollView 
+      style={styles.tabContent}yButtonText}>Retry</Text>
+      showsVerticalScrollIndicator={false}
+      accessible={true}
+      accessibilityRole="list"
+      accessibilityLabel={`Events from ${saga.name} in chronological order`}ew style={styles.emptyContainer}>
+    >for this saga</Text>
+      {eventsError ? (.emptySubtext}>
+        <View style={styles.errorContainer}>nts will appear here when available for this location
+          <Text style={styles.errorText}>⚠️ {eventsError}</Text>
+          <TouchableOpacity 
+            style={styles.retryButton} 
+            onPress={loadTroyEvents}
+            accessible={true}
+            accessibilityRole="button"tyle={styles.timelineHeader}>
+            accessibilityLabel="Retry loading events"xt style={styles.timelineTitle}>🏛️ Troy Saga Timeline</Text>
+          > <Text style={styles.timelineSubtitle}>
+            <Text style={styles.retryButtonText}>Retry</Text>    {events.length} events in chronological order
+          </TouchableOpacity>
+        </View>r} />
+      ) : events.length === 0 && !eventsLoading ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>🏛️ No events found for this saga</Text>
+          <Text style={styles.emptySubtext}>ap((event, index) => (
+            Events will appear here when available for this locationlineContainer}>
+          </Text> Timeline connector line */}
+        </View>              {index < events.length - 1 && (
+      ) : (onnector} />
+        <>
+          {/* P2: Chronological Timeline Header */}
+          <View style={styles.timelineHeader}>
+            <Text style={styles.timelineTitle}>🏛️ Troy Saga Timeline</Text>
+            <Text style={styles.timelineSubtitle}>
+              {events.length} events in chronological order{ backgroundColor: getImportanceColor(event.eventContext.importance) }
+            </Text>]}>
+            <View style={styles.timelineDivider} />imelineMarkerText}>
+          </View>uenceOrder}
+
+          {/* P2: Chronological Event Timeline */}
+          {events.map((event, index) => (
+            <View key={event.id} style={styles.timelineContainer}>
+              {/* Timeline connector line */}Card}>
+              {index < events.length - 1 && (tyle={styles.eventHeader}>
+                <View style={styles.eventTimelineConnector} />ew style={styles.eventTitleSection}>
+              )}      <Text style={styles.eventTitle}>{event.title}</Text>
+              {styles.eventTimestamp}>
+              {/* Timeline marker */}eventTimestamp)}
+              <View style={[
+                styles.timelineMarker,
+                { backgroundColor: getImportanceColor(event.eventContext.importance) }
+              ]}>
+                <Text style={styles.timelineMarkerText}>
+                  {event.sequenceOrder}kgroundColor: getImportanceColor(event.eventContext.importance) + '40' },
+                </Text>olor: getImportanceColor(event.eventContext.importance) }
+              </View>
+              Context.importance.toUpperCase()}
+              {/* Event Card */}
+              <View style={styles.eventCard}>
+                <View style={styles.eventHeader}>
+                  <View style={styles.eventTitleSection}>
+                    <Text style={styles.eventTitle}>{event.title}</Text>ption}</Text>
+                    <Text style={styles.eventTimestamp}>
+                      {formatEventDate(event.eventTimestamp)}aracters.length > 0 && (
+                    </Text> style={styles.eventCharacters}>
+                  </View>    <Text style={styles.eventCharactersLabel}>Characters:</Text>
+                  <View style={styles.eventMeta}>
+                    <Text style={[      {event.characters.map(character => (
+                      styles.eventImportance,style={styles.characterTag}>
+                      { backgroundColor: getImportanceColor(event.eventContext.importance) + '40' },TagText}>{character.name}</Text>
+                      { color: getImportanceColor(event.eventContext.importance) }
+                    ]}>
+                      {event.eventContext.importance.toUpperCase()}
+                    </Text>
+                  </View>
+                </View>
+                ngs.length > 0 && (
+                <Text style={styles.eventDescription}>{event.description}</Text>le={styles.eventSongs}>
+                 style={styles.eventSongsLabel}>Related Songs:</Text>
+                {event.characters.length > 0 && (  {event.songs.map(song => (
+                  <View style={styles.eventCharacters}>      <Text key={song.id} style={styles.eventSongItem}>
+                    <Text style={styles.eventCharactersLabel}>Characters:</Text>
+                    <View style={styles.characterTags}>
+                      {event.characters.map(character => (
+                        <TouchableOpacity 
+                          key={character.id} 
+                          style={styles.characterTag}
+                          onPress={() => handleCharacterPress(character)}
+                          accessible={true}
+                          accessibilityRole="button"
+                          accessibilityLabel={`View details for ${character.name}`}
+                        >
+                          <Text style={styles.characterTagText}>{character.name}</Text>
+                        </TouchableOpacity>
+                      ))}styles.eventFooter}>
+                    </View> style={styles.eventLocation}>📍 {event.location.name}</Text>
+                  </View>tyle={styles.eventSequence}>
+                )}  Event {event.sequenceOrder} of {events.length}
+                  </Text>
+                {event.songs.length > 0 && (
+                  <View style={styles.eventSongs}>
+                    <Text style={styles.eventSongsLabel}>Related Songs:</Text>
+                    {event.songs.map(song => (
+                      <Text key={song.id} style={styles.eventSongItem}>
+                        🎵 {song.title}completion marker */}
+                      </Text>={styles.timelineCompletion}>
+                    ))}tyle={styles.completionMarker}>
+                  </View> <Text style={styles.completionText}>🏁</Text>
+                )}            </View>
+                bel}>End of Troy Saga Timeline</Text>
+                <View style={styles.eventFooter}>
+                  <Text style={styles.eventLocation}>📍 {event.location.name}</Text>
+                  <Text style={styles.eventSequence}>
+                    Event {event.sequenceOrder} of {events.length}
+                  </Text>
+                </View>
+              </View>
+            </View>mated.View
+          ))}
+    styles.overlay,
+          {/* Timeline completion marker */}        style,
+          <View style={styles.timelineCompletion}>
+            <View style={styles.completionMarker}> fadeAnim,
+              <Text style={styles.completionText}>🏁</Text>
+            </View>
+            <Text style={styles.completionLabel}>End of Troy Saga Timeline</Text>le={true}
+          </View>essibilityRole="text"
+        </>aga information panel for ${saga.name}`}
+      )}essibilityViewIsModal={true}
+    </ScrollView>
+  );
+
+  return (
+    <Animated.View
+      style={[   ]}
+        styles.overlay,
+        style,er with staggered animation */}
+        {
+          opacity: fadeAnim,
+        }  styles.header, 
+      ]}     { backgroundColor: saga.color },
+      accessible={true}
+      accessibilityRole="text": [
+      accessibilityLabel={`Saga information panel for ${saga.name}`}
+      accessibilityViewIsModal={true}Y: headerSlideAnim,
+    >
+      <Animated.View ],
+        style={[
+          getPanelStyle(),
+          getTransformStyle(),
+        ]}yle={styles.headerContent}>
+      >t 
+        {/* Header with staggered animation */} style={styles.title}
+        <Animated.View   accessible={true}
+          style={[     accessibilityRole="header"
+            styles.header, e} information panel`}
+            { backgroundColor: saga.color },
+            {
+              transform: [
+                {
+                  translateY: headerSlideAnim,
+                }, onPress={onClose}
+              ],{true}
+            }sibilityRole="button"
+          ]}bel="Close saga information panel"
+        >close this panel and return to the map"
+          <View style={styles.headerContent}>
+            <Text es.closeButtonText}>✕</Text>
+              style={styles.title}
+              accessible={true}
+              accessibilityRole="header"
+              accessibilityLabel={`${saga.name} information panel`}
+            >
+              {saga.name}
+            </Text>styles.tabBar}
+            <TouchableOpacityue}
+              style={styles.closeButton}          accessibilityRole="tablist"
+              onPress={onClose}Saga information tabs"
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Close saga information panel"w', label: '📋 Overview' },
+              accessibilityHint="Tap to close this panel and return to the map" Songs' },
+            >
+              <Text style={styles.closeButtonText}>✕</Text>   { key: 'events', label: '🏛️ Events' }
+            </TouchableOpacity>map((tab) => (
+          </View>
+        </Animated.View>
+
+        {/* Tab Navigation */}
+        <View === tab.key && [styles.activeTab, { borderBottomColor: saga.color }]
+          style={styles.tabBar}
+          accessible={true}> handleTabChange(tab.key as any)}
+          accessibilityRole="tablist"le={true}
+          accessibilityLabel="Saga information tabs"Role="tab"
+        >
+          {[cessibilityState={{ selected: activeTab === tab.key }}
+            { key: 'overview', label: '📋 Overview' },it(' ')[1]} information`}
+            { key: 'songs', label: '🎵 Songs' },
+            { key: 'details', label: '📖 Details' },
+            { key: 'events', label: '🏛️ Events' }
+          ].map((tab) => (r: saga.color }]
+            <TouchableOpacity
+              key={tab.key}   {tab.label}
+              style={[
+                styles.tab,
+                activeTab === tab.key && [styles.activeTab, { borderBottomColor: saga.color }]
+              ]}
+              onPress={() => handleTabChange(tab.key as any)}
+              accessible={true}nt with fade animation */}
+              accessibilityRole="tab"
+              accessibilityLabel={tab.label}le={[
+              accessibilityState={{ selected: activeTab === tab.key }}les.content,
+              accessibilityHint={`Tap to view ${tab.label.split(' ')[1]} information`}            {
+            >tFadeAnim, tabContentAnim),
+              <Text style={[: [
+                styles.tabText,
+                activeTab === tab.key && [styles.activeTabText, { color: saga.color }]Y: contentFadeAnim.interpolate({
+              ]}>       inputRange: [0, 1],
+                {tab.label}
+              </Text>
+            </TouchableOpacity>,
+          ))}
+        </View>tAnim.interpolate({
+
+        {/* Tab Content with fade animation */}utputRange: [10, 0],
+        <Animated.View }),
+          style={[,
+            styles.content,
+            {
+              opacity: Animated.multiply(contentFadeAnim, tabContentAnim),
+              transform: [
+                {ab === 'overview' && (isLoading ? <OverviewSkeleton /> : renderOverviewTab())}
+                  translateY: contentFadeAnim.interpolate({eTab === 'songs' && (isLoading ? <SongsSkeleton /> : renderSongsTab())}
+                    inputRange: [0, 1],tiveTab === 'details' && (isLoading ? <DetailsSkeleton /> : renderDetailsTab())}
+                    outputRange: [20, 0],ctiveTab === 'events' && (eventsLoading ? <EventsSkeleton /> : renderEventsTab())}
+                  }),/Animated.View>
+                },
+                {
+                  translateX: tabContentAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [10, 0],
+                  }),eet.create({
+                },
+              ],position: 'absolute',
+            }  top: 0,
+          ]}    left: 0,
+        >
+          {activeTab === 'overview' && (isLoading ? <OverviewSkeleton /> : renderOverviewTab())}0,
+          {activeTab === 'songs' && (isLoading ? <SongsSkeleton /> : renderSongsTab())}a(0, 0, 0, 0.75)',
+          {activeTab === 'details' && (isLoading ? <DetailsSkeleton /> : renderDetailsTab())} 1000,
+          {activeTab === 'events' && (eventsLoading ? <EventsSkeleton /> : renderEventsTab())}
+        </Animated.View>
+      </Animated.View>'absolute',
+    </Animated.View>
+  ); 20,
+};shadowColor: '#000',
+Offset: { width: -4, height: 0 },
+const styles = StyleSheet.create({
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0, types
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    zIndex: 1000,bottom: 0,
+  },
+  panel: {
+    position: 'absolute',pLeftRadius: 20,
+    backgroundColor: '#0a0e1a',tomLeftRadius: 20,
+    borderRadius: 20,ightRadius: 0,
+    shadowColor: '#000',ightRadius: 0,
+    shadowOffset: { width: -4, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 15,
+    elevation: 15,
+  },
+  // Panel variants for different animation typeswidth: '85%',
+  panelSlideRight: {
+    top: 50,pRightRadius: 20,
+    right: 0,ttomRightRadius: 20,
+    bottom: 0,eftRadius: 0,
+    width: '85%',eftRadius: 0,
+    maxWidth: 400,
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+  },height: '80%',
+  panelSlideLeft: {0,
+    top: 50,LeftRadius: 20,
+    left: 0,ightRadius: 20,
+    bottom: 0,omLeftRadius: 0,
+    width: '85%',ghtRadius: 0,
+  },
+  panelSlideDown: {
+    left: 20,
+    right: 20,
+    top: 0,
+    height: '80%',
+    maxHeight: 600,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+  },
+  header: {
+    padding: 20,
+    borderTopLeftRadius: 20,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    flex: 1,
+  },
+  closeButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 15,
+    padding: 8,
+    marginLeft: 10,
+  },
+  closeButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: '#16213e',
+    borderBottomWidth: 1,
+    borderBottomColor: '#2c3e50',
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    alignItems: 'center',
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+  },
+  activeTab: {
+    borderBottomWidth: 3,
+  },
+  tabText: {
+    fontSize: 12,
+    color: '#B0C4DE',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  activeTabText: {
+    fontWeight: 'bold',
+  },
+  content: {
+    flex: 1,
+    backgroundColor: '#16213e',
+  },
+  tabContent: {
+    flex: 1,
+    padding: 20,
+  },
+  descriptionContainer: {
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: 'rgba(74, 144, 226, 0.1)',
+    borderRadius: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#4A90E2',
+  },
+  description: {
+    fontSize: 16,
+    color: '#B0C4DE',
+    lineHeight: 24,
+    fontStyle: 'italic',
+  },
+  infoSection: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 10,
+  },
+  sectionContent: {
+    fontSize: 14,
+    color: '#B0C4DE',
+    lineHeight: 20,
+  },
+  characterList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  characterChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  characterText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  songCard: {
+    marginBottom: 15,
+    padding: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    borderLeftWidth: 4,
+  },
+  songHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  songTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    flex: 1,
+  },
+  songDuration: {
+    fontSize: 12,
+    color: '#FFD700',
+    fontWeight: 'bold',
+  },
+  songDescription: {
+    fontSize: 14,
+    color: '#B0C4DE',
+    lineHeight: 20,
+  },
+  momentItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  momentBullet: {
+    color: '#FFD700',
+    fontSize: 16,
+    marginRight: 10,
+    marginTop: 2,
+  },
+  momentText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#B0C4DE',
+    lineHeight: 20,
+  },
+  sagaNavSection: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 215, 0, 0.3)',
+  },
+  sagaOrderText: {
+    fontSize: 14,
+    color: '#FFD700',
+    textAlign: 'center',
+    marginBottom: 15,
+    fontWeight: 'bold',
+  },
+  navigationButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  navButton: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    borderWidth: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    alignItems: 'center',
+  },
+  navButtonText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  // Timeline Progress Styles
+  progressSection: {
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: 'rgba(74, 144, 226, 0.1)',
+    borderRadius: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#4A90E2',
+  },
+  progressContainer: {
+       marginBottom: 15,
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  progressLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#B0C4DE',
+  },
+  progressPercent: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#B0C4DE',
+  },
+  progressBarContainer: {
+    height: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  progressBar: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  songProgressContainer: {
+    marginBottom: 15,
+  },
+  songTimeline: {
+    marginTop: 10,
+  },
+  timelineItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    position: 'relative',
+  },
+  timelineNode: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+    borderWidth: 2,
+    borderColor: '#333',
+  },
+  timelineContent: {
+    flex: 1,
+  },
+  timelineSongTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#B0C4DE',
+  },
+  timelineDuration: {
+    fontSize: 12,
+    color: '#888',
+    marginTop: 2,
+  },
+  timelineConnector: {
+    position: 'absolute',
+    left: 11,
+    top: 24,
+    width: 2,
+    height: 16,
+    backgroundColor: '#666',
+  },
+  checkmark: {
+    fontSize: 12,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  currentIndicator: {
+    fontSize: 12,
+    color: '#fff',
+  },
+  momentsContainer: {
+    marginTop: 10,
+  },
+  momentsList: {
+    marginTop: 8,
+  },
+  momentChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginBottom: 6,
+    borderWidth: 1,
+  },
+  // Song List Integration Styles
+  songListContainer: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  // P2: Song Search Styles
+  songSearchContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    marginBottom: 8,
+  },
+  songSearchLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFB74D',
+    marginBottom: 8,
+  },
+  songSearchInput: {
+    height: 40,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    color: '#FFFFFF',
+    fontSize: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 183, 77, 0.3)',
+  },
+  clearSearchButton: {
+    position: 'absolute',
+    right: 20,
+    top: 32,
+    backgroundColor: 'rgba(255, 183, 77, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  clearSearchText: {
+    color: '#FFB74D',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  searchResultsInfo: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: 'rgba(255, 183, 77, 0.1)',
+    borderRadius: 8,
+    marginHorizontal: 16,
+    marginTop: 8,
+  },
+  searchResultsText: {
+    color: '#FFB74D',
+    fontSize: 12,
+    fontStyle: 'italic',
+  },
+  // P2: Search suggestions styles
+  searchSuggestions: {
+    marginTop: 12,
+  },
+  suggestionsLabel: {
+    color: '#B0B0B0',
+    fontSize: 12,
+    marginBottom: 6,
+  },
+  suggestionsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  suggestionChip: {
+    backgroundColor: 'rgba(255, 183, 77, 0.1)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 183, 77, 0.2)',
+  },
+  suggestionText: {
+    color: '#FFB74D',
+    fontSize: 11,
+    fontWeight: '500',
+  },
+  fallbackSongsList: {
+    flex: 1,
+  },
+  // Skeleton loading styles
+  detailsSection: {
+    marginBottom: 20,
+  },
+  charactersGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  // P2: Events tab styles
+  eventCard: {
+    backgroundColor: '#16213e',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#4A90E2',
+  },
+  eventHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  eventTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    flex: 1,
+    marginRight: 8,
+  },
+  eventMeta: {
+    alignItems: 'flex-end',
+  },
+  eventImportance: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#FFB347',
+    backgroundColor: 'rgba(255, 179, 71, 0.2)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginBottom: 4,
+  },
+  eventOrder: {
+    fontSize: 12,
+    color: '#B0C4DE',
+    fontWeight: '500',
+  },
+  eventDescription: {
+    fontSize: 14,
+    color: '#B0C4DE',
+    lineHeight: 20,
+    marginBottom: 12,
+  },
+  eventCharacters: {
+    marginBottom: 12,
+  },
+  eventCharactersLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#4A90E2',
+    marginBottom: 6,
+  },
+  characterTags: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  characterTag: {
+    backgroundColor: 'rgba(74, 144, 226, 0.2)',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  characterTagText: {
+    fontSize: 11,
+    color: '#4A90E2',
+    fontWeight: '500',
+  },
+  eventSongs: {
+    marginBottom: 12,
+  },
+  eventSongsLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#FF6B35',
+    marginBottom: 6,
+  },
+  eventSongItem: {
+    fontSize: 12,
+    color: '#FF6B35',
+    marginBottom: 2,
+  },
+  eventFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(74, 144, 226, 0.3)',
+  },
+  eventLocation: {
+    fontSize: 12,
+    color: '#B0C4DE',
+    fontWeight: '500',
+  },
+  eventDate: {
+    fontSize: 11,
+    color: '#888888',
+  },
+  errorContainer: {
+    backgroundColor: 'rgba(255, 107, 53, 0.1)',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#FF6B35',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  retryButton: {
+    backgroundColor: '#FF6B35',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  retryButtonText: {
+    fontSize: 12,
+    color: '#ffffff',
+    fontWeight: '600',
+  },
+  emptyContainer: {
+    backgroundColor: 'rgba(176, 196, 222, 0.1)',
+    borderRadius: 12,
+    padding: 24,
+    alignItems: 'center',
+    marginTop: 32,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#B0C4DE',
+    fontWeight: '600',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptySubtext: {
+    fontSize: 12,
+    color: '#888888',
+    textAlign: 'center',
+    lineHeight: 16,
+  },
+  // P2: Chronological Timeline Styles
+  timelineHeader: {
+    paddingBottom: 20,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  timelineTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFB347',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  timelineSubtitle: {
+    fontSize: 14,
+    color: '#B0C4DE',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  timelineDivider: {
+    width: '80%',
+    height: 2,
+    backgroundColor: '#FFB347',
+    borderRadius: 1,
+  },
+  timelineContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    position: 'relative',
+  },
+  eventTimelineConnector: {
+    position: 'absolute',
+    left: 19,
+    top: 40,
+    bottom: -20,
+    width: 2,
+    backgroundColor: '#4A90E2',
+    zIndex: 1,
+  },
+  timelineMarker: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+    borderWidth: 3,
+    borderColor: '#1a1a2e',
+    zIndex: 2,
+  },
+  timelineMarkerText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  eventTitleSection: {
+    flex: 1,
+  },
+  eventTimestamp: {
+    fontSize: 12,
+    color: '#FFB347',
+    fontWeight: '500',
+    marginTop: 4,
+  },
+  eventSequence: {
+    fontSize: 11,
+    color: '#4A90E2',
+    fontWeight: '500',
+  },
+  timelineCompletion: {
+    alignItems: 'center',
+    paddingVertical: 24,
+    marginTop: 20,
+  },
+  completionMarker: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#4A90E2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  completionText: {
+    fontSize: 24,
+  },
+  completionLabel: {
+    fontSize: 14,
+    color: '#B0C4DE',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+});
+
+export default SagaInfoPanel;
+export { EPIC_SAGAS };

@@ -1,0 +1,110 @@
+// ✅ CHARACTER ENUMS
+export enum CharacterType {
+  MORTAL = 'MORTAL',
+  GOD = 'GOD',
+  MONSTER = 'MONSTER',
+  SPIRIT = 'SPIRIT',
+  TITAN = 'TITAN',
+  NYMPH = 'NYMPH'
+}
+
+// ✅ NARRATIVE IMPORTANCE ENUMS
+export enum NarrativeImportance {
+  TRIVIAL = 'TRIVIAL',
+  MINOR = 'MINOR',
+  MODERATE = 'MODERATE',
+  HIGH = 'HIGH',
+  CRITICAL = 'CRITICAL',
+  FUNDAMENTAL = 'FUNDAMENTAL'
+}
+
+// ✅ CULTURAL SIGNIFICANCE ENUMS
+export enum CulturalSignificance {
+  OBSCURE = 'OBSCURE',
+  REGIONAL = 'REGIONAL',
+  NATIONAL = 'NATIONAL',
+  CLASSICAL = 'CLASSICAL',
+  LEGENDARY = 'LEGENDARY',
+  UNIVERSAL = 'UNIVERSAL'
+}
+
+// ✅ COMPARISON ENUMS
+export enum ComparisonType {
+  ADAPTATION = 'ADAPTATION',
+  INTERPRETATION = 'INTERPRETATION',
+  CROSS_REFERENCE = 'CROSS_REFERENCE',
+  HISTORICAL_CONTEXT = 'HISTORICAL_CONTEXT',
+  MODERN_PARALLEL = 'MODERN_PARALLEL',
+  EDUCATIONAL = 'EDUCATIONAL'
+}
+
+export enum ComparisonTargetType {
+  SAGA = 'SAGA',
+  CHARACTER = 'CHARACTER',
+  SONG = 'SONG',
+  EVENT = 'EVENT',
+  LOCATION = 'LOCATION',
+  THEME = 'THEME'
+}
+
+export enum CredibilityLevel {
+  SPECULATIVE = 'SPECULATIVE',
+  LIKELY = 'LIKELY',
+  DOCUMENTED = 'DOCUMENTED',
+  DEFINITIVE = 'DEFINITIVE'
+}
+
+// ✅ EDUCATIONAL ENUMS
+export enum EducationalValue {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  EXCEPTIONAL = 'EXCEPTIONAL'
+}
+
+export enum AudienceImpact {
+  NICHE = 'NICHE',
+  MODERATE = 'MODERATE',
+  BROAD = 'BROAD',
+  UNIVERSAL = 'UNIVERSAL'
+}
+
+export enum AgeAppropriateness {
+  CHILDREN = 'CHILDREN',
+  TEENS = 'TEENS',
+  ADULTS = 'ADULTS',
+  ALL_AGES = 'ALL_AGES'
+}
+
+// ✅ MUSICAL ENUMS
+export enum MusicalStyle {
+  BALLAD = 'BALLAD',
+  ROCK = 'ROCK',
+  FOLK = 'FOLK',
+  ORCHESTRAL = 'ORCHESTRAL',
+  CHORAL = 'CHORAL',
+  RAP = 'RAP',
+  DUET = 'DUET',
+  ENSEMBLE = 'ENSEMBLE'
+}
+
+export enum VocalStyle {
+  SOLO = 'SOLO',
+  DUET = 'DUET',
+  CHORUS = 'CHORUS',
+  ENSEMBLE = 'ENSEMBLE',
+  NARRATION = 'NARRATION',
+  SPOKEN = 'SPOKEN'
+}
+
+// ✅ LOCATION ENUMS
+export enum LocationType {
+  CITY = 'CITY',
+  ISLAND = 'ISLAND',
+  MOUNTAIN = 'MOUNTAIN',
+  SEA = 'SEA',
+  UNDERWORLD = 'UNDERWORLD',
+  DIVINE_REALM = 'DIVINE_REALM',
+  PALACE = 'PALACE',
+  BATTLEFIELD = 'BATTLEFIELD'
+}

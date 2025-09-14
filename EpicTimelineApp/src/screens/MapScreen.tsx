@@ -10,16 +10,85 @@ import {
 } from 'react-native';
 // ✅ Update this import for Expo
 import { EpicTimelineMap } from '../components/EpicTimelineMap';
-import { MapService, EpicMapLocation } from '../services/MapService';
+import SagaInfoPanel from '../components/UI/SagaInfoPanel';
+import { MapService, Location } from '../services/MapService';
 import { SagaService } from '../services';
 import { Saga } from '../types';
+import { EpicLocation } from '../components/EpicTimelineMap/constants';
+
+// Transform Location to EpicLocation for the map component
+const transformLocationToEpicLocation = (location: Location): EpicLocation => ({
+  id: location.id,
+  name: location.name,
+  latitude: location.coordinates.y, // y is latitude
+  longitude: location.coordinates.x, // x is longitude  
+  description: location.description,
+  saga: location.saga || 'Unknown Saga',
+  significance: location.significance,
+  songs: location.songs || [],
+});
 
 export const MapScreen: React.FC = () => {
   const [selectedSaga, setSelectedSaga] = useState<string>('');
   const [sagas, setSagas] = useState<Saga[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<EpicMapLocation | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [showJourney, setShowJourney] = useState(true);
-  const [locations, setLocations] = useState<EpicMapLocation[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // P2: Saga Info Panel state
+  const [showSagaPanel, setShowSagaPanel] = useState(false);
+  const [selectedSagaInfo, setSelectedSagaInfo] = useState<any>(null);
+
+  // Troy Saga data for the info panel
+  const troyPageData = {
+    id: 'troy',
+    name: 'The Troy Saga',
+    color: '#FF4500',
+    description: 'The beginning of Odysseus\'s epic journey, starting with the fall of Troy and his first moral challenges. After 10 years of war, victory comes at a cost that will haunt the hero forever.',
+    theme: 'War, Strategy, and Moral Complexity',
+    keyCharacters: ['Odysseus', 'Astyanax', 'Polites', 'Eurylochus'],
+    songs: [
+      {
+        title: 'The Horse and the Infant',
+        description: 'Odysseus faces the prophecy about Astyanax and makes a devastating choice.',
+        duration: '4:15'
+      },
+      {
+        title: 'Just a Man',
+        description: 'Odysseus grapples with the weight of his decisions and their consequences.',
+        duration: '4:42'
+      },
+      {
+        title: 'Full Speed Ahead',
+        description: 'The crew sets sail from Troy, optimistic about their journey home.',
+        duration: '3:38'
+      },
+      {
+        title: 'Open Arms',
+        description: 'Polites encourages kindness and trust, contrasting with Odysseus\'s caution.',
+        duration: '3:25'
+      },
+      {
+        title: 'Warrior of the Mind',
+        description: 'Athena appears to guide Odysseus, revealing their special connection.',
+        duration: '4:20'
+      }
+    ],
+    locations: ['Troy', 'Ancient Citadel', 'Trojan Palace'],
+    emotionalTone: 'Epic, conflicted, and morally complex',
+    musicalStyle: 'Orchestral with modern elements and character themes',
+    keyMoments: [
+      'The fall of Troy',
+      'The infant\'s fate',
+      'Departure from Troy',
+      'First divine intervention',
+      'Setting the moral tone'
+    ],
+    symbolism: 'Troy represents the cost of victory and the weight of leadership',
+    order: 1
+  };
 
   useEffect(() => {
     loadSagas();
@@ -36,89 +105,141 @@ export const MapScreen: React.FC = () => {
     }
   };
 
-  const loadLocations = () => {
-    const allLocations = MapService.getAllLocations();
-    console.log('🎭 EPIC Locations loaded:', allLocations.length);
-    console.log('🗺️ First location:', allLocations[0]);
-    setLocations(allLocations);
+  const loadLocations = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('📍 Loading locations with Troy priority...');
+      
+      // Try to fetch Troy specifically first, then all locations
+      const [troyData, allData] = await Promise.allSettled([
+        MapService.getTroyLocation(),
+        MapService.getAllLocations()
+      ]);
+
+      let locations: Location[] = [];
+
+      if (allData.status === 'fulfilled') {
+        locations = allData.value;
+        console.log('✅ All locations loaded:', locations.length);
+      } else if (troyData.status === 'fulfilled' && troyData.value) {
+        // If only Troy loaded, use it plus other static fallbacks if available
+        console.log('⚠️ Only Troy loaded, using Troy data');
+        locations = [troyData.value];
+      } else {
+        throw new Error('Failed to load any location data');
+      }
+      
+      // Ensure data is an array and has Troy
+      if (!Array.isArray(locations) || locations.length === 0) {
+        throw new Error('Invalid location data format');
+      }
+
+      console.log('🏛️ Troy location confirmed:', locations[0]?.name);
+      setLocations(locations);
+    } catch (err) {
+      console.error('❌ Failed to load locations:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load locations');
+      // Use empty array as fallback since we don't have static locations
+      setLocations([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSagaFilter = (sagaId: string) => {
     setSelectedSaga(sagaId);
-    const filteredLocations = MapService.getLocationsBySaga(sagaId);
-    setLocations(filteredLocations);
+    // TODO: Implement saga filtering when backend supports it
+    console.log('Filtering by saga:', sagaId);
   };
 
-  const handleLocationSelect = (location: EpicMapLocation) => {
+  const handleLocationSelect = (location: Location) => {
     setSelectedLocation(location);
-    Alert.alert(
-      `📍 ${location.name}`,
-      `${location.description}\n\n✨ ${location.significance}`,
-      [{ text: 'Explore More', style: 'default' }]
-    );
+    
+    // P2: Check if this is Troy and show the Troy Saga info panel
+    const isTroy = location.name.toLowerCase().includes('troy');
+    
+    if (isTroy) {
+      console.log('🏛️ Troy hotspot tapped - showing Troy Saga panel');
+      setSelectedSagaInfo(troyPageData);
+      setShowSagaPanel(true);
+    } else {
+      // For other locations, show the standard alert
+      Alert.alert(
+        `📍 ${location.name}`,
+        `${location.description}\n\n✨ ${location.significance}`,
+        [{ text: 'Explore More', style: 'default' }]
+      );
+    }
   };
+
+  // P2: Saga panel handlers
+  const handleCloseSagaPanel = () => {
+    setShowSagaPanel(false);
+    setSelectedSagaInfo(null);
+  };
+
+  const handleSagaSelect = (sagaId: string) => {
+    console.log('Selected saga:', sagaId);
+    // TODO: Navigate to specific saga if needed
+  };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1a1a2e' }}>
+        <Text style={{ color: '#fff', fontSize: 18 }}>Loading Epic Timeline Map...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1a1a2e', padding: 20 }}>
+        <Text style={{ color: '#ff6b6b', fontSize: 18, marginBottom: 10 }}>Error Loading Map</Text>
+        <Text style={{ color: '#fff', textAlign: 'center' }}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>🎭 Epic Timeline Map</Text>
-        <Text style={styles.subtitle}>Explore Classical Literature Locations</Text>
-      </View>
+      {/* Remove Header section completely */}
+      
+      {/* Remove Journey Toggle section completely */}
 
-      {/* Saga Filters */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtersContainer}>
-        <TouchableOpacity
-          style={[styles.filterButton, selectedSaga === '' && styles.filterButtonActive]}
-          onPress={() => handleSagaFilter('')}
-        >
-          <Text style={[styles.filterText, selectedSaga === '' && styles.filterTextActive]}>
-            All Sagas
-          </Text>
-        </TouchableOpacity>
-        {sagas.map((saga) => (
-          <TouchableOpacity
-            key={saga.id}
-            style={[styles.filterButton, selectedSaga === saga.id && styles.filterButtonActive]}
-            onPress={() => handleSagaFilter(saga.id)}
-          >
-            <Text style={[styles.filterText, selectedSaga === saga.id && styles.filterTextActive]}>
-              {saga.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      {/* Journey Toggle */}
-      <View style={styles.toggleContainer}>
-        <TouchableOpacity
-          style={[styles.toggleButton, showJourney && styles.toggleButtonActive]}
-          onPress={() => setShowJourney(!showJourney)}
-        >
-          <Text style={[styles.toggleText, showJourney && styles.toggleTextActive]}>
-            {showJourney ? '🗺️ Hide Journey' : '🗺️ Show Journey'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Map */}
-      <View style={styles.mapContainer}>
+      {/* Map - Now takes up almost the full screen */}
+      <View style={[styles.mapContainer, { flex: 1, margin: 0, padding: 0 }]}>
         <EpicTimelineMap
-          locations={locations}
-          selectedLocation={selectedLocation}
+          locations={locations.map(transformLocationToEpicLocation)}
+          selectedLocation={selectedLocation ? transformLocationToEpicLocation(selectedLocation) : null}
           showJourney={showJourney}
-          onLocationPress={handleLocationSelect}
+          onLocationPress={(epicLocation: EpicLocation) => {
+            // Find the original Location object to use in our state
+            const originalLocation = locations.find(loc => loc.id === epicLocation.id);
+            if (originalLocation) {
+              handleLocationSelect(originalLocation);
+            }
+          }}
         />
       </View>
 
-      {/* Location Info Panel */}
+      {/* Location Info Panel - Keep this at bottom if needed */}
       {selectedLocation && (
         <View style={styles.infoPanel}>
           <Text style={styles.infoTitle}>📍 {selectedLocation.name}</Text>
           <Text style={styles.infoDescription}>{selectedLocation.description}</Text>
-          <Text style={styles.infoSaga}>From: {selectedLocation.saga.toUpperCase()}</Text>
+          <Text style={styles.infoSaga}>From: {(selectedLocation.saga || 'Unknown Saga').toUpperCase()}</Text>
         </View>
       )}
+
+      {/* P2: Troy Saga Info Panel */}
+      <SagaInfoPanel
+        saga={selectedSagaInfo}
+        isVisible={showSagaPanel}
+        onClose={handleCloseSagaPanel}
+        onSagaSelect={handleSagaSelect}
+        animationType="slide-right"
+      />
     </SafeAreaView>
   );
 };
@@ -145,30 +266,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#B0C4DE',
     fontStyle: 'italic',
-  },
-  filtersContainer: {
-    paddingVertical: 15,
-    paddingHorizontal: 10,
-  },
-  filterButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    marginHorizontal: 5,
-    backgroundColor: '#2d3748',
-    borderRadius: 25,
-    borderWidth: 1,
-    borderColor: '#4A90E2',
-  },
-  filterButtonActive: {
-    backgroundColor: '#4A90E2',
-  },
-  filterText: {
-    color: '#B0C4DE',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  filterTextActive: {
-    color: '#ffffff',
   },
   toggleContainer: {
     paddingHorizontal: 20,

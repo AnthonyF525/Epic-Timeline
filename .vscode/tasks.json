@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start EPIC Timeline App",
+			"type": "shell",
+			"command": "cd /Users/anthony/Project/Epic-Timeline/EpicTimelineApp && npx expo start",
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

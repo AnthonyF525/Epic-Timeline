@@ -1,108 +1,103 @@
-export interface EpicMapLocation {
+import { LocationService } from './LocationService';
+
+export interface Location {
   id: string;
   name: string;
-  latitude: number;
-  longitude: number;
+  coordinates: { x: number; y: number; z?: number };
   description: string;
-  saga: string;
-  significance: string;
-  songs: string[];
+  saga?: string;
+  significance?: string;
+  modernLocation?: string;
+  mythologyFacts?: string[];
+  songs?: string[];
+  culturalSignificance?: 'PRIMARY' | 'SECONDARY' | 'LEGENDARY';
+  isRealPlace?: boolean;
+  isMythological?: boolean;
 }
 
 export class MapService {
-  private static epicLocations: EpicMapLocation[] = [
-    {
-      id: 'troy',
+  static async getAllLocations(): Promise<Location[]> {
+    try {
+      const apiLocations = await LocationService.getAllLocations();
+      
+      return apiLocations.map(apiLoc => ({
+        id: apiLoc.id.toString(),
+        name: apiLoc.name,
+        coordinates: { x: apiLoc.latitude, y: apiLoc.longitude },
+        description: apiLoc.description,
+        modernLocation: apiLoc.modernName,
+        culturalSignificance: apiLoc.culturalSignificance?.importance as 'PRIMARY' | 'SECONDARY' | 'LEGENDARY',
+        isRealPlace: apiLoc.isRealPlace,
+        isMythological: apiLoc.isMythological,
+      }));
+    } catch (error) {
+      console.error('Failed to load locations from API:', error);
+      return [];
+    }
+  }
+
+  static async getTroyLocation(): Promise<Location> {
+    try {
+      const apiData = await LocationService.getTroyLocation();
+      
+      if (apiData) {
+        return {
+          id: apiData.id.toString(),
+          name: apiData.name,
+          coordinates: { x: apiData.latitude, y: apiData.longitude },
+          description: apiData.description,
+          saga: 'The Troy Saga',
+          significance: 'Starting point of Odysseus\' journey home from the Trojan War',
+          modernLocation: apiData.modernName,
+          mythologyFacts: [
+            'Site of the legendary Trojan Horse stratagem',
+            'Ten-year siege by the Greek coalition forces',
+            'Home to Prince Hector and King Priam',
+            'The war began over Helen of Troy',
+            'Destroyed by the Greeks using Odysseus\' wooden horse plan'
+          ],
+          songs: [
+            'The Horse and the Infant',
+            'Just a Man',
+            'Full Speed Ahead',
+            'Open Arms',
+            'Warrior of the Mind'
+          ],
+          culturalSignificance: apiData.culturalSignificance?.importance as 'PRIMARY' | 'SECONDARY' | 'LEGENDARY',
+          isRealPlace: apiData.isRealPlace,
+          isMythological: apiData.isMythological,
+        };
+      }
+    } catch (error) {
+      console.warn('Using fallback Troy data:', error);
+    }
+
+    // Enhanced fallback with song data
+    return {
+      id: 'troy-fallback',
       name: 'Troy',
-      latitude: 39.9570,
-      longitude: 26.2390,
-      description: 'The legendary city where the Trojan War took place.',
-      saga: 'troy-saga',
-      significance: 'Where Odysseus made the choice in "Just a Man"',
-      songs: ['The Horse and the Infant', 'Just a Man', 'Full Speed Ahead', 'Open Arms', 'Warrior of the Mind']
-    },
-    {
-      id: 'polyphemus-cave',
-      name: 'Polyphemus\'s Cave',
-      latitude: 37.0902,
-      longitude: 25.1536,
-      description: 'The cave of the cyclops Polyphemus.',
-      saga: 'cyclops-saga',
-      significance: 'Where Odysseus revealed his name and doomed his crew',
-      songs: ['Polyphemus', 'Survive', 'Remember Them', 'My Goodbye']
-    },
-    {
-      id: 'poseidon-ocean',
-      name: 'Poseidon\'s Domain',
-      latitude: 36.5000,
-      longitude: 23.0000,
-      description: 'The vast ocean where Poseidon rules.',
-      saga: 'ocean-saga',
-      significance: 'Where Poseidon taught Odysseus about ruthlessness',
-      songs: ['Storm', 'Luck Runs Out', 'Keep Your Friends Close', 'Ruthlessness']
-    },
-    {
-      id: 'circe-island',
-      name: 'Circe\'s Island',
-      latitude: 41.2033,
-      longitude: 13.0667,
-      description: 'The island of the powerful sorceress Circe.',
-      saga: 'circe-saga',
-      significance: 'Where Odysseus learned there are other ways',
-      songs: ['Puppeteer', 'Wouldn\'t You Like', 'Done For', 'There Are Other Ways']
-    },
-    {
-      id: 'underworld',
-      name: 'The Underworld',
-      latitude: 38.0000,
-      longitude: 22.0000,
-      description: 'The realm of the dead where Odysseus spoke to the prophet.',
-      saga: 'underworld-saga',
-      significance: 'Where Odysseus learned he was becoming a monster',
-      songs: ['The Underworld', 'No Longer You', 'Monster']
-    },
-    {
-      id: 'scylla-strait',
-      name: 'Scylla\'s Strait',
-      latitude: 38.2500,
-      longitude: 15.6333,
-      description: 'The dangerous strait guarded by the six-headed monster Scylla.',
-      saga: 'thunder-saga',
-      significance: 'Where Odysseus sacrificed six men to save the rest',
-      songs: ['Suffering', 'Different Beast', 'Scylla', 'Mutiny', 'Thunder Bringer']
-    },
-    {
-      id: 'calypso-island',
-      name: 'Calypso\'s Island',
-      latitude: 35.0000,
-      longitude: 18.0000,
-      description: 'The paradise island where Calypso held Odysseus for seven years.',
-      saga: 'wisdom-saga',
-      significance: 'Where Athena played the God Games to free Odysseus',
-      songs: ['Legendary', 'Little Wolf', 'We\'ll Be Fine', 'Love in Paradise', 'God Games']
-    },
-    {
-      id: 'ithaca',
-      name: 'Ithaca',
-      latitude: 38.3667,
-      longitude: 20.7167,
-      description: 'The home island of Odysseus, where his family waits.',
-      saga: 'ithaca-saga',
-      significance: 'Where Odysseus finally returns and reclaims his throne',
-      songs: ['The Challenge', 'Hold Them Down', 'Odysseus', 'I Can\'t Help But Wonder']
-    },
-  ];
-
-  static getAllLocations(): EpicMapLocation[] {
-    return this.epicLocations;
-  }
-
-  static getLocationsBySaga(saga: string): EpicMapLocation[] {
-    if (!saga) return this.epicLocations;
-    return this.epicLocations.filter(location => location.saga === saga);
-  }
-
-  static getLocationById(id: string): EpicMapLocation | undefined {
-    return this.epicLocations.find(location => location.id === id);
+      coordinates: { x: 39.9576, y: 26.2385 },
+      description: 'Ancient fortified city in northwestern Anatolia, site of the legendary Trojan War from Homer\'s Iliad and the setting for EPIC: The Musical',
+      saga: 'The Troy Saga',
+      significance: 'Starting point of Odysseus\' journey home from the Trojan War',
+      modernLocation: 'Hisarlik, Turkey',
+      mythologyFacts: [
+        'Site of the legendary Trojan Horse stratagem',
+        'Ten-year siege by the Greek coalition forces',
+        'Home to Prince Hector and King Priam',
+        'The war began over Helen of Troy',
+        'Destroyed by the Greeks using Odysseus\' wooden horse plan'
+      ],
+      songs: [
+        'The Horse and the Infant',
+        'Just a Man',
+        'Full Speed Ahead',
+        'Open Arms',
+        'Warrior of the Mind'
+      ],
+      culturalSignificance: 'PRIMARY',
+      isRealPlace: true,
+      isMythological: true,
+    };
   }
 }
