@@ -32,7 +32,7 @@ class CacheInitializer {
    */
   public configure(config: Partial<CacheInitConfig>): void {
     this.config = { ...this.config, ...config };
-    console.log('⚙️ CacheInitializer configured:', this.config);
+    console.log('◦  CacheInitializer configured:', this.config);
   }
 
   /**
@@ -40,11 +40,11 @@ class CacheInitializer {
    */
   public async initialize(): Promise<void> {
     if (this.isInitialized) {
-      console.log('📦 Cache system already initialized');
+      console.log('• Cache system already initialized');
       return;
     }
 
-    console.log('🚀 Initializing Epic Timeline cache system...');
+    console.log('• Initializing Epic Timeline cache system...');
 
     try {
       // Configure cache service with optimal settings for Troy data
@@ -66,11 +66,11 @@ class CacheInitializer {
       }
 
       this.isInitialized = true;
-      console.log('✅ Cache system initialization complete');
+      console.log('• Cache system initialization complete');
       console.log(EventService.getCacheStatus());
 
     } catch (error) {
-      console.error('❌ Cache initialization failed:', error);
+      console.error('✗ Cache initialization failed:', error);
     }
   }
 
@@ -78,7 +78,7 @@ class CacheInitializer {
    * Preload critical data for immediate availability
    */
   private async preloadCriticalData(): Promise<void> {
-    console.log('⏳ Preloading critical Troy data...');
+    console.log('• Preloading critical Troy data...');
 
     try {
       // Preload Troy events (main P2 requirement)
@@ -86,10 +86,10 @@ class CacheInitializer {
 
       // Log cache status after preloading
       const stats = EventService.getCacheStats();
-      console.log(`📊 Cache after preload: ${stats.totalEntries} entries, Troy cached: ${stats.troyDataCached}`);
+      console.log(`• Cache after preload: ${stats.totalEntries} entries, Troy cached: ${stats.troyDataCached}`);
 
     } catch (error) {
-      console.error('❌ Error preloading critical data:', error);
+      console.error('✗ Error preloading critical data:', error);
     }
   }
 
@@ -102,12 +102,12 @@ class CacheInitializer {
     this.refreshInterval = setInterval(async () => {
       try {
         if (EventService.shouldRefreshTroyData()) {
-          console.log('🔄 Background refresh: Updating Troy data...');
+          console.log('• Background refresh: Updating Troy data...');
           await EventService.refreshTroyCache();
-          console.log('✅ Background refresh: Troy data updated');
+          console.log('• Background refresh: Troy data updated');
         }
       } catch (error) {
-        console.error('❌ Background refresh failed:', error);
+        console.error('✗ Background refresh failed:', error);
       }
     }, intervalMs);
 
@@ -118,14 +118,14 @@ class CacheInitializer {
    * Force refresh all cached data
    */
   public async forceRefresh(): Promise<void> {
-    console.log('🔄 Force refreshing all cache data...');
+    console.log('• Force refreshing all cache data...');
     
     try {
       EventService.clearCache();
       await this.preloadCriticalData();
-      console.log('✅ Force refresh complete');
+      console.log('• Force refresh complete');
     } catch (error) {
-      console.error('❌ Force refresh failed:', error);
+      console.error('✗ Force refresh failed:', error);
     }
   }
 
@@ -168,7 +168,7 @@ class CacheInitializer {
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
       this.refreshInterval = null;
-      console.log('⏹️ Background refresh stopped');
+      console.log('⏹• Background refresh stopped');
     }
   }
 
@@ -207,23 +207,23 @@ class CacheInitializer {
     const recommendations: string[] = [];
     
     if (!stats.troyDataCached) {
-      recommendations.push('⚠️ Troy data not cached - consider preloading');
+      recommendations.push('◦  Troy data not cached - consider preloading');
     }
     
     if (stats.hitRate < 50 && stats.totalEntries > 10) {
-      recommendations.push('📊 Low cache hit rate - consider longer TTL values');
+      recommendations.push('• Low cache hit rate - consider longer TTL values');
     }
     
     if (stats.memoryUsage > 10 * 1024 * 1024) { // 10MB
-      recommendations.push('💾 High memory usage - consider reducing cache size');
+      recommendations.push('• High memory usage - consider reducing cache size');
     }
     
     if (stats.totalEntries > 100) {
-      recommendations.push('📦 Large cache size - monitoring recommended');
+      recommendations.push('• Large cache size - monitoring recommended');
     }
     
     if (recommendations.length === 0) {
-      recommendations.push('✅ Cache performance is optimal');
+      recommendations.push('• Cache performance is optimal');
     }
     
     return recommendations;

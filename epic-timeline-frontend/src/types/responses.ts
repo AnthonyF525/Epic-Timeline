@@ -1,7 +1,7 @@
 import { Saga, Character, Song, Event, Location, Comparison } from './core';
 import { Comparison as ComparisonEntity } from './comparison';
 
-// ✅ API RESPONSE WRAPPERS
+// ✓ API RESPONSE WRAPPERS
 export interface ApiResponse<T> {
   data: T;
   _epicMeta: {
@@ -23,7 +23,7 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
   };
 }
 
-// ✅ STATISTICS INTERFACES
+// ✓ STATISTICS INTERFACES
 export interface SagaStats {
   totalSagas: number;
   completedSagas: number;

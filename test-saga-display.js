@@ -52,26 +52,26 @@ class SagaServiceTest {
   static getReleaseStatusDisplay(status) {
     switch (status) {
       case 'released':
-        return '✅ Released';
+        return 'Released';
       case 'upcoming':
-        return '🔜 Coming Soon';
+        return 'Coming Soon';
       case 'in-production':
-        return '🎬 In Production';
+        return 'In Production';
       case 'unknown':
-        return '❓ Status Unknown';
+        return 'Status Unknown';
       default:
-        return '❓ Status Unknown';
+        return 'Status Unknown';
     }
   }
 }
 
 // Test function to verify saga display functionality
 async function testSagaDisplay() {
-  console.log('🎭 Testing Saga Display Functionality...\n');
+  console.log('Testing Saga Display Functionality...\n');
   
   try {
     // Test 1: Fetch Troy Saga and format display info
-    console.log('📚 Test 1: Fetching and formatting Troy Saga display...');
+    console.log('Test 1: Fetching and formatting Troy Saga display...');
     const response = await fetch(`${API_BASE_URL}/api/sagas/1`);
     
     if (!response.ok) {
@@ -81,18 +81,18 @@ async function testSagaDisplay() {
     const troySaga = await response.json();
     const displayInfo = SagaServiceTest.formatSagaDisplayInfo(troySaga);
     
-    console.log('✅ Troy Saga Display Information:');
-    console.log(`   🎭 Name: ${displayInfo.name}`);
-    console.log(`   📖 Description: ${displayInfo.description}`);
+    console.log('Troy Saga Display Information:');
+    console.log(`   Name: ${displayInfo.name}`);
+    console.log(`   Description: ${displayInfo.description}`);
     console.log(`   ${SagaServiceTest.getReleaseStatusDisplay(displayInfo.releaseStatus)}`);
-    console.log(`   📅 Release Date: ${new Date(displayInfo.releaseDate).toLocaleDateString()}`);
-    console.log(`   🎵 Episodes: ${displayInfo.episodeCount}`);
-    console.log(`   ⏱️ Duration: ${displayInfo.duration}`);
-    console.log(`   🎭 Themes: ${displayInfo.themes.join(', ')}`);
-    console.log(`   🎨 Genres: ${displayInfo.genres.join(', ')}`);
+    console.log(`   Release Date: ${new Date(displayInfo.releaseDate).toLocaleDateString()}`);
+    console.log(`   Episodes: ${displayInfo.episodeCount}`);
+    console.log(`   Duration: ${displayInfo.duration}`);
+    console.log(`   Themes: ${displayInfo.themes.join(', ')}`);
+    console.log(`   Genres: ${displayInfo.genres.join(', ')}`);
     
     // Test 2: Test different release dates
-    console.log('\n🕒 Test 2: Testing release status determination...');
+    console.log('\nTest 2: Testing release status determination...');
     
     const testDates = [
       { date: '2022-12-25', expected: 'released' },
@@ -104,12 +104,12 @@ async function testSagaDisplay() {
     testDates.forEach(test => {
       const status = SagaServiceTest.determineReleaseStatus(test.date);
       const statusDisplay = SagaServiceTest.getReleaseStatusDisplay(status);
-      const success = status === test.expected ? '✅' : '❌';
+      const success = status === test.expected ? '✓' : '✗';
       console.log(`   ${success} ${test.date} → ${statusDisplay} (expected: ${test.expected})`);
     });
     
     // Test 3: Test all available sagas
-    console.log('\n📚 Test 3: Testing all available sagas...');
+    console.log('\nTEST 3: Testing all available sagas...');
     const allSagasResponse = await fetch(`${API_BASE_URL}/api/sagas`);
     
     if (allSagasResponse.ok) {
@@ -119,17 +119,17 @@ async function testSagaDisplay() {
       
       allSagas.content.forEach((saga, index) => {
         const displayInfo = SagaServiceTest.formatSagaDisplayInfo(saga);
-        console.log(`${index + 1}. 🎭 ${displayInfo.name}`);
+        console.log(`${index + 1}. ${displayInfo.name}`);
         console.log(`   ${SagaServiceTest.getReleaseStatusDisplay(displayInfo.releaseStatus)} • ${displayInfo.episodeCount} episodes • ${displayInfo.duration}`);
-        console.log(`   📖 ${displayInfo.description.substring(0, 80)}...`);
+        console.log(`   DESC: ${displayInfo.description.substring(0, 80)}...`);
         console.log('');
       });
     }
     
-    console.log('🎉 All saga display tests passed!');
+    console.log('SUCCESS: All saga display tests passed!');
     
   } catch (error) {
-    console.error('❌ Saga display test failed:', error);
+    console.error('ERROR: Saga display test failed:', error);
   }
 }
 

@@ -72,7 +72,7 @@ export const useMapLogic = (
       isInitializing: false,
     }));
 
-    console.error(`🗺️ Map Error [${mapError.type}]:`, mapError.message);
+    console.error(`◦  Map Error [${mapError.type}]:`, mapError.message);
   }, []);
 
   // Clear errors
@@ -116,7 +116,7 @@ export const useMapLogic = (
         isInitializing: false,
       }));
 
-      console.log('🎭 Epic Timeline Map initialized successfully!');
+      console.log('• Epic Timeline Map initialized successfully!');
     } catch (error) {
       handleError({
         type: 'DATA_ERROR',
@@ -227,7 +227,7 @@ export const useMapLogic = (
           setIsDragging(true);
           setLastPanPosition(panOffset);
           clearErrors(); // Clear errors when user starts interacting
-          console.log('🎯 Started panning Mediterranean map');
+          console.log('• Started panning Mediterranean map');
           break;
           
         case State.END:
@@ -246,7 +246,7 @@ export const useMapLogic = (
           const constrainedFinalOffset = constrainPanOffset(finalOffset);
           setPanOffset(constrainedFinalOffset);
           
-          console.log(`🗺️ Finished panning to: (${constrainedFinalOffset.x.toFixed(1)}, ${constrainedFinalOffset.y.toFixed(1)})`);
+          console.log(`◦  Finished panning to: (${constrainedFinalOffset.x.toFixed(1)}, ${constrainedFinalOffset.y.toFixed(1)})`);
           break;
       }
     } catch (error) {
@@ -268,7 +268,7 @@ export const useMapLogic = (
       const constrainedOffset = constrainPanOffset(panOffset);
       setPanOffset(constrainedOffset);
       
-      console.log(`🔍 Zoomed in to ${newZoom}x`);
+      console.log(`• Zoomed in to ${newZoom}x`);
     } catch (error) {
       handleError({
         type: 'BOUNDS_ERROR',
@@ -286,7 +286,7 @@ export const useMapLogic = (
       const constrainedOffset = constrainPanOffset(panOffset);
       setPanOffset(constrainedOffset);
       
-      console.log(`🔍 Zoomed out to ${newZoom}x`);
+      console.log(`• Zoomed out to ${newZoom}x`);
     } catch (error) {
       handleError({
         type: 'BOUNDS_ERROR',
@@ -327,7 +327,7 @@ export const useMapLogic = (
         isFocusing: false,
       }));
 
-      console.log(`🏛️ Successfully focused on Troy`);
+      console.log(`◦  Successfully focused on Troy`);
     } catch (error) {
       handleError({
         type: 'BOUNDS_ERROR',
@@ -409,7 +409,7 @@ export const useMapLogic = (
       setZoomLevel(MEDITERRANEAN_BOUNDS.zoom.initial);
       setPanOffset({ x: 0, y: 0 });
       clearErrors();
-      console.log('🌊 Reset to Mediterranean overview');
+      console.log('• Reset to Mediterranean overview');
     } catch (error) {
       handleError({
         type: 'BOUNDS_ERROR',

@@ -21,20 +21,20 @@ public class SagaService {
     @Autowired
     private SagaRepository sagaRepository;
 
-    // ✅ Get all sagas with filtering
+    // // [DONE] Get all sagas with filtering
     public Page<Saga> findAllWithFilter(SagaFilterRequest filter, Pageable pageable) {
         // Custom query logic based on filter criteria
         return sagaRepository.findAllWithFilter(filter, pageable);
     }
 
-    // ✅ Get saga by ID with populated relationships
+    // // [DONE] Get saga by ID with populated relationships
     public Optional<Saga> findByIdWithRelations(Long id) {
         return sagaRepository.findByIdWithCharactersAndSongsAndLocationsAndEvents(id);
     }
 
-    // ✅ Create new saga with validation
+    // // [DONE] Create new saga with validation
     public Saga createSaga(SagaCreateRequest request) {
-        // ✅ Custom validation beyond annotations
+        // // [DONE] Custom validation beyond annotations
         validateSagaRequest(request);
         
         Saga saga = Saga.builder()
@@ -58,10 +58,10 @@ public class SagaService {
         return sagaRepository.save(saga);
     }
 
-    // ✅ Update existing saga
+    // // [DONE] Update existing saga
     public Optional<Saga> updateSaga(Long id, SagaUpdateRequest request) {
         return sagaRepository.findById(id).map(existingSaga -> {
-            // ✅ Only update fields that are provided
+            // // [DONE] Only update fields that are provided
             if (request.getTitle() != null) {
                 existingSaga.setTitle(request.getTitle());
             }
@@ -76,7 +76,7 @@ public class SagaService {
                 existingSaga.setEpisodeCount(request.getEpisodeCount());
             }
             
-            // ✅ Update arrays if provided
+            // // [DONE] Update arrays if provided
             if (request.getGenres() != null) {
                 existingSaga.setGenres(validateAndCleanStringList(request.getGenres()));
             }
@@ -87,7 +87,7 @@ public class SagaService {
                 existingSaga.setInspirations(validateAndCleanStringList(request.getInspirations()));
             }
             
-            // ✅ Update URLs if provided
+            // // [DONE] Update URLs if provided
             if (request.getAlbumArtUrl() != null) {
                 existingSaga.setAlbumArtUrl(request.getAlbumArtUrl());
             }
@@ -105,7 +105,7 @@ public class SagaService {
         });
     }
 
-    // ✅ Delete saga
+    // // [DONE] Delete saga
     public boolean deleteSaga(Long id) {
         if (sagaRepository.existsById(id)) {
             sagaRepository.deleteById(id);
@@ -114,7 +114,7 @@ public class SagaService {
         return false;
     }
 
-    // ✅ Get saga statistics
+    // // [DONE] Get saga statistics
     public Optional<SagaStatsResponse> getSagaStats(Long id) {
         return sagaRepository.findByIdWithRelations(id).map(saga -> {
             return SagaStatsResponse.builder()
@@ -139,25 +139,25 @@ public class SagaService {
         });
     }
 
-    // ✅ Private validation methods
+    // // [DONE] Private validation methods
     private void validateSagaRequest(SagaCreateRequest request) {
-        // ✅ Validate date format
+        // // [DONE] Validate date format
         validateDateFormat(request.getReleaseDate());
         
-        // ✅ Validate genres aren't duplicates
+        // // [DONE] Validate genres aren't duplicates
         if (hasDuplicates(request.getGenres())) {
             throw new IllegalArgumentException("Genres cannot contain duplicates");
         }
         
-        // ✅ Validate themes aren't duplicates
+        // // [DONE] Validate themes aren't duplicates
         if (hasDuplicates(request.getThemes())) {
             throw new IllegalArgumentException("Themes cannot contain duplicates");
         }
         
-        // ✅ Validate predefined genre list (optional)
+        // // [DONE] Validate predefined genre list (optional)
         validateAgainstAllowedValues(request.getGenres(), getAllowedGenres(), "genre");
         
-        // ✅ Validate predefined theme list (optional)
+        // // [DONE] Validate predefined theme list (optional)
         validateAgainstAllowedValues(request.getThemes(), getAllowedThemes(), "theme");
     }
 
@@ -216,7 +216,7 @@ public class SagaService {
         );
     }
 
-    // ✅ Helper methods for statistics
+    // // [DONE] Helper methods for statistics
     private Double calculateAverageSongDuration(Saga saga) {
         return saga.getSongs().stream()
             .mapToInt(song -> song.getDurationSeconds() != null ? song.getDurationSeconds() : 0)

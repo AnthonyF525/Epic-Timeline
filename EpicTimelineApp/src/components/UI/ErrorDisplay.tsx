@@ -51,15 +51,15 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
   const getErrorIcon = () => {
     switch (error.type) {
       case 'network':
-        return '📡';
+        return '•';
       case 'server':
-        return '🔧';
+        return '•';
       case 'timeout':
-        return '⏱️';
+        return '⏱';
       case 'parse':
-        return '📄';
+        return '•';
       default:
-        return '⚠️';
+        return '⚠';
     }
   };
 
@@ -157,7 +157,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
                 <ActivityIndicator size="small" color="#FFFFFF" />
               ) : (
                 <Text style={styles.retryButtonText}>
-                  🔄 Retry ({maxRetryAttempts - retryCount} left)
+                  ↻ Retry ({maxRetryAttempts - retryCount} left)
                 </Text>
               )}
             </TouchableOpacity>
@@ -239,7 +239,7 @@ export const ErrorBanner: React.FC<{
         {onDismiss && (
           <TouchableOpacity onPress={onDismiss} style={styles.bannerButton}>
             <Text style={[styles.bannerButtonText, { color: getTextColor() }]}>
-              ✕
+              ×
             </Text>
           </TouchableOpacity>
         )}

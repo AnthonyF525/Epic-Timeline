@@ -4,7 +4,7 @@ import { ArrayOperation, ArrayUpdatePayload, BatchArrayUpdate, EpicArrayHelpers 
 
 export class SongService {
   
-  // ✅ BASIC SONG OPERATIONS
+  // ✓ BASIC SONG OPERATIONS
   static async getAllSongs(): Promise<Song[]> {
     const response = await epicRequest.get<Song[]>('/songs');
     return response.data;
@@ -29,7 +29,7 @@ export class SongService {
     await epicRequest.delete(`/songs/${id}`);
   }
 
-  // ✅ SAGA-BASED SONG RETRIEVAL
+  // ✓ SAGA-BASED SONG RETRIEVAL
   static async getSongsBySaga(sagaId: number): Promise<Song[]> {
     const response = await epicRequest.get<Song[]>(`/songs/saga/${sagaId}`);
     return response.data;
@@ -45,7 +45,7 @@ export class SongService {
 
   // ... other saga songs
 
-  // ✅ CHARACTER-FOCUSED SONGS
+  // ✓ CHARACTER-FOCUSED SONGS
   static async getSongsByCharacter(characterName: string): Promise<Song[]> {
     const response = await epicRequest.get<Song[]>(`/songs/character/${encodeURIComponent(characterName)}`);
     return response.data;
@@ -59,7 +59,7 @@ export class SongService {
     return this.getSongsByCharacter('Athena');
   }
 
-  // ✅ NARRATIVE IMPORTANCE FILTERING
+  // ✓ NARRATIVE IMPORTANCE FILTERING
   static async getSongsByImportance(importance: NarrativeImportance): Promise<Song[]> {
     const response = await epicRequest.get<Song[]>(`/songs/importance/${importance}`);
     return response.data;
@@ -69,7 +69,7 @@ export class SongService {
     return this.getSongsByImportance(NarrativeImportance.CRITICAL);
   }
 
-  // ✅ MUSICAL STYLE FILTERING
+  // ✓ MUSICAL STYLE FILTERING
   static async getSongsByMusicalStyle(style: string): Promise<Song[]> {
     const response = await epicRequest.get<Song[]>(`/songs/musical-style/${encodeURIComponent(style)}`);
     return response.data;
@@ -80,7 +80,7 @@ export class SongService {
     return response.data;
   }
 
-  // ✅ THEME-BASED FILTERING
+  // ✓ THEME-BASED FILTERING
   static async getSongsByTheme(theme: string): Promise<Song[]> {
     const response = await epicRequest.get<Song[]>(`/songs/theme/${encodeURIComponent(theme)}`);
     return response.data;
@@ -91,13 +91,13 @@ export class SongService {
     return response.data;
   }
 
-  // ✅ NARRATIVE FUNCTION
+  // ✓ NARRATIVE FUNCTION
   static async getSongsByNarrativeFunction(func: string): Promise<Song[]> {
     const response = await epicRequest.get<Song[]>(`/songs/narrative-function/${encodeURIComponent(func)}`);
     return response.data;
   }
 
-  // ✅ DURATION AND TRACK FILTERING
+  // ✓ DURATION AND TRACK FILTERING
   static async getSongsByDurationRange(minDuration: number, maxDuration: number): Promise<Song[]> {
     const response = await epicRequest.get<Song[]>(`/songs/duration?min=${minDuration}&max=${maxDuration}`);
     return response.data;
@@ -108,19 +108,19 @@ export class SongService {
     return response.data;
   }
 
-  // ✅ INSTRUMENTAL ELEMENTS
+  // ✓ INSTRUMENTAL ELEMENTS
   static async getSongsByInstrumentalElement(element: string): Promise<Song[]> {
     const response = await epicRequest.get<Song[]>(`/songs/instrumental/${encodeURIComponent(element)}`);
     return response.data;
   }
 
-  // ✅ SONG SEARCH AND DISCOVERY
+  // ✓ SONG SEARCH AND DISCOVERY
   static async searchSongs(query: string): Promise<Song[]> {
     const response = await epicRequest.get<Song[]>(`/songs/search?q=${encodeURIComponent(query)}`);
     return response.data;
   }
 
-  // ✅ SONG STATISTICS
+  // ✓ SONG STATISTICS
   static async getSongStats(): Promise<any> {
     const response = await epicRequest.get('/songs/stats');
     return response.data;
@@ -131,7 +131,7 @@ export class SongService {
     return response.data;
   }
 
-  // ✅ COMPLEX FILTERING
+  // ✓ COMPLEX FILTERING
   static async filterSongs(filter: SongFilter): Promise<Song[]> {
     const params = new URLSearchParams();
     
@@ -147,7 +147,7 @@ export class SongService {
     return response.data;
   }
 
-  // ✅ THEMES UPDATES
+  // ✓ THEMES UPDATES
   static async updateSongThemes(songId: number, operation: ArrayOperation, themes: string[]): Promise<Song> {
     const updatedThemes = EpicArrayHelpers.updateSongThemes([], operation, themes);
     
@@ -163,7 +163,7 @@ export class SongService {
     return response.data;
   }
 
-  // ✅ CHARACTER FOCUS UPDATES
+  // ✓ CHARACTER FOCUS UPDATES
   static async updateSongCharacterFocus(songId: number, operation: ArrayOperation, characters: string[]): Promise<Song> {
     const updatedFocus = EpicArrayHelpers.updateCharacterFocus([], operation, characters);
     
@@ -179,7 +179,7 @@ export class SongService {
     return response.data;
   }
 
-  // ✅ EMOTIONAL TONE UPDATES
+  // ✓ EMOTIONAL TONE UPDATES
   static async updateSongEmotionalTone(songId: number, operation: ArrayOperation, tones: string[]): Promise<Song> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -193,7 +193,7 @@ export class SongService {
     return response.data;
   }
 
-  // ✅ INSTRUMENTAL ELEMENTS UPDATES
+  // ✓ INSTRUMENTAL ELEMENTS UPDATES
   static async updateSongInstrumentalElements(songId: number, operation: ArrayOperation, elements: string[]): Promise<Song> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -207,7 +207,7 @@ export class SongService {
     return response.data;
   }
 
-  // ✅ LEARNING OBJECTIVES UPDATES
+  // ✓ LEARNING OBJECTIVES UPDATES
   static async updateSongLearningObjectives(songId: number, operation: ArrayOperation, objectives: string[]): Promise<Song> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -221,7 +221,7 @@ export class SongService {
     return response.data;
   }
 
-  // ✅ HISTORICAL CONTEXT UPDATES
+  // ✓ HISTORICAL CONTEXT UPDATES
   static async updateSongHistoricalContext(songId: number, operation: ArrayOperation, context: string[]): Promise<Song> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -235,7 +235,7 @@ export class SongService {
     return response.data;
   }
 
-  // ✅ LITERARY DEVICES UPDATES
+  // ✓ LITERARY DEVICES UPDATES
   static async updateSongLiteraryDevices(songId: number, operation: ArrayOperation, devices: string[]): Promise<Song> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -249,7 +249,7 @@ export class SongService {
     return response.data;
   }
 
-  // ✅ EPIC CHANGES UPDATES (Homer Comparison)
+  // ✓ EPIC CHANGES UPDATES (Homer Comparison)
   static async updateSongEpicChanges(songId: number, operation: ArrayOperation, changes: string[]): Promise<Song> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -263,7 +263,7 @@ export class SongService {
     return response.data;
   }
 
-  // ✅ BATCH ARRAY UPDATES
+  // ✓ BATCH ARRAY UPDATES
   static async batchUpdateSongArrays(songId: number, updates: ArrayUpdatePayload[]): Promise<Song> {
     const batchPayload: BatchArrayUpdate = {
       entityType: 'song',
@@ -276,7 +276,7 @@ export class SongService {
     return response.data;
   }
 
-  // ✅ EPIC TIMELINE HELPERS
+  // ✓ EPIC TIMELINE HELPERS
   static async addThemeToTroySagaSongs(theme: string): Promise<Song[]> {
     const troySongs = await this.getTroySagaSongs();
     const updatedSongs: Song[] = [];

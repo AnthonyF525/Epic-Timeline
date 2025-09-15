@@ -12,24 +12,24 @@ public class ComparisonStatsResponse {
     private Long comparisonId;
     private String comparisonTitle;
     
-    // ✅ Comparison type enum
+    // // [DONE] Comparison type enum
     private ComparisonType comparisonType;
     
-    // ✅ Analysis metadata
+    // // [DONE] Analysis metadata
     private String analysisType;
     private String conclusion;
     
-    // ✅ Boolean flags
+    // // [DONE] Boolean flags
     private Boolean isPublic;
     private Boolean isDetailed;
     
-    // ✅ Entity information
+    // // [DONE] Entity information
     private Long entityOneId;
     private String entityOneName;
     private Long entityTwoId;
     private String entityTwoName;
     
-    // ✅ Criteria statistics
+    // // [DONE] Criteria statistics
     private Integer criteriaCount;
     private Double averageEntityOneScore;
     private Double averageEntityTwoScore;
@@ -38,27 +38,27 @@ public class ComparisonStatsResponse {
     private String winningEntity;
     private Double scoreDifference;
     
-    // ✅ Content statistics
+    // // [DONE] Content statistics
     private Integer themeCount;
     private Integer tagCount;
     private Integer sourceCount;
     private Integer keyInsightCount;
     private Integer relatedEntityCount;
     
-    // ✅ Array content
+    // // [DONE] Array content
     private List<String> allThemes;
     private List<String> allTags;
     private Map<String, Long> themeFrequency;
     private Map<String, Long> tagFrequency;
     
-    // ✅ Metrics information
+    // // [DONE] Metrics information
     private Double overallEntityOneScore;
     private Double overallEntityTwoScore;
     private Double confidenceLevel;
     private Integer analysisDepth;
     private Integer biasLevel;
     
-    // ✅ Context information
+    // // [DONE] Context information
     private String historicalPeriod;
     private String culturalContext;
     private String comparisonPurpose;
@@ -66,13 +66,13 @@ public class ComparisonStatsResponse {
     private List<String> methodologies;
     private List<String> limitations;
     
-    // ✅ Related entities
+    // // [DONE] Related entities
     private List<String> relatedCharacterNames;
     private List<String> relatedLocationNames;
     private List<String> relatedEventTitles;
     private List<String> relatedSagaTitles;
     
-    // ✅ Detailed criteria breakdown
+    // // [DONE] Detailed criteria breakdown
     private List<ComparisonCriteriaStatsResponse> criteriaBreakdown;
 }
 

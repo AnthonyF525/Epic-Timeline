@@ -17,10 +17,10 @@ public class ComparisonUpdateRequest {
     @Size(min = 10, max = 2000, message = "Description must be between 10 and 2000 characters")
     private String description;
     
-    // ✅ Comparison type enum (optional for updates)
+    // // [DONE] Comparison type enum (optional for updates)
     private ComparisonType comparisonType;
     
-    // ✅ Analysis metadata updates
+    // // [DONE] Analysis metadata updates
     @Pattern(regexp = "similarities|differences|strengths_weaknesses|historical_impact|character_development|thematic_analysis", 
              message = "Analysis type must be: similarities, differences, strengths_weaknesses, historical_impact, character_development, or thematic_analysis")
     private String analysisType;
@@ -29,11 +29,11 @@ public class ComparisonUpdateRequest {
              message = "Conclusion must be: entity_one_superior, entity_two_superior, equivalent, incomparable, or context_dependent")
     private String conclusion;
     
-    // ✅ Boolean flag updates
+    // // [DONE] Boolean flag updates
     private Boolean isPublic;
     private Boolean isDetailed;
     
-    // ✅ Array updates (with validation)
+    // // [DONE] Array updates (with validation)
     @Size(min = 3, max = 20, message = "Must have between 3 and 20 comparison criteria")
     private List<@Valid ComparisonCriteriaRequest> criteria;
     

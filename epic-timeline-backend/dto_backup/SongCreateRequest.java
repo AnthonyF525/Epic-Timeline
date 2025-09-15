@@ -29,57 +29,57 @@ public class SongCreateRequest {
     @NotNull(message = "Saga ID is required")
     private Long sagaId;
 
-    // ✅ Array validation - themes (at least one required)
+    // // [DONE] Array validation - themes (at least one required)
     @NotEmpty(message = "At least one theme is required")
     @Size(max = 10, message = "Cannot have more than 10 themes")
     private List<@NotBlank @Size(max = 50) String> themes;
 
-    // ✅ Array validation - genres (at least one required)
+    // // [DONE] Array validation - genres (at least one required)
     @NotEmpty(message = "At least one genre is required")
     @Size(max = 8, message = "Cannot have more than 8 genres")
     private List<@NotBlank @Size(max = 50) String> genres;
 
-    // ✅ Array validation - instruments (optional)
+    // // [DONE] Array validation - instruments (optional)
     @Size(max = 15, message = "Cannot have more than 15 instruments")
     private List<@NotBlank @Size(max = 50) String> instruments;
 
-    // ✅ Array validation - vocals (optional)
+    // // [DONE] Array validation - vocals (optional)
     @Size(max = 10, message = "Cannot have more than 10 vocal styles")
     private List<@NotBlank @Size(max = 50) String> vocals;
 
-    // ✅ Array validation - moods (optional)
+    // // [DONE] Array validation - moods (optional)
     @Size(max = 8, message = "Cannot have more than 8 moods")
     private List<@NotBlank @Size(max = 50) String> moods;
 
-    // ✅ Array validation - tags (optional)
+    // // [DONE] Array validation - tags (optional)
     @Size(max = 12, message = "Cannot have more than 12 tags")
     private List<@NotBlank @Size(max = 30) String> tags;
 
-    // ✅ Array validation - character IDs (optional for creation)
+    // // [DONE] Array validation - character IDs (optional for creation)
     @Size(max = 20, message = "Cannot have more than 20 characters")
     private List<@NotNull Long> characterIds;
 
-    // ✅ Array validation - song sections (optional)
+    // // [DONE] Array validation - song sections (optional)
     @Size(max = 20, message = "Cannot have more than 20 song sections")
     private List<@NotBlank @Size(max = 100) String> songSections;
 
-    // ✅ Array validation - lyric highlights (optional)
+    // // [DONE] Array validation - lyric highlights (optional)
     @Size(max = 15, message = "Cannot have more than 15 lyric highlights")
     private List<@NotBlank @Size(max = 200) String> lyricHighlights;
 
-    // ✅ Array validation - Amazon Music IDs (optional)
+    // // [DONE] Array validation - Amazon Music IDs (optional)
     @Size(max = 5, message = "Cannot have more than 5 Amazon Music IDs")
     private List<@NotBlank @Size(max = 50) String> amazonMusicIds;
 
-    // ✅ Array validation - YouTube IDs (optional)
+    // // [DONE] Array validation - YouTube IDs (optional)
     @Size(max = 10, message = "Cannot have more than 10 YouTube IDs")
     private List<@NotBlank @Size(max = 50) String> youtubeIds;
 
-    // ✅ Array validation - inspiration sources (optional)
+    // // [DONE] Array validation - inspiration sources (optional)
     @Size(max = 10, message = "Cannot have more than 10 inspiration sources")
     private List<@NotBlank @Size(max = 100) String> inspirationSources;
 
-    // ✅ Optional metadata fields
+    // // [DONE] Optional metadata fields
     @Size(max = 100, message = "Lyricist name cannot exceed 100 characters")
     private String lyricist;
 

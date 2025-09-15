@@ -14,7 +14,7 @@ export interface EpicMapLocation extends Location {
 
 export class MapService {
   
-  // ✅ EPIC TIMELINE LOCATIONS WITH REAL COORDINATES
+  // ✓ EPIC TIMELINE LOCATIONS WITH REAL COORDINATES
   static getEpicLocations(): EpicMapLocation[] {
     return [
       {
@@ -110,7 +110,7 @@ export class MapService {
     ];
   }
 
-  // ✅ GET SAGA ROUTE
+  // ✓ GET SAGA ROUTE
   static getSagaRoute(sagaTitle: string): EpicMapLocation[] {
     const allLocations = this.getEpicLocations();
     
@@ -132,7 +132,7 @@ export class MapService {
     }
   }
 
-  // ✅ GET ODYSSEUS'S COMPLETE JOURNEY
+  // ✓ GET ODYSSEUS'S COMPLETE JOURNEY
   static getOdysseusJourney(): EpicMapLocation[] {
     return this.getEpicLocations().sort((a, b) => {
       const order = ['Troy', 'Cyclops Island', 'Circe Island (Aeaea)', 'Underworld Entrance', 'Ithaca'];
@@ -140,7 +140,7 @@ export class MapService {
     });
   }
 
-  // ✅ CALCULATE DISTANCE BETWEEN LOCATIONS
+  // ✓ CALCULATE DISTANCE BETWEEN LOCATIONS
   static calculateDistance(loc1: EpicMapLocation, loc2: EpicMapLocation): number {
     const R = 6371; // Earth's radius in km
     const dLat = this.toRad(loc2.coordinates.latitude - loc1.coordinates.latitude);
@@ -159,7 +159,7 @@ export class MapService {
     return degrees * (Math.PI / 180);
   }
 
-  // ✅ GET MAP REGION FOR EPIC TIMELINE
+  // ✓ GET MAP REGION FOR EPIC TIMELINE
   static getEpicMapRegion() {
     return {
       latitude: 39.0,

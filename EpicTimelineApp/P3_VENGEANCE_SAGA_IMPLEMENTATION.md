@@ -4,22 +4,22 @@
 
 The Vengeance Saga represents the culmination of Odysseus's twenty-year journey in EPIC: The Musical. This implementation provides comprehensive seed data for the final confrontation, homecoming, and divine justice that closes the epic tale.
 
-## Implementation Status: ✅ COMPLETE
+## Implementation Status: • COMPLETE
 
 ### Features Implemented
 
-#### 🏹 Characters (3 total)
+#### • Characters (3 total)
 - **Odysseus (Returned King)** - The legendary hero finally home, carrying the weight of his trials and the prophecy of becoming a monster to protect his family
 - **Penelope** - The faithful wife who has cleverly delayed the suitors while maintaining hope for her husband's return
 - **The Suitors** - The parasitic nobles who have invaded Odysseus's home and must face divine justice
 
-#### 🏛️ Locations (4 total)
+#### ◦  Locations (4 total)
 - **Royal Palace of Ithaca** - The grand palace where Odysseus was once king, now overrun by suitors
 - **Harbor of Ithaca** - The coastal arrival point where Odysseus first sets foot on his homeland after twenty years
 - **Throne Room of Ithaca** - The seat of power where justice will be delivered and rightful rule restored
 - **Great Hall of Judgment** - The space where the final confrontation between Odysseus and the suitors takes place
 
-#### 🎵 Songs (6 total)
+#### • Songs (6 total)
 1. **Charybdis** (4:15) - The final sea monster encounter
 2. **Get in the Water** (5:30) - Poseidon's ultimatum
 3. **Six Hundred Strike** (6:45) - Odysseus's brutal response
@@ -27,7 +27,7 @@ The Vengeance Saga represents the culmination of Odysseus's twenty-year journey 
 5. **Dangerous** (4:25) - The revelation of Odysseus's identity
 6. **The Challenge** (5:15) - The contest that determines the suitors' fate
 
-#### ⚔️ Events (9 total)
+#### ◦  Events (9 total)
 - Odysseus's return to Ithaca in disguise
 - Recognition by faithful servants
 - Planning the suitor confrontation
@@ -127,7 +127,7 @@ const palaceLocations = seedDataService.getLocationsBySaga('vengeance')
 
 ## Completion Status
 
-### ✅ Completed
+### • Completed
 - Character definitions with complex relationships
 - Location data with royal/homecoming focus
 - Complete song progression
@@ -136,7 +136,7 @@ const palaceLocations = seedDataService.getLocationsBySaga('vengeance')
 - TypeScript compatibility
 - EPIC: The Musical accuracy verification
 
-### 🔄 Integration Points
+### • Integration Points
 - UI components can now display Vengeance Saga data
 - API fallback functionality includes final saga
 - Complete narrative arc from Troy to Ithaca available

@@ -7,10 +7,10 @@ import lombok.Builder;
 @Data
 @Builder
 public class CharacterFilterRequest {
-    // ✅ Character type enum filter
+    // // [DONE] Character type enum filter
     private CharacterType characterType;
     
-    // ✅ Boolean flag filters
+    // // [DONE] Boolean flag filters
     private Boolean isAlive;
     private Boolean isImmortal;
     private Boolean hasSpokenLines;
@@ -19,7 +19,7 @@ public class CharacterFilterRequest {
     private Boolean isProtagonist;
     private Boolean isHistoricalFigure;
     
-    // ✅ Array content filters
+    // // [DONE] Array content filters
     private String role;
     private String trait;
     private String ability;
@@ -29,23 +29,23 @@ public class CharacterFilterRequest {
     private String epithet;
     private String weapon;
     
-    // ✅ Relationship filters
+    // // [DONE] Relationship filters
     private Long songId;
     private Long locationId;
     private Long sagaId;
     
-    // ✅ Search filter
+    // // [DONE] Search filter
     private String search;
     
-    // ✅ Physical description filters
+    // // [DONE] Physical description filters
     private String hairColor;
     private String eyeColor;
     private String build;
     
-    // ✅ Voice actor filter
+    // // [DONE] Voice actor filter
     private String voiceActorName;
     
-    // ✅ Background filters
+    // // [DONE] Background filters
     private String birthPlace;
     private String familyOrigin;
 }

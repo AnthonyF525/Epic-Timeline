@@ -88,9 +88,9 @@ const CacheDebugPanel: React.FC<CacheDebugPanelProps> = ({ isVisible, onClose })
       <View style={styles.overlay}>
         <View style={styles.panel}>
           <View style={styles.header}>
-            <Text style={styles.title}>📦 Cache Debug Panel</Text>
+            <Text style={styles.title}>Cache Debug Panel</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>✕</Text>
+              <Text style={styles.closeButtonText}>X</Text>
             </TouchableOpacity>
           </View>
 
@@ -106,12 +106,12 @@ const CacheDebugPanel: React.FC<CacheDebugPanelProps> = ({ isVisible, onClose })
               </View>
               <View style={styles.statusRow}>
                 <Text style={styles.label}>Initialized:</Text>
-                <Text style={styles.value}>{metrics.initialized ? '✅ Yes' : '❌ No'}</Text>
+                <Text style={styles.value}>{metrics.initialized ? 'Yes' : 'No'}</Text>
               </View>
               <View style={styles.statusRow}>
                 <Text style={styles.label}>Background Refresh:</Text>
                 <Text style={styles.value}>
-                  {metrics.backgroundRefreshActive ? '🔄 Active' : '⏸️ Inactive'}
+                  {metrics.backgroundRefreshActive ? 'Active' : 'Inactive'}
                 </Text>
               </View>
             </View>
@@ -139,11 +139,11 @@ const CacheDebugPanel: React.FC<CacheDebugPanelProps> = ({ isVisible, onClose })
 
             {/* Troy Data Specific */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>🏛️ Troy Data</Text>
+              <Text style={styles.sectionTitle}>Troy Data</Text>
               <View style={styles.statusRow}>
                 <Text style={styles.label}>Cached:</Text>
                 <Text style={styles.value}>
-                  {metrics.cache.troyDataCached ? '✅ Yes' : '❌ No'}
+                  {metrics.cache.troyDataCached ? 'Yes' : 'No'}
                 </Text>
               </View>
               <View style={styles.statusRow}>
@@ -163,7 +163,7 @@ const CacheDebugPanel: React.FC<CacheDebugPanelProps> = ({ isVisible, onClose })
 
             {/* Recommendations */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>💡 Recommendations</Text>
+              <Text style={styles.sectionTitle}>Recommendations</Text>
               {metrics.recommendations.map((rec: string, index: number) => (
                 <Text key={index} style={styles.recommendation}>
                   {rec}
@@ -173,11 +173,11 @@ const CacheDebugPanel: React.FC<CacheDebugPanelProps> = ({ isVisible, onClose })
 
             {/* Configuration */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>⚙️ Configuration</Text>
+              <Text style={styles.sectionTitle}>Configuration</Text>
               <View style={styles.statusRow}>
                 <Text style={styles.label}>Preload Troy:</Text>
                 <Text style={styles.value}>
-                  {metrics.config.preloadTroyData ? '✅ Enabled' : '❌ Disabled'}
+                  {metrics.config.preloadTroyData ? 'Enabled' : 'Disabled'}
                 </Text>
               </View>
               <View style={styles.statusRow}>
@@ -187,7 +187,7 @@ const CacheDebugPanel: React.FC<CacheDebugPanelProps> = ({ isVisible, onClose })
               <View style={styles.statusRow}>
                 <Text style={styles.label}>Dev Mode:</Text>
                 <Text style={styles.value}>
-                  {metrics.config.enableDevelopmentMode ? '🔧 On' : '📱 Off'}
+                  {metrics.config.enableDevelopmentMode ? 'On' : 'Off'}
                 </Text>
               </View>
             </View>
@@ -201,7 +201,7 @@ const CacheDebugPanel: React.FC<CacheDebugPanelProps> = ({ isVisible, onClose })
               disabled={refreshing}
             >
               <Text style={styles.actionButtonText}>
-                {refreshing ? '🔄 Refreshing...' : '🔄 Force Refresh'}
+                {refreshing ? 'Refreshing...' : 'Force Refresh'}
               </Text>
             </TouchableOpacity>
             
@@ -209,7 +209,7 @@ const CacheDebugPanel: React.FC<CacheDebugPanelProps> = ({ isVisible, onClose })
               style={[styles.actionButton, styles.clearButton]} 
               onPress={handleClearCache}
             >
-              <Text style={styles.actionButtonText}>🧹 Clear Cache</Text>
+              <Text style={styles.actionButtonText}>Clear Cache</Text>
             </TouchableOpacity>
           </View>
         </View>

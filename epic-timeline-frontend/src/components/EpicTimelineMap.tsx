@@ -38,7 +38,7 @@ const EpicTimelineMap = ({
         setJourneyRoute(journey);
       }
     } catch (error) {
-      console.error('🚨 Error loading Epic Timeline locations:', error);
+      console.error('ERROR Error loading Epic Timeline locations:', error);
       Alert.alert('Error', 'Failed to load Epic Timeline map data');
     }
   };
@@ -72,7 +72,7 @@ const EpicTimelineMap = ({
         mapType="terrain" // Good for showing ancient geography
         customMapStyle={epicMapStyle} // Custom styling for Epic Timeline
       >
-        {/* ✅ Epic Timeline Location Markers */}
+        {/* ✓ Epic Timeline Location Markers */}
         {epicLocations.map((location) => (
           <Marker
             coordinate={{
@@ -87,7 +87,7 @@ const EpicTimelineMap = ({
           />
         ))}
 
-        {/* ✅ Odysseus's Journey Route */}
+        {/* ✓ Odysseus's Journey Route */}
         {showJourney && journeyRoute.length > 1 && (
           <Polyline
             coordinates={journeyRoute.map(loc => ({
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   },
 });
 
-// ✅ CUSTOM MAP STYLE FOR EPIC TIMELINE
+// ✓ CUSTOM MAP STYLE FOR EPIC TIMELINE
 const epicMapStyle = [
   {
     featureType: "water",

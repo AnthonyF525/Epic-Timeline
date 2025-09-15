@@ -27,16 +27,16 @@ export const capitalizeSagaName = (saga: string): string => {
 // Helper function to get saga emoji
 export const getSagaEmoji = (saga: string): string => {
   switch (saga.toLowerCase()) {
-    case 'troy-saga': return '🏛️';
-    case 'cyclops-saga': return '👁️';
-    case 'ocean-saga': return '🌊';
-    case 'circe-saga': return '🔮';
-    case 'underworld-saga': return '💀';
-    case 'thunder-saga': return '⚡';
-    case 'wisdom-saga': return '🦉';
-    case 'vengeance-saga': return '⚔️';
-    case 'ithaca-saga': return '🏠';
-    default: return '🗺️';
+    case 'troy-saga': return '◦ ';
+    case 'cyclops-saga': return '◦ ';
+    case 'ocean-saga': return '•';
+    case 'circe-saga': return '•';
+    case 'underworld-saga': return '•';
+    case 'thunder-saga': return '•';
+    case 'wisdom-saga': return '⚪';
+    case 'vengeance-saga': return '◦ ';
+    case 'ithaca-saga': return '•';
+    default: return '◦ ';
   }
 };
 
@@ -52,7 +52,7 @@ export const measurePerformance = <T>(fn: () => T, label: string): T => {
   const start = performance.now();
   const result = fn();
   const end = performance.now();
-  console.log(`🎯 ${label}: ${(end - start).toFixed(2)}ms`);
+  console.log(`• ${label}: ${(end - start).toFixed(2)}ms`);
   return result;
 };
 

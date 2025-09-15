@@ -51,7 +51,7 @@ export const LocationHotspot: React.FC<LocationHotspotProps> = ({
         backgroundColor: '#8B0000', // Dark red for Troy
         borderColor: '#FFD700', // Gold border for Troy
         size: 20,
-        icon: '🏛️',
+        icon: '◦ ',
         priority: 1,
       };
     }
@@ -68,17 +68,17 @@ export const LocationHotspot: React.FC<LocationHotspotProps> = ({
   // Get saga-specific icon
   const getLocationIcon = (saga: string): string => {
     const sagaIcons: Record<string, string> = {
-      'troy-saga': '🏛️',
-      'cyclops-saga': '👁️',
-      'ocean-saga': '🌊',
-      'circe-saga': '🔮',
-      'underworld-saga': '💀',
-      'thunder-saga': '⚡',
-      'wisdom-saga': '🦉',
-      'vengeance-saga': '⚔️',
-      'ithaca-saga': '🏠',
+      'troy-saga': '◦ ',
+      'cyclops-saga': '◦ ',
+      'ocean-saga': '•',
+      'circe-saga': '•',
+      'underworld-saga': '•',
+      'thunder-saga': '•',
+      'wisdom-saga': '⚪',
+      'vengeance-saga': '◦ ',
+      'ithaca-saga': '•',
     };
-    return sagaIcons[saga] || '📍';
+    return sagaIcons[saga] || '•';
   };
 
   // Handle visibility animation

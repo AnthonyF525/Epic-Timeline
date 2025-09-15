@@ -19,6 +19,7 @@ import {
 import Slider from '@react-native-community/slider';
 import { Audio, AVPlaybackStatus, InterruptionModeIOS, InterruptionModeAndroid } from 'expo-av';
 import { Song } from './SongList';
+import { realSpotifyService } from '../../services/RealSpotifyService';
 
 export interface AudioPlayerProps {
   currentSong?: Song | null;
@@ -208,7 +209,49 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
       // For demo purposes, we'll use a placeholder audio URL
       // In production, you'd use song.audioUrl
-      const audioUri = song.audioUrl || 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav';
+      let audioUri = song.audioUrl;
+      
+      // Try to get Spotify preview for EPIC songs
+      if (!audioUri && song.title) {
+        try {
+          if (realSpotifyService.isAuthenticated()) {
+            console.log('Searching Spotify for:', song.title);
+            const spotifyResult = await realSpotifyService.getPreviewUrl(song.title);
+            
+            if (spotifyResult.success && spotifyResult.previewUrl) {
+              audioUri = spotifyResult.previewUrl;
+              console.log('Using Spotify preview URL for:', song.title);
+              console.log('Track info:', spotifyResult.trackInfo);
+            } else {
+              console.warn('Spotify preview failed:', spotifyResult.message);
+            }
+          } else {
+            console.log('Not authenticated with Spotify, using fallback');
+          }
+        } catch (error) {
+          console.warn('Failed to get Spotify preview:', error);
+        }
+      }
+      
+      // Fallback to demo audio if no Spotify preview available
+      if (!audioUri) {
+        // Instead of playing a bell, show a clear message and do not play audio
+        setPlayerState(prev => ({
+          ...prev,
+          isLoading: false,
+          isBuffering: false,
+          error: 'No preview available. Connect Spotify for real Epic: The Musical songs.'
+        }));
+        Alert.alert(
+          'Epic: The Musical',
+          `No preview available for "${song.title}".\n\nConnect Spotify to hear real 30-second previews from Epic: The Musical by Jorge Rivera-Herrans!`,
+          [
+            { text: 'OK', style: 'cancel' }
+          ]
+        );
+        clearInterval(progressInterval);
+        return;
+      }
       
       const { sound: newSound, status } = await Audio.Sound.createAsync(
         { uri: audioUri },
@@ -257,11 +300,16 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
       
       // Show user-friendly error message
       Alert.alert(
-        'Playback Error', 
-        `Could not load "${song.title}". Please check your internet connection and try again.`,
+        'Audio Format Error', 
+        `Could not play "${song.title}". This may be due to audio format compatibility. Try connecting to Spotify for real previews!`,
         [
           { text: 'OK', onPress: () => setPlayerState(prev => ({ ...prev, error: null })) },
-          { text: 'Retry', onPress: () => loadSong(song) }
+          { text: 'Connect Spotify', onPress: () => {
+            // Trigger Spotify connection from MapScreen
+            console.log('User wants to connect Spotify for Epic songs');
+            // You can add navigation or global state update here
+            Alert.alert('Spotify Setup', 'Look for the "Get Real Epic Songs" button at the top of the map to connect!');
+          }}
         ]
       );
     }
@@ -507,9 +555,9 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   // Get repeat icon
   const getRepeatIcon = () => {
     switch (playerState.repeatMode) {
-      case 'one': return '🔂';
-      case 'all': return '🔁';
-      default: return '🔁';
+      case 'one': return '1';
+      case 'all': return '∞';
+      default: return '∞';
     }
   };
 
@@ -586,15 +634,15 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
               disabled={playerState.isLoading || playerState.error !== null}
             >
               <Text style={styles.compactPlayIcon}>
-                {playerState.isLoading ? '⏳' : 
-                 playerState.isBuffering ? '⏰' :
-                 playerState.error ? '⚠️' :
-                 playerState.isPlaying ? '⏸️' : '▶️'}
+                {playerState.isLoading ? '...' : 
+                 playerState.isBuffering ? '...' :
+                 playerState.error ? '!' :
+                 playerState.isPlaying ? '||' : '▶'}
               </Text>
             </TouchableOpacity>
             {onClose && (
               <TouchableOpacity onPress={handleCloseWithBackgroundInfo} style={styles.compactCloseButton}>
-                <Text style={styles.compactCloseIcon}>✕</Text>
+                <Text style={styles.compactCloseIcon}>×</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -628,12 +676,12 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             <View style={styles.headerCenter}>
               <Text style={styles.headerTitle}>Now Playing</Text>
               {appState === 'background' && playerState.isPlaying && (
-                <Text style={styles.backgroundIndicator}>🎵 Background</Text>
+                <Text style={styles.backgroundIndicator}>Background</Text>
               )}
             </View>
             {onClose && (
               <TouchableOpacity onPress={handleCloseWithBackgroundInfo}>
-                <Text style={styles.closeIcon}>✕</Text>
+                <Text style={styles.closeIcon}>×</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -680,20 +728,20 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
           {/* Buffering Indicator */}
           {playerState.isBuffering && !playerState.isLoading && (
             <View style={styles.bufferingContainer}>
-              <Text style={styles.bufferingText}>⏳ Buffering...</Text>
+              <Text style={styles.bufferingText}>Buffering...</Text>
             </View>
           )}
 
           {/* Error Display */}
           {playerState.error && (
             <View style={styles.errorContainer}>
-              <Text style={styles.errorIcon}>⚠️</Text>
+              <Text style={styles.errorIcon}>!</Text>
               <Text style={styles.errorText}>{playerState.error}</Text>
               <TouchableOpacity
                 style={styles.errorDismissButton}
                 onPress={() => setPlayerState(prev => ({ ...prev, error: null }))}
               >
-                <Text style={styles.errorDismissText}>✕</Text>
+                <Text style={styles.errorDismissText}>×</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -732,7 +780,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
           {/* Main Controls */}
           <View style={styles.mainControls}>
             <TouchableOpacity onPress={handlePrevious} style={styles.controlButton}>
-              <Text style={styles.controlIcon}>⏮️</Text>
+              <Text style={styles.controlIcon}>⏮</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
@@ -744,15 +792,15 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
               disabled={playerState.isLoading || playerState.error !== null}
             >
               <Text style={styles.playIcon}>
-                {playerState.isLoading ? '⏳' : 
-                 playerState.isBuffering ? '⏰' :
-                 playerState.error ? '⚠️' :
-                 playerState.isPlaying ? '⏸️' : '▶️'}
+                {playerState.isLoading ? '...' : 
+                 playerState.isBuffering ? '...' :
+                 playerState.error ? '!' :
+                 playerState.isPlaying ? '||' : '▶'}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={handleNext} style={styles.controlButton}>
-              <Text style={styles.controlIcon}>⏭️</Text>
+              <Text style={styles.controlIcon}>⏭</Text>
             </TouchableOpacity>
           </View>
 
@@ -768,7 +816,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             </TouchableOpacity>
 
             <View style={styles.volumeContainer}>
-              <Text style={styles.volumeIcon}>🔊</Text>
+              <Text style={styles.volumeIcon}>♪</Text>
               <Slider
                 style={styles.volumeSlider}
                 value={playerState.volume}

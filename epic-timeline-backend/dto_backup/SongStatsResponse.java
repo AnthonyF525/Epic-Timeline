@@ -14,7 +14,7 @@ public class SongStatsResponse {
     private Integer durationSeconds;
     private Integer characterCount;
 
-    // ✅ Array statistics
+    // // [DONE] Array statistics
     private List<String> allThemes;
     private List<String> allGenres;
     private List<String> allInstruments;
@@ -25,17 +25,17 @@ public class SongStatsResponse {
     private Map<String, Integer> genreCount;
     private Map<String, Integer> moodCount;
 
-    // ✅ Character statistics
+    // // [DONE] Character statistics
     private List<String> characterNames;
     private Map<String, Integer> characterTypeCount;
 
-    // ✅ Song structure statistics
+    // // [DONE] Song structure statistics
     private Integer sectionCount;
     private Integer lyricHighlightCount;
     private Integer externalLinkCount;
     private Integer inspirationSourceCount;
 
-    // ✅ Musical metadata
+    // // [DONE] Musical metadata
     private Boolean isInstrumental;
     private Boolean hasDialogue;
     private Boolean isReprise;

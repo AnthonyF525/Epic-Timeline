@@ -7,7 +7,7 @@ public class LocationStatsResponse {
     private Long locationId;
     private String locationName;
     
-    // ✅ Boolean flag statistics
+    // // [DONE] Boolean flag statistics
     private Boolean isRealPlace;
     private Boolean isMythological;
     private Boolean isModernLocation;
@@ -18,19 +18,19 @@ public class LocationStatsResponse {
     private Boolean hasModernName;
     private Boolean hasCoordinates;
     
-    // ✅ Relationship counts
+    // // [DONE] Relationship counts
     private Integer characterCount;
     private Integer eventCount;
     private Integer sagaCount;
     
-    // ✅ Array statistics
+    // // [DONE] Array statistics
     private Integer alternativeNameCount;
     private Integer notableFeatureCount;
     private Integer historicalPeriodCount;
     private Integer mythologicalEventCount;
     private Integer modernLandmarkCount;
     
-    // ✅ Geographic data
+    // // [DONE] Geographic data
     private String regionType;
     private String regionName;
     private String parentRegion;
@@ -38,18 +38,18 @@ public class LocationStatsResponse {
     private Double longitude;
     private Double altitude;
     
-    // ✅ Cultural significance
+    // // [DONE] Cultural significance
     private String culturalImportance;
     private List<String> culturalTags;
     private Integer literaryReferenceCount;
     
-    // ✅ Tourism data
+    // // [DONE] Tourism data
     private Boolean hasTravelInfo;
     private String nearestAirport;
     private List<String> accessMethods;
     private String bestTimeToVisit;
     
-    // ✅ Related entities
+    // // [DONE] Related entities
     private List<String> characterNames;
     private List<String> eventTitles;
     private List<String> sagaTitles;

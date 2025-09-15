@@ -9,7 +9,7 @@ import {
   AgeAppropriateness
 } from './enums';
 
-// ✅ FILTER INTERFACES
+// ✓ FILTER INTERFACES
 export interface SagaFilter {
   themes?: string[];
   musicalStyles?: MusicalStyle[];

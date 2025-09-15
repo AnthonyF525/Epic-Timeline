@@ -1,4 +1,4 @@
-// ✅ CHARACTER ENUMS
+// ✓ CHARACTER ENUMS
 export enum CharacterType {
   MORTAL = 'MORTAL',
   GOD = 'GOD',
@@ -8,7 +8,7 @@ export enum CharacterType {
   NYMPH = 'NYMPH'
 }
 
-// ✅ NARRATIVE IMPORTANCE ENUMS
+// ✓ NARRATIVE IMPORTANCE ENUMS
 export enum NarrativeImportance {
   TRIVIAL = 'TRIVIAL',
   MINOR = 'MINOR',
@@ -18,7 +18,7 @@ export enum NarrativeImportance {
   FUNDAMENTAL = 'FUNDAMENTAL'
 }
 
-// ✅ CULTURAL SIGNIFICANCE ENUMS
+// ✓ CULTURAL SIGNIFICANCE ENUMS
 export enum CulturalSignificance {
   OBSCURE = 'OBSCURE',
   REGIONAL = 'REGIONAL',
@@ -28,7 +28,7 @@ export enum CulturalSignificance {
   UNIVERSAL = 'UNIVERSAL'
 }
 
-// ✅ COMPARISON ENUMS
+// ✓ COMPARISON ENUMS
 export enum ComparisonType {
   ADAPTATION = 'ADAPTATION',
   INTERPRETATION = 'INTERPRETATION',
@@ -54,7 +54,7 @@ export enum CredibilityLevel {
   DEFINITIVE = 'DEFINITIVE'
 }
 
-// ✅ EDUCATIONAL ENUMS
+// ✓ EDUCATIONAL ENUMS
 export enum EducationalValue {
   LOW = 'LOW',
   MEDIUM = 'MEDIUM',
@@ -76,7 +76,7 @@ export enum AgeAppropriateness {
   ALL_AGES = 'ALL_AGES'
 }
 
-// ✅ MUSICAL ENUMS
+// ✓ MUSICAL ENUMS
 export enum MusicalStyle {
   BALLAD = 'BALLAD',
   ROCK = 'ROCK',
@@ -97,7 +97,7 @@ export enum VocalStyle {
   SPOKEN = 'SPOKEN'
 }
 
-// ✅ LOCATION ENUMS
+// ✓ LOCATION ENUMS
 export enum LocationType {
   CITY = 'CITY',
   ISLAND = 'ISLAND',

@@ -48,47 +48,47 @@ const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({
   };
 
   const getCharacterIcon = (character?: Character) => {
-    if (!character) return '👤';
+    if (!character) return '•';
     
     // Specific icons for EPIC: The Musical characters
     switch (character.name.toLowerCase()) {
       case 'odysseus':
-        return '⚔️'; // Sword for the warrior king
+        return '◦ '; // Sword for the warrior king
       case 'penelope':
-        return '👑'; // Crown for the queen
+        return '•'; // Crown for the queen
       case 'telemachus':
-        return '🛡️'; // Shield for the young prince
+        return '◦ '; // Shield for the young prince
       case 'athena':
-        return '🦉'; // Owl for the goddess of wisdom
+        return '⚪'; // Wisdom symbol for the goddess of wisdom
       case 'poseidon':
-        return '🔱'; // Trident for the god of the sea
+        return '•'; // Trident for the god of the sea
       case 'polyphemus':
-        return '👁️'; // Eye for the cyclops
+        return '◦ '; // Eye for the cyclops
       case 'circe':
-        return '🔮'; // Crystal ball for the sorceress
+        return '•'; // Crystal ball for the sorceress
       case 'eurylochus':
-        return '⚓'; // Anchor for the loyal sailor
+        return '•'; // Anchor for the loyal sailor
       default:
         // Fallback to type-based icons
         switch (character.characterType?.toLowerCase()) {
           case 'king':
-            return '⚔️';
+            return '◦ ';
           case 'queen':
-            return '👑';
+            return '•';
           case 'prince':
-            return '🛡️';
+            return '◦ ';
           case 'goddess':
-            return '🦉';
+            return '⚪';
           case 'god':
-            return '🔱';
+            return '•';
           case 'cyclops':
-            return '👁️';
+            return '◦ ';
           case 'sorceress':
-            return '🔮';
+            return '•';
           case 'sailor':
-            return '⚓';
+            return '•';
           default:
-            return '👤';
+            return '•';
         }
     }
   };
@@ -157,7 +157,7 @@ const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({
               </View>
             </View>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>✕</Text>
+              <Text style={styles.closeButtonText}>•</Text>
             </TouchableOpacity>
           </View>
 
@@ -179,7 +179,7 @@ const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({
                 <Text style={styles.sectionTitle}>Role</Text>
                 <View style={styles.roleContainer}>
                   <Text style={styles.roleText}>
-                    {character.isProtagonist ? '⭐ Protagonist' : '🎭 Supporting Character'}
+                    {character.isProtagonist ? '⭐ Protagonist' : '• Supporting Character'}
                   </Text>
                 </View>
               </View>
@@ -206,7 +206,7 @@ const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({
                 <View style={styles.powersContainer}>
                   {character.powers.map((power, index) => (
                     <View key={index} style={styles.powerItem}>
-                      <Text style={styles.powerIcon}>⚡</Text>
+                      <Text style={styles.powerIcon}>•</Text>
                       <Text style={styles.powerText}>{power}</Text>
                     </View>
                   ))}

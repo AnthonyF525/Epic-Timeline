@@ -26,21 +26,21 @@ public class SagaCreateRequest {
     @Max(value = 100, message = "Episode count cannot exceed 100")
     private Integer episodeCount;
     
-    // ✅ Array validation - at least one genre required
+    // // [DONE] Array validation - at least one genre required
     @NotEmpty(message = "At least one genre is required")
     @Size(max = 10, message = "Cannot have more than 10 genres")
     private List<@NotBlank @Size(max = 50) String> genres;
     
-    // ✅ Array validation - at least one theme required  
+    // // [DONE] Array validation - at least one theme required  
     @NotEmpty(message = "At least one theme is required")
     @Size(max = 15, message = "Cannot have more than 15 themes")
     private List<@NotBlank @Size(max = 50) String> themes;
     
-    // ✅ Array validation - inspirations optional but limited
+    // // [DONE] Array validation - inspirations optional but limited
     @Size(max = 20, message = "Cannot have more than 20 inspirations")
     private List<@NotBlank @Size(max = 100) String> inspirations;
     
-    // ✅ URL validation
+    // // [DONE] URL validation
     @Pattern(regexp = "^(https?://).*", message = "Album art URL must start with http:// or https://")
     private String albumArtUrl;
     

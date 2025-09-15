@@ -23,7 +23,7 @@ export const LocationsList: React.FC<LocationsListProps> = ({
     return (
       <View style={mapStyles.noLocationsContainer}>
         <Text style={mapStyles.noLocationsText}>
-          {loadingState.isLoadingLocations ? '⏳ Loading EPIC Locations...' : '📍 No Locations Found'}
+          {loadingState.isLoadingLocations ? '• Loading EPIC Locations...' : '• No Locations Found'}
         </Text>
         <Text style={mapStyles.noLocationsSubText}>
           {loadingState.isLoadingLocations ? 
@@ -32,7 +32,7 @@ export const LocationsList: React.FC<LocationsListProps> = ({
         </Text>
         {!loadingState.isLoadingLocations && (
           <TouchableOpacity style={mapStyles.retryButton}>
-            <Text style={mapStyles.retryButtonText}>🔄 Retry Loading</Text>
+            <Text style={mapStyles.retryButtonText}>• Retry Loading</Text>
           </TouchableOpacity>
         )}
       </View>

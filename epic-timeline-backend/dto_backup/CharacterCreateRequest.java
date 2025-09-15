@@ -19,11 +19,11 @@ public class CharacterCreateRequest {
     @Size(min = 10, max = 2000, message = "Description must be between 10 and 2000 characters")
     private String description;
     
-    // ✅ Character type enum validation (required)
+    // // [DONE] Character type enum validation (required)
     @NotNull(message = "Character type is required")
     private CharacterType characterType;
     
-    // ✅ Boolean flags validation (all required with defaults)
+    // // [DONE] Boolean flags validation (all required with defaults)
     @NotNull(message = "isAlive flag is required")
     private Boolean isAlive;
     
@@ -45,48 +45,48 @@ public class CharacterCreateRequest {
     @NotNull(message = "isHistoricalFigure flag is required")
     private Boolean isHistoricalFigure;
     
-    // ✅ Array validation - roles (at least one required)
+    // // [DONE] Array validation - roles (at least one required)
     @NotEmpty(message = "At least one role is required")
     @Size(max = 15, message = "Cannot have more than 15 roles")
     private List<@NotBlank @Size(max = 100) String> roles;
     
-    // ✅ Array validation - traits (optional but limited)
+    // // [DONE] Array validation - traits (optional but limited)
     @Size(max = 20, message = "Cannot have more than 20 traits")
     private List<@NotBlank @Size(max = 100) String> traits;
     
-    // ✅ Array validation - abilities (optional but limited)
+    // // [DONE] Array validation - abilities (optional but limited)
     @Size(max = 25, message = "Cannot have more than 25 abilities")
     private List<@NotBlank @Size(max = 150) String> abilities;
     
-    // ✅ Array validation - weaknesses (optional)
+    // // [DONE] Array validation - weaknesses (optional)
     @Size(max = 15, message = "Cannot have more than 15 weaknesses")
     private List<@NotBlank @Size(max = 150) String> weaknesses;
     
-    // ✅ Array validation - allegiances (optional)
+    // // [DONE] Array validation - allegiances (optional)
     @Size(max = 10, message = "Cannot have more than 10 allegiances")
     private List<@NotBlank @Size(max = 100) String> allegiances;
     
-    // ✅ Array validation - alternative names (optional)
+    // // [DONE] Array validation - alternative names (optional)
     @Size(max = 20, message = "Cannot have more than 20 alternative names")
     private List<@NotBlank @Size(max = 100) String> alternativeNames;
     
-    // ✅ Array validation - titles (optional)
+    // // [DONE] Array validation - titles (optional)
     @Size(max = 15, message = "Cannot have more than 15 titles")
     private List<@NotBlank @Size(max = 100) String> titles;
     
-    // ✅ Array validation - epithets (optional)
+    // // [DONE] Array validation - epithets (optional)
     @Size(max = 20, message = "Cannot have more than 20 epithets")
     private List<@NotBlank @Size(max = 100) String> epithets;
     
-    // ✅ Array validation - weapons (optional)
+    // // [DONE] Array validation - weapons (optional)
     @Size(max = 15, message = "Cannot have more than 15 weapons")
     private List<@NotBlank @Size(max = 100) String> weapons;
     
-    // ✅ Array validation - memorable quotes (optional)
+    // // [DONE] Array validation - memorable quotes (optional)
     @Size(max = 30, message = "Cannot have more than 30 memorable quotes")
     private List<@NotBlank @Size(max = 500) String> memorableQuotes;
     
-    // ✅ Entity relationships (optional)
+    // // [DONE] Entity relationships (optional)
     @Size(max = 100, message = "Cannot be in more than 100 songs")
     private List<@NotNull Long> songIds;
     
@@ -96,7 +96,7 @@ public class CharacterCreateRequest {
     @Size(max = 10, message = "Cannot be in more than 10 sagas")
     private List<@NotNull Long> sagaIds;
     
-    // ✅ Nested object validation (optional)
+    // // [DONE] Nested object validation (optional)
     @Valid
     private PhysicalDescriptionRequest physicalDescription;
     
@@ -106,7 +106,7 @@ public class CharacterCreateRequest {
     @Valid
     private VoiceActorInfoRequest voiceActorInfo;
     
-    // ✅ Character relationships (optional for creation)
+    // // [DONE] Character relationships (optional for creation)
     @Size(max = 50, message = "Cannot have more than 50 relationships")
     private List<@Valid CharacterRelationshipRequest> relationships;
 }

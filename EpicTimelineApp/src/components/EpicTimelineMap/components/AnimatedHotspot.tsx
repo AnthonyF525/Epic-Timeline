@@ -144,7 +144,7 @@ export const AnimatedHotspot: React.FC<AnimatedHotspotProps> = ({
         strokeWidth={isTroy ? "0.5" : undefined}
         onPress={onPress}
       >
-        {isTroy ? `⚔️ ${location.name}` : location.name}
+        {isTroy ? `◦  ${location.name}` : location.name}
       </Text>
 
       {/* Troy war symbol */}
@@ -157,7 +157,7 @@ export const AnimatedHotspot: React.FC<AnimatedHotspotProps> = ({
           fill={colors.stroke}
           onPress={onPress}
         >
-          🏛️
+          ◦ 
         </Text>
       )}
 

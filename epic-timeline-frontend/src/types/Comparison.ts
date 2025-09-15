@@ -8,7 +8,7 @@ import {
 } from './enums';
 import { BaseEntity } from './core';
 
-// ✅ COMPARISON INTERFACE (Your sophisticated system)
+// ✓ COMPARISON INTERFACE (Your sophisticated system)
 export interface Comparison extends BaseEntity {
   title: string;
   description: string;

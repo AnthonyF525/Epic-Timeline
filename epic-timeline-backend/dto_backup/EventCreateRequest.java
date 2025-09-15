@@ -23,7 +23,7 @@ public class EventCreateRequest {
              message = "Event date must be in ISO format (yyyy-MM-ddTHH:mm:ssZ)")
     private String eventDate;
     
-    // ✅ Boolean flags validation (all required with defaults)
+    // // [DONE] Boolean flags validation (all required with defaults)
     @NotNull(message = "isHistorical flag is required")
     private Boolean isHistorical;
     
@@ -39,58 +39,58 @@ public class EventCreateRequest {
     @NotNull(message = "isPivotal flag is required")
     private Boolean isPivotal;
     
-    // ✅ Required nested object validation
+    // // [DONE] Required nested object validation
     @NotNull(message = "Event context is required")
     @Valid
     private EventContextRequest eventContext;
     
-    // ✅ Array validation - character relationships (at least one character required)
+    // // [DONE] Array validation - character relationships (at least one character required)
     @NotEmpty(message = "At least one character must be involved in the event")
     @Size(max = 50, message = "Cannot have more than 50 characters")
     private List<@NotNull Long> characterIds;
     
-    // ✅ Array validation - location relationships (at least one location required)
+    // // [DONE] Array validation - location relationships (at least one location required)
     @NotEmpty(message = "At least one location is required")
     @Size(max = 20, message = "Cannot have more than 20 locations")
     private List<@NotNull Long> locationIds;
     
-    // ✅ Array validation - saga relationships (optional)
+    // // [DONE] Array validation - saga relationships (optional)
     @Size(max = 10, message = "Cannot be in more than 10 sagas")
     private List<@NotNull Long> sagaIds;
     
-    // ✅ Array validation - song relationships (optional)
+    // // [DONE] Array validation - song relationships (optional)
     @Size(max = 30, message = "Cannot have more than 30 related songs")
     private List<@NotNull Long> songIds;
     
-    // ✅ Array validation - key details (optional but limited)
+    // // [DONE] Array validation - key details (optional but limited)
     @Size(max = 25, message = "Cannot have more than 25 key details")
     private List<@NotBlank @Size(max = 300) String> keyDetails;
     
-    // ✅ Array validation - witnesses (optional)
+    // // [DONE] Array validation - witnesses (optional)
     @Size(max = 40, message = "Cannot have more than 40 witnesses")
     private List<@NotBlank @Size(max = 200) String> witnesses;
     
-    // ✅ Array validation - consequences (optional)
+    // // [DONE] Array validation - consequences (optional)
     @Size(max = 30, message = "Cannot have more than 30 consequences")
     private List<@NotBlank @Size(max = 400) String> consequences;
     
-    // ✅ Array validation - alternative accounts (optional)
+    // // [DONE] Array validation - alternative accounts (optional)
     @Size(max = 15, message = "Cannot have more than 15 alternative accounts")
     private List<@NotBlank @Size(max = 500) String> alternativeAccounts;
     
-    // ✅ Array validation - cultural impacts (optional)
+    // // [DONE] Array validation - cultural impacts (optional)
     @Size(max = 20, message = "Cannot have more than 20 cultural impacts")
     private List<@NotBlank @Size(max = 300) String> culturalImpacts;
     
-    // ✅ Array validation - historical sources (optional)
+    // // [DONE] Array validation - historical sources (optional)
     @Size(max = 25, message = "Cannot have more than 25 historical sources")
     private List<@NotBlank @Size(max = 200) String> historicalSources;
     
-    // ✅ Array validation - related artifacts (optional)
+    // // [DONE] Array validation - related artifacts (optional)
     @Size(max = 30, message = "Cannot have more than 30 related artifacts")
     private List<@NotBlank @Size(max = 200) String> relatedArtifacts;
     
-    // ✅ Optional nested objects
+    // // [DONE] Optional nested objects
     @Valid
     private WeatherConditionsRequest weatherConditions;
     

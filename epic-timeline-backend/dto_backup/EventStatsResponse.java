@@ -12,26 +12,26 @@ public class EventStatsResponse {
     private String eventTitle;
     private String eventDate;
     
-    // ✅ Event metadata
+    // // [DONE] Event metadata
     private String eventType;
     private String importance;
     private String outcome;
     private Integer durationMinutes;
     
-    // ✅ Boolean flag statistics
+    // // [DONE] Boolean flag statistics
     private Boolean isHistorical;
     private Boolean isMythological;
     private Boolean hasWitnesses;
     private Boolean hasMultipleVersions;
     private Boolean isPivotal;
     
-    // ✅ Relationship counts
+    // // [DONE] Relationship counts
     private Integer characterCount;
     private Integer locationCount;
     private Integer sagaCount;
     private Integer songCount;
     
-    // ✅ Content array statistics
+    // // [DONE] Content array statistics
     private Integer keyDetailCount;
     private Integer witnessCount;
     private Integer consequenceCount;
@@ -40,13 +40,13 @@ public class EventStatsResponse {
     private Integer historicalSourceCount;
     private Integer relatedArtifactCount;
     
-    // ✅ Array content (for analysis)
+    // // [DONE] Array content (for analysis)
     private List<String> themes;
     private List<String> tags;
     private Map<String, Long> themeFrequency;
     private Map<String, Long> outcomesByType;
     
-    // ✅ Weather and environmental data
+    // // [DONE] Weather and environmental data
     private String weather;
     private String season;
     private String timeOfDay;
@@ -54,7 +54,7 @@ public class EventStatsResponse {
     private Boolean wasStormy;
     private Boolean hadNaturalPhenomena;
     
-    // ✅ Political context statistics
+    // // [DONE] Political context statistics
     private Integer rulingPowerCount;
     private Integer allianceCount;
     private Integer conflictCount;
@@ -62,7 +62,7 @@ public class EventStatsResponse {
     private List<String> rulingPowers;
     private List<String> alliances;
     
-    // ✅ Related entities
+    // // [DONE] Related entities
     private List<String> characterNames;
     private List<String> locationNames;
     private List<String> sagaTitles;
@@ -70,7 +70,7 @@ public class EventStatsResponse {
     private Map<String, Integer> characterTypeCount;
     private Map<String, Integer> locationTypeCount;
     
-    // ✅ Timeline context
+    // // [DONE] Timeline context
     private String previousEventTitle;
     private String nextEventTitle;
     private Long daysSincePreviousEvent;

@@ -20,11 +20,11 @@ export class MapService {
    */
   static async getEpicLocations(): Promise<EpicMapLocation[]> {
     try {
-      console.log('🗺️ Loading Epic Timeline locations from API...');
+      console.log('◦  Loading Epic Timeline locations from API...');
       const locations = await LocationService.getAllLocations();
       return locations.map(this.transformLocationToMapLocation);
     } catch (error) {
-      console.error('🚨 Error loading Epic Timeline locations:', error);
+      console.error('✗ Error loading Epic Timeline locations:', error);
       // Fallback to static data if API fails
       return this.getFallbackLocations();
     }
@@ -35,7 +35,7 @@ export class MapService {
    */
   static async getOdysseusJourney(): Promise<EpicMapLocation[]> {
     try {
-      console.log('🛥️ Loading Odysseus journey route...');
+      console.log('ROUTE• Loading Odysseus journey route...');
       const allLocations = await LocationService.getAllLocations();
       
       // Filter and order locations for Odysseus's journey
@@ -53,7 +53,7 @@ export class MapService {
       
       return journeyLocations;
     } catch (error) {
-      console.error('🚨 Error loading Odysseus journey:', error);
+      console.error('✗ Error loading Odysseus journey:', error);
       return this.getFallbackJourney();
     }
   }
@@ -63,13 +63,13 @@ export class MapService {
    */
   static async getSagaRoute(sagaName: string): Promise<EpicMapLocation[]> {
     try {
-      console.log(`🎭 Loading locations for saga: ${sagaName}...`);
+      console.log(`• Loading locations for saga: ${sagaName}...`);
       const allLocations = await this.getEpicLocations();
       
       // For now, return all locations as Epic is one continuous story
       return allLocations;
     } catch (error) {
-      console.error(`🚨 Error loading saga locations for ${sagaName}:`, error);
+      console.error(`• Error loading saga locations for ${sagaName}:`, error);
       return this.getFallbackLocations();
     }
   }
@@ -185,17 +185,17 @@ export class MapService {
    */
   static async getTroyHotspot(): Promise<EpicMapLocation | null> {
     try {
-      console.log('🏰 Loading Troy hotspot location...');
+      console.log('LOCATION Loading Troy hotspot location...');
       const troyLocation = await LocationService.getTroyLocation();
       
       if (troyLocation) {
         return this.transformLocationToMapLocation(troyLocation);
       } else {
-        console.warn('⚠️ Troy not found in API, using fallback coordinates');
+        console.warn('⚠• Troy not found in API, using fallback coordinates');
         return this.getFallbackLocations()[0]; // Fallback Troy
       }
     } catch (error) {
-      console.error('🚨 Error loading Troy hotspot:', error);
+      console.error('✗ Error loading Troy hotspot:', error);
       return this.getFallbackLocations()[0]; // Fallback Troy
     }
   }

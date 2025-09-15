@@ -4,7 +4,7 @@ import { ArrayOperation, ArrayUpdatePayload, BatchArrayUpdate, EpicArrayHelpers 
 
 export class CharacterService {
   
-  // ✅ BASIC CHARACTER OPERATIONS
+  // ✓ BASIC CHARACTER OPERATIONS
   static async getAllCharacters(): Promise<Character[]> {
     const response = await epicRequest.get<Character[]>('/characters');
     return response.data;
@@ -29,7 +29,7 @@ export class CharacterService {
     await epicRequest.delete(`/characters/${id}`);
   }
 
-  // ✅ ENUM-BASED CHARACTER TYPE FILTERING
+  // ✓ ENUM-BASED CHARACTER TYPE FILTERING
   static async getCharactersByType(type: CharacterType): Promise<Character[]> {
     const response = await epicRequest.get<Character[]>(`/characters/type/${type}`);
     return response.data;
@@ -51,7 +51,7 @@ export class CharacterService {
     return this.getCharactersByType(CharacterType.SPIRIT);
   }
 
-  // ✅ EPIC TIMELINE MAIN CHARACTERS
+  // ✓ EPIC TIMELINE MAIN CHARACTERS
   static async getOdysseus(): Promise<Character> {
     const characters = await this.getMortalCharacters();
     return characters.find(c => c.name === 'Odysseus')!;
@@ -87,7 +87,7 @@ export class CharacterService {
     return characters.find(c => c.name === 'Telemachus')!;
   }
 
-  // ✅ CHARACTER ROLE FILTERING
+  // ✓ CHARACTER ROLE FILTERING
   static async getProtagonists(): Promise<Character[]> {
     const response = await epicRequest.get<Character[]>('/characters/protagonists');
     return response.data;
@@ -113,7 +113,7 @@ export class CharacterService {
     return response.data;
   }
 
-  // ✅ SAGA APPEARANCE TRACKING
+  // ✓ SAGA APPEARANCE TRACKING
   static async getCharactersBySaga(sagaTitle: string): Promise<Character[]> {
     const response = await epicRequest.get<Character[]>(`/characters/saga/${encodeURIComponent(sagaTitle)}`);
     return response.data;
@@ -124,7 +124,7 @@ export class CharacterService {
     return response.data;
   }
 
-  // ✅ CULTURAL SIGNIFICANCE
+  // ✓ CULTURAL SIGNIFICANCE
   static async getCharactersByCulturalSignificance(significance: CulturalSignificance): Promise<Character[]> {
     const response = await epicRequest.get<Character[]>(`/characters/cultural-significance/${significance}`);
     return response.data;
@@ -134,7 +134,7 @@ export class CharacterService {
     return this.getCharactersByCulturalSignificance(CulturalSignificance.LEGENDARY);
   }
 
-  // ✅ TRAIT AND ABILITY FILTERING
+  // ✓ TRAIT AND ABILITY FILTERING
   static async getCharactersByTrait(trait: string): Promise<Character[]> {
     const response = await epicRequest.get<Character[]>(`/characters/trait/${encodeURIComponent(trait)}`);
     return response.data;
@@ -150,7 +150,7 @@ export class CharacterService {
     return response.data;
   }
 
-  // ✅ SEARCH AND DISCOVERY
+  // ✓ SEARCH AND DISCOVERY
   static async searchCharacters(query: string): Promise<Character[]> {
     const response = await epicRequest.get<Character[]>(`/characters/search?q=${encodeURIComponent(query)}`);
     return response.data;
@@ -161,13 +161,13 @@ export class CharacterService {
     return response.data;
   }
 
-  // ✅ CHARACTER STATISTICS
+  // ✓ CHARACTER STATISTICS
   static async getCharacterStats(): Promise<any> {
     const response = await epicRequest.get('/characters/stats');
     return response.data;
   }
 
-  // ✅ COMPLEX FILTERING
+  // ✓ COMPLEX FILTERING
   static async filterCharacters(filter: CharacterFilter): Promise<Character[]> {
     const params = new URLSearchParams();
     
@@ -184,7 +184,7 @@ export class CharacterService {
     return response.data;
   }
 
-  // ✅ APPEARANCE IN SAGAS UPDATES
+  // ✓ APPEARANCE IN SAGAS UPDATES
   static async updateCharacterSagaAppearances(characterId: number, operation: ArrayOperation, sagas: string[]): Promise<Character> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -206,7 +206,7 @@ export class CharacterService {
     return this.updateCharacterSagaAppearances(characterId, ArrayOperation.REMOVE, sagas);
   }
 
-  // ✅ PERSONALITY TRAITS UPDATES
+  // ✓ PERSONALITY TRAITS UPDATES
   static async updateCharacterTraits(characterId: number, operation: ArrayOperation, traits: string[]): Promise<Character> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -220,7 +220,7 @@ export class CharacterService {
     return response.data;
   }
 
-  // ✅ ABILITIES UPDATES
+  // ✓ ABILITIES UPDATES
   static async updateCharacterAbilities(characterId: number, operation: ArrayOperation, abilities: string[]): Promise<Character> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -234,7 +234,7 @@ export class CharacterService {
     return response.data;
   }
 
-  // ✅ RELATIONSHIPS UPDATES (Complex Objects)
+  // ✓ RELATIONSHIPS UPDATES (Complex Objects)
   static async updateCharacterRelationships(characterId: number, operation: ArrayOperation, relationships: CharacterRelationship[]): Promise<Character> {
     const payload: ArrayUpdatePayload<CharacterRelationship> = {
       operation,
@@ -258,7 +258,7 @@ export class CharacterService {
     return this.updateCharacterRelationships(characterId, ArrayOperation.REMOVE, relationshipsToRemove);
   }
 
-  // ✅ ROLES UPDATES
+  // ✓ ROLES UPDATES
   static async updateCharacterRoles(characterId: number, operation: ArrayOperation, roles: string[]): Promise<Character> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -272,7 +272,7 @@ export class CharacterService {
     return response.data;
   }
 
-  // ✅ SYMBOLISM UPDATES
+  // ✓ SYMBOLISM UPDATES
   static async updateCharacterSymbolism(characterId: number, operation: ArrayOperation, symbolism: string[]): Promise<Character> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -286,7 +286,7 @@ export class CharacterService {
     return response.data;
   }
 
-  // ✅ EPIC TIMELINE HELPERS
+  // ✓ EPIC TIMELINE HELPERS
   static async addOdysseusToSagas(sagas: string[]): Promise<Character> {
     const odysseus = await this.getOdysseus();
     return this.addCharacterToSagas(odysseus.id, sagas);
@@ -297,7 +297,7 @@ export class CharacterService {
     return this.updateCharacterTraits(athena.id, operation, traits);
   }
 
-  // ✅ BATCH ARRAY UPDATES
+  // ✓ BATCH ARRAY UPDATES
   static async batchUpdateCharacterArrays(characterId: number, updates: ArrayUpdatePayload[]): Promise<Character> {
     const batchPayload: BatchArrayUpdate = {
       entityType: 'character',

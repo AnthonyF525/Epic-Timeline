@@ -17,10 +17,10 @@ public class CharacterUpdateRequest {
     @Size(min = 10, max = 2000, message = "Description must be between 10 and 2000 characters")
     private String description;
     
-    // ✅ Character type enum (optional for updates)
+    // // [DONE] Character type enum (optional for updates)
     private CharacterType characterType;
     
-    // ✅ Boolean flag updates (optional)
+    // // [DONE] Boolean flag updates (optional)
     private Boolean isAlive;
     private Boolean isImmortal;
     private Boolean hasSpokenLines;
@@ -29,7 +29,7 @@ public class CharacterUpdateRequest {
     private Boolean isProtagonist;
     private Boolean isHistoricalFigure;
     
-    // ✅ Array updates (with validation)
+    // // [DONE] Array updates (with validation)
     @Size(min = 1, max = 15, message = "Must have between 1 and 15 roles")
     private List<@NotBlank @Size(max = 100) String> roles;
     

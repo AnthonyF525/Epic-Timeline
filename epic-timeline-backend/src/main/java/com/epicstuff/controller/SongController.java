@@ -18,7 +18,7 @@ public class SongController {
     @Autowired
     private SongService songService;
 
-    // ✅ GET /api/songs - List all songs with basic filtering
+    // // [DONE] GET /api/songs - List all songs with basic filtering
     @GetMapping
     public ResponseEntity<List<Song>> getAllSongs(
             @RequestParam(required = false) Long sagaId
@@ -32,7 +32,7 @@ public class SongController {
         return ResponseEntity.ok(songs);
     }
 
-    // ✅ GET /api/songs/{id} - Get single song with populated relationships
+    // // [DONE] GET /api/songs/{id} - Get single song with populated relationships
     @GetMapping("/{id}")
     public ResponseEntity<Song> getSongById(@PathVariable Long id) {
         Optional<Song> song = songService.findByIdWithRelations(id);
@@ -40,7 +40,7 @@ public class SongController {
                   .orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ POST /api/songs - Create new song (simplified)
+    // // [DONE] POST /api/songs - Create new song (simplified)
     @PostMapping
     public ResponseEntity<Song> createSong(@RequestBody Song song) {
         try {
@@ -51,7 +51,7 @@ public class SongController {
         }
     }
 
-    // ✅ PUT /api/songs/{id} - Update existing song (simplified)
+    // // [DONE] PUT /api/songs/{id} - Update existing song (simplified)
     @PutMapping("/{id}")
     public ResponseEntity<Song> updateSong(
             @PathVariable Long id, 
@@ -74,7 +74,7 @@ public class SongController {
         }
     }
 
-    // ✅ DELETE /api/songs/{id} - Delete song
+    // // [DONE] DELETE /api/songs/{id} - Delete song
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSong(@PathVariable Long id) {
         boolean deleted = songService.deleteSong(id);
@@ -82,14 +82,14 @@ public class SongController {
                         ResponseEntity.notFound().build();
     }
 
-    // ✅ GET /api/songs/{id}/characters - Get all characters in song
+    // // [DONE] GET /api/songs/{id}/characters - Get all characters in song
     @GetMapping("/{id}/characters")
     public ResponseEntity<List<com.epicstuff.model.Character>> getSongCharacters(@PathVariable Long id) {
         List<com.epicstuff.model.Character> characters = songService.getSongCharacters(id);
         return ResponseEntity.ok(characters);
     }
 
-    // ✅ POST /api/songs/{id}/characters/{characterId} - Add character to song
+    // // [DONE] POST /api/songs/{id}/characters/{characterId} - Add character to song
     @PostMapping("/{id}/characters/{characterId}")
     public ResponseEntity<Song> addCharacterToSong(
             @PathVariable Long id, 
@@ -104,7 +104,7 @@ public class SongController {
         }
     }
 
-    // ✅ DELETE /api/songs/{id}/characters/{characterId} - Remove character from song
+    // // [DONE] DELETE /api/songs/{id}/characters/{characterId} - Remove character from song
     @DeleteMapping("/{id}/characters/{characterId}")
     public ResponseEntity<Song> removeCharacterFromSong(
             @PathVariable Long id, 
@@ -115,21 +115,21 @@ public class SongController {
                          .orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ GET /api/songs/by-character/{characterId} - Get all songs for a character
+    // // [DONE] GET /api/songs/by-character/{characterId} - Get all songs for a character
     @GetMapping("/by-character/{characterId}")
     public ResponseEntity<List<Song>> getSongsByCharacter(@PathVariable Long characterId) {
         List<Song> songs = songService.findSongsByCharacter(characterId);
         return ResponseEntity.ok(songs);
     }
 
-    // ✅ GET /api/songs/by-saga/{sagaId} - Get all songs in a saga
+    // // [DONE] GET /api/songs/by-saga/{sagaId} - Get all songs in a saga
     @GetMapping("/by-saga/{sagaId}")
     public ResponseEntity<List<Song>> getSongsBySaga(@PathVariable Long sagaId) {
         List<Song> songs = songService.findSongsBySaga(sagaId);
         return ResponseEntity.ok(songs);
     }
 
-    // ✅ GET /api/songs/{id}/stats - Get song statistics (simplified)
+    // // [DONE] GET /api/songs/{id}/stats - Get song statistics (simplified)
     @GetMapping("/{id}/stats")
     public ResponseEntity<String> getSongStats(@PathVariable Long id) {
         String stats = songService.getSongStats(id);

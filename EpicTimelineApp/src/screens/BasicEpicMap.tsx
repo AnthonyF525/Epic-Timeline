@@ -307,7 +307,7 @@ const SVGMediterraneanMap: React.FC<{
                   fill="#FFA500"
                   fontWeight="bold"
                 >
-                  ⏳
+                  •
                 </SvgText>
               )}
               
@@ -320,7 +320,7 @@ const SVGMediterraneanMap: React.FC<{
                   fill="#32CD32"
                   fontWeight="bold"
                 >
-                  ✓
+                  •
                 </SvgText>
               )}
               
@@ -332,7 +332,7 @@ const SVGMediterraneanMap: React.FC<{
                   fontSize="10"
                   fill="#808080"
                 >
-                  🔒
+                  •
                 </SvgText>
               )}
               
@@ -362,7 +362,7 @@ const SVGMediterraneanMap: React.FC<{
                 strokeWidth="1"
                 onPress={isClickable ? () => onLocationPress(location.id) : undefined}
               >
-                {isTroy ? `⚔️ ${location.name}` : isUnderworld ? `👻 ${location.name}` : location.name}
+                {isTroy ? `◦  ${location.name}` : isUnderworld ? `• ${location.name}` : location.name}
               </SvgText>
 
               {/* Special symbols for important locations */}
@@ -375,7 +375,7 @@ const SVGMediterraneanMap: React.FC<{
                   fill="#FFD700"
                   onPress={isClickable ? () => onLocationPress(location.id) : undefined}
                 >
-                  🏛️
+                  ◦ 
                 </SvgText>
               )}
               
@@ -388,7 +388,7 @@ const SVGMediterraneanMap: React.FC<{
                   fill="#8A2BE2"
                   onPress={isClickable ? () => onLocationPress(location.id) : undefined}
                 >
-                  💀
+                  •
                 </SvgText>
               )}
             </React.Fragment>
@@ -463,7 +463,7 @@ const BasicEpicMap = () => {
 
   // Debug logging for state tracking
   useEffect(() => {
-    console.log('🔍 Debug - State update:', {
+    console.log('• Debug - State update:', {
       isLoading,
       errorState,
       loadingHotspotId,
@@ -483,12 +483,12 @@ const BasicEpicMap = () => {
       });
       setIsLoading(true);
       
-      console.log('📍 Starting location fetch...');
+      console.log('• Starting location fetch...');
       
       // First check if backend is healthy
       const isHealthy = await LocationService.checkApiHealth();
       if (!isHealthy) {
-        console.log('⚠️ Backend health check failed, proceeding with fallback');
+        console.log('◦  Backend health check failed, proceeding with fallback');
       }
       
       const apiLocations = await LocationService.getAllLocations();
@@ -504,7 +504,7 @@ const BasicEpicMap = () => {
       }));
       
       setLocations(transformedLocations);
-      console.log('✅ Loaded locations:', transformedLocations.length);
+      console.log('• Loaded locations:', transformedLocations.length);
       
       // If we're using fallback data, show a warning (but only if locations are actually empty)
       if (!isHealthy && transformedLocations.length === 0) {
@@ -518,11 +518,11 @@ const BasicEpicMap = () => {
         });
       } else if (!isHealthy) {
         // Backend health check failed but we got data - just log it
-        console.log('⚠️ Backend health check failed but data loaded successfully');
+        console.log('◦  Backend health check failed but data loaded successfully');
       }
       
     } catch (error) {
-      console.error('❌ Critical error loading locations:', error);
+      console.error('✗ Critical error loading locations:', error);
       setErrorState({ 
         hasError: true, 
         message: 'Failed to load locations. Please check your connection and try again.', 
@@ -556,15 +556,15 @@ const BasicEpicMap = () => {
       setIsLoadingSaga(true);
       setSagaError(null);
       
-      console.log('🎭 Fetching Troy Saga data from backend...');
-      console.log('🌐 Backend URL:', `${API_BASE_URL}/api/sagas`);
+      console.log('• Fetching Troy Saga data from backend...');
+      console.log('• Backend URL:', `${API_BASE_URL}/api/sagas`);
       
       // First try to get Troy Saga by title
       let troySaga = await SagaService.getSagaByTitle('The Troy Saga');
       
       // If not found by title, try by ID (assuming Troy Saga has ID 1)
       if (!troySaga) {
-        console.log('🔄 Troy Saga not found by title, trying by ID...');
+        console.log('• Troy Saga not found by title, trying by ID...');
         troySaga = await SagaService.getSagaById(1);
       }
       
@@ -575,8 +575,8 @@ const BasicEpicMap = () => {
         const displayInfo = SagaService.formatSagaDisplayInfo(troySaga);
         setTroySagaDisplayInfo(displayInfo);
         
-        console.log('✅ Troy Saga data loaded successfully:', troySaga.title);
-        console.log('📊 Troy Saga data details:', {
+        console.log('• Troy Saga data loaded successfully:', troySaga.title);
+        console.log('• Troy Saga data details:', {
           title: troySaga.title,
           description: troySaga.description,
           releaseDate: troySaga.releaseDate,
@@ -590,7 +590,7 @@ const BasicEpicMap = () => {
         // Convert to SagaInfo format and update the EPIC_SAGAS array if needed
         const troySagaInfo = SagaService.convertApiSagaToSagaInfo(troySaga);
         
-        console.log('🔄 Converted Troy Saga to SagaInfo format:', troySagaInfo);
+        console.log('• Converted Troy Saga to SagaInfo format:', troySagaInfo);
         
         // Update the Troy Saga in EPIC_SAGAS with backend data
         const updatedSagas = EPIC_SAGAS.map(saga => {
@@ -608,15 +608,15 @@ const BasicEpicMap = () => {
           return saga;
         });
         
-        console.log('🔄 Updated Troy Saga with backend data');
+        console.log('• Updated Troy Saga with backend data');
       } else {
-        console.log('⚠️ No Troy Saga data found in backend, using fallback');
+        console.log('◦  No Troy Saga data found in backend, using fallback');
         setSagaError('Troy Saga data not available from backend');
       }
       
     } catch (error) {
-      console.error('❌ Error fetching Troy Saga data:', error);
-      console.error('📋 Error details:', {
+      console.error('✗ Error fetching Troy Saga data:', error);
+      console.error('✗ Error details:', {
         name: (error as Error)?.name || 'Unknown',
         message: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined
@@ -630,7 +630,7 @@ const BasicEpicMap = () => {
   // Fetch all sagas data from backend API
   const fetchAllSagas = async () => {
     try {
-      console.log('📚 Fetching all sagas data from backend...');
+      console.log('• Fetching all sagas data from backend...');
       
       const allSagas = await SagaService.getAllSagas();
       
@@ -642,7 +642,7 @@ const BasicEpicMap = () => {
         allSagas.forEach(saga => {
           const sagaColor = SagaService.getSagaColor(saga);
           colorMap[saga.title] = sagaColor;
-          console.log(`🎨 ${saga.title}: ${sagaColor} (based on themes: ${saga.themes.join(', ')})`);
+          console.log(`• ${saga.title}: ${sagaColor} (based on themes: ${saga.themes.join(', ')})`);
         });
         setDynamicSagaColors(colorMap);
         
@@ -679,21 +679,21 @@ const BasicEpicMap = () => {
         
         setEnhancedSagas(updatedEnhancedSagas);
         
-        console.log('✅ All sagas data loaded successfully:', allSagas.length, 'sagas');
-        console.log('🎨 Dynamic colors generated:', colorMap);
-        console.log('🔄 Enhanced sagas updated with backend data and dynamic colors');
+        console.log('• All sagas data loaded successfully:', allSagas.length, 'sagas');
+        console.log('• Dynamic colors generated:', colorMap);
+        console.log('• Enhanced sagas updated with backend data and dynamic colors');
         
         // Log release status for each saga
         allSagas.forEach(saga => {
           const displayInfo = SagaService.formatSagaDisplayInfo(saga);
-          console.log(`📖 ${displayInfo.name}: ${SagaService.getReleaseStatusDisplay(displayInfo.releaseStatus)}`);
+          console.log(`• ${displayInfo.name}: ${SagaService.getReleaseStatusDisplay(displayInfo.releaseStatus)}`);
         });
       } else {
-        console.log('⚠️ No sagas data found in backend');
+        console.log('◦  No sagas data found in backend');
       }
       
     } catch (error) {
-      console.error('❌ Error fetching all sagas data:', error);
+      console.error('✗ Error fetching all sagas data:', error);
     }
   };
 
@@ -709,7 +709,7 @@ const BasicEpicMap = () => {
         attemptCount: 0
       });
       
-      console.log(`🎯 Loading details for location: ${locationId}`);
+      console.log(`• Loading details for location: ${locationId}`);
       
       // Try to get detailed location data from the service
       const detailedLocation = await LocationService.getLocationById(locationId);
@@ -727,18 +727,18 @@ const BasicEpicMap = () => {
           songs: detailedLocation.songs || []
         };
         setSelectedLocation(location);
-        console.log('✅ Location details loaded from API:', location.name);
+        console.log('• Location details loaded from API:', location.name);
       } else {
         // Fallback to cached location data
         const location = locations.find(loc => loc.id === locationId);
         if (location) {
           setSelectedLocation(location);
-          console.log('✅ Location details loaded from cache:', location.name);
+          console.log('• Location details loaded from cache:', location.name);
         }
       }
       
     } catch (error) {
-      console.error('❌ Error loading location details:', error);
+      console.error('✗ Error loading location details:', error);
       setErrorState({
         hasError: true,
         message: `Failed to load details for this location. Please try again.`,
@@ -760,7 +760,7 @@ const BasicEpicMap = () => {
 
   // Enhanced retry function for error recovery
   const handleRetry = async () => {
-    console.log(`🔄 Retrying ${errorState.type} operation...`);
+    console.log(`• Retrying ${errorState.type} operation...`);
     
     if (errorState.type === 'network') {
       // Retry fetching locations
@@ -788,19 +788,19 @@ const BasicEpicMap = () => {
     
     // Set loading state when opening panel to show skeletons
     setIsLoadingSaga(true);
-    console.log('🔄 Setting loading state for SagaInfoPanel...');
+    console.log('• Setting loading state for SagaInfoPanel...');
     
     // Find saga in enhanced sagas (which includes backend data and dynamic colors)
     const sagaInfo = enhancedSagas.find(saga => saga.name === sagaName);
     if (sagaInfo) {
       // Check if this is Troy Saga and we have backend data for enhanced description
       if (sagaName === 'The Troy Saga' && troySagaData && troySagaDisplayInfo) {
-        console.log('🎭 Using enhanced Troy Saga data for panel');
+        console.log('• Using enhanced Troy Saga data for panel');
         
         // Create enhanced description with backend data
         const enhancedSagaInfo: SagaInfo = {
           ...sagaInfo,
-          description: `${troySagaDisplayInfo.description}\n\n${SagaService.getReleaseStatusDisplay(troySagaDisplayInfo.releaseStatus)} • Released: ${new Date(troySagaDisplayInfo.releaseDate).toLocaleDateString()}\n🎵 ${troySagaDisplayInfo.episodeCount} episodes • ⏱️ ${troySagaDisplayInfo.duration}\n🎭 Themes: ${troySagaDisplayInfo.themes.join(', ')}`
+          description: `${troySagaDisplayInfo.description}\n\n${SagaService.getReleaseStatusDisplay(troySagaDisplayInfo.releaseStatus)} • Released: ${new Date(troySagaDisplayInfo.releaseDate).toLocaleDateString()}\n• ${troySagaDisplayInfo.episodeCount} episodes • ⏱• ${troySagaDisplayInfo.duration}\n• Themes: ${troySagaDisplayInfo.themes.join(', ')}`
         };
         
         setSelectedSagaInfo(enhancedSagaInfo);
@@ -814,7 +814,7 @@ const BasicEpicMap = () => {
       // Simulate loading delay to show skeletons (remove in production)
       await new Promise(resolve => setTimeout(resolve, 1500));
       setIsLoadingSaga(false);
-      console.log('✅ Loading state cleared, showing saga content');
+      console.log('• Loading state cleared, showing saga content');
     }
   };
 
@@ -844,7 +844,7 @@ const BasicEpicMap = () => {
           accessible={true}
           accessibilityRole="header"
         >
-          🏛️ Epic Timeline Map
+          ◦  Epic Timeline Map
         </Text>
         
         <View style={styles.loadingContainer}>
@@ -854,7 +854,7 @@ const BasicEpicMap = () => {
             accessibilityRole="text"
             accessibilityLabel="Currently loading locations from backend, please wait"
           >
-            🌐 Connecting to backend...
+            • Connecting to backend...
           </Text>
           
           <Text 
@@ -867,7 +867,7 @@ const BasicEpicMap = () => {
           
           <View style={styles.loadingProgress}>
             <Text style={styles.loadingProgressText}>
-              📍 Fetching Troy, Ithaca, and the Underworld...
+              • Fetching Troy, Ithaca, and the Underworld...
             </Text>
           </View>
         </View>
@@ -889,7 +889,7 @@ const BasicEpicMap = () => {
         accessibilityRole="header"
         accessibilityLabel="Epic Timeline Interactive Map - Main title"
       >
-        🏛️ Epic Timeline Interactive Map
+        ◦  Epic Timeline Interactive Map
       </Text>
       <Text 
         style={styles.subtitle}
@@ -897,14 +897,14 @@ const BasicEpicMap = () => {
         accessibilityRole="text"
         accessibilityLabel={`Connected to backend with ${locations.length} locations loaded for Odysseus's Journey${troySagaDisplayInfo ? `, Troy Saga live data available - ${SagaService.getReleaseStatusDisplay(troySagaDisplayInfo.releaseStatus)}` : ''}`}
       >
-        🌊 Connected: {locations.length} locations loaded • Odysseus's Journey
+        • Connected: {locations.length} locations loaded • Odysseus's Journey
         {troySagaDisplayInfo && (
           <Text style={{ color: SagaService.getReleaseStatusColor(troySagaDisplayInfo.releaseStatus) }}>
             {' • '}{SagaService.getReleaseStatusDisplay(troySagaDisplayInfo.releaseStatus)}
           </Text>
         )}
-        {isLoadingSaga && <Text style={{ color: '#FFB74D' }}> • 🔄 Loading Saga...</Text>}
-        {sagaError && <Text style={{ color: '#FF6B6B' }}> • 🔴 Saga Error</Text>}
+        {isLoadingSaga && <Text style={{ color: '#FFB74D' }}> • • Loading Saga...</Text>}
+        {sagaError && <Text style={{ color: '#FF6B6B' }}> • • Saga Error</Text>}
       </Text>
       
       {/* Error State Display */}
@@ -936,7 +936,7 @@ const BasicEpicMap = () => {
             accessibilityRole="button"
             accessibilityLabel={`${showSagaDetails ? 'Collapse' : 'Expand'} Troy Saga details`}
           >
-            <Text style={styles.sagaInfoTitle}>🎭 {troySagaDisplayInfo.name}</Text>
+            <Text style={styles.sagaInfoTitle}>• {troySagaDisplayInfo.name}</Text>
             <Text style={styles.expandIcon}>{showSagaDetails ? '▼' : '▶'}</Text>
           </TouchableOpacity>
           
@@ -949,7 +949,7 @@ const BasicEpicMap = () => {
               {SagaService.getReleaseStatusDisplay(troySagaDisplayInfo.releaseStatus)}
             </Text>
             <Text style={styles.releaseDateText}>
-              📅 {new Date(troySagaDisplayInfo.releaseDate).toLocaleDateString()}
+              • {new Date(troySagaDisplayInfo.releaseDate).toLocaleDateString()}
             </Text>
           </View>
           
@@ -958,7 +958,7 @@ const BasicEpicMap = () => {
             <>
               {/* Description */}
               <View style={styles.sagaDescriptionContainer}>
-                <Text style={styles.sectionTitle}>📖 Description</Text>
+                <Text style={styles.sectionTitle}>• Description</Text>
                 <ScrollView style={styles.descriptionScroll} showsVerticalScrollIndicator={false}>
                   <Text style={styles.descriptionText}>
                     {troySagaDisplayInfo.description}
@@ -968,7 +968,7 @@ const BasicEpicMap = () => {
               
               {/* Themes */}
               <View style={styles.sagaThemesContainer}>
-                <Text style={styles.sectionTitle}>🎭 Themes</Text>
+                <Text style={styles.sectionTitle}>• Themes</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   {troySagaDisplayInfo.themes.map((theme, index) => (
                     <View key={index} style={styles.themeTag}>
@@ -980,11 +980,11 @@ const BasicEpicMap = () => {
               
               {/* Additional Info */}
               <View style={styles.sagaStatsContainer}>
-                <Text style={styles.sectionTitle}>📊 Details</Text>
+                <Text style={styles.sectionTitle}>• Details</Text>
                 <Text style={styles.debugText}>
-                  🎵 {troySagaDisplayInfo.episodeCount} episodes • 
-                  ⏱️ {troySagaDisplayInfo.duration} • 
-                  🎨 {troySagaDisplayInfo.genres.join(', ')}
+                  • {troySagaDisplayInfo.episodeCount} episodes • 
+                  ⏱• {troySagaDisplayInfo.duration} • 
+                  • {troySagaDisplayInfo.genres.join(', ')}
                 </Text>
               </View>
             </>
@@ -1001,7 +1001,7 @@ const BasicEpicMap = () => {
           accessibilityRole="button"
           accessibilityLabel="Manually fetch Troy Saga data"
         >
-          <Text style={styles.debugButtonText}>🔄 Retry Troy Saga Fetch</Text>
+          <Text style={styles.debugButtonText}>• Retry Troy Saga Fetch</Text>
         </TouchableOpacity>
       )}
       
@@ -1017,7 +1017,7 @@ const BasicEpicMap = () => {
           accessible={true}
           accessibilityRole="header"
         >
-          ⚡ Select Your Saga
+          • Select Your Saga
         </Text>
         <ScrollView 
           horizontal 
@@ -1061,7 +1061,7 @@ const BasicEpicMap = () => {
                   style={styles.sagaSelectedIndicator}
                   accessible={false}
                 >
-                  ⚡
+                  •
                 </Text>
               )}
               {saga.name !== 'All Sagas' && (
@@ -1069,23 +1069,23 @@ const BasicEpicMap = () => {
                   style={[styles.sagaInfoIcon, { color: saga.color }]}
                   accessible={false}
                 >
-                  ℹ️
+                  ℹ•
                 </Text>
               )}
               {/* Show backend data indicator for Troy Saga */}
               {saga.name === 'The Troy Saga' && (
                 <View style={styles.backendStatusContainer}>
                   {isLoadingSaga ? (
-                    <Text style={styles.backendStatusText} accessible={false}>🔄</Text>
+                    <Text style={styles.backendStatusText} accessible={false}>•</Text>
                   ) : troySagaDisplayInfo ? (
                     <Text 
                       style={[styles.backendStatusText, { color: SagaService.getReleaseStatusColor(troySagaDisplayInfo.releaseStatus) }]}
                       accessible={true}
                       accessibilityLabel={`${SagaService.getReleaseStatusDisplay(troySagaDisplayInfo.releaseStatus)}`}
                     >
-                      {troySagaDisplayInfo.releaseStatus === 'released' ? '✅' : 
-                       troySagaDisplayInfo.releaseStatus === 'upcoming' ? '🔜' :
-                       troySagaDisplayInfo.releaseStatus === 'in-production' ? '🎬' : '❓'}
+                      {troySagaDisplayInfo.releaseStatus === 'released' ? '•' : 
+                       troySagaDisplayInfo.releaseStatus === 'upcoming' ? '•' :
+                       troySagaDisplayInfo.releaseStatus === 'in-production' ? '•' : '•'}
                     </Text>
                   ) : sagaError ? (
                     <Text 
@@ -1093,7 +1093,7 @@ const BasicEpicMap = () => {
                       accessible={true}
                       accessibilityLabel="Backend data unavailable, using offline data"
                     >
-                      🔴
+                      •
                     </Text>
                   ) : null}
                 </View>
@@ -1114,9 +1114,9 @@ const BasicEpicMap = () => {
                         accessible={true}
                         accessibilityLabel={`${SagaService.getReleaseStatusDisplay(displayInfo.releaseStatus)}`}
                       >
-                        {displayInfo.releaseStatus === 'released' ? '✅' : 
-                         displayInfo.releaseStatus === 'upcoming' ? '🔜' :
-                         displayInfo.releaseStatus === 'in-production' ? '🎬' : '❓'}
+                        {displayInfo.releaseStatus === 'released' ? '•' : 
+                         displayInfo.releaseStatus === 'upcoming' ? '•' :
+                         displayInfo.releaseStatus === 'in-production' ? '•' : '•'}
                       </Text>
                     </View>
                   );
@@ -1140,7 +1140,7 @@ const BasicEpicMap = () => {
           accessibilityRole="text"
           accessibilityLabel={`Current saga: ${selectedSaga}. Journey progress: ${progressIndex + 1} of ${locations.length} locations completed.`}
         >
-          <Text style={styles.controlsText}>🎭 Current: {selectedSaga}</Text>
+          <Text style={styles.controlsText}>• Current: {selectedSaga}</Text>
           <Text style={styles.progressText}>
             Progress: {progressIndex + 1}/{locations.length} locations
           </Text>
@@ -1170,7 +1170,7 @@ const BasicEpicMap = () => {
               disabled: progressIndex <= 0
             }}
           >
-            <Text style={styles.progressButtonText}>⬅️ Prev</Text>
+            <Text style={styles.progressButtonText}>⬅• Prev</Text>
           </TouchableOpacity>
           
           <TouchableOpacity
@@ -1192,7 +1192,7 @@ const BasicEpicMap = () => {
               disabled: progressIndex >= locations.length - 1
             }}
           >
-            <Text style={styles.progressButtonText}>Next ➡️</Text>
+            <Text style={styles.progressButtonText}>Next ◦ </Text>
           </TouchableOpacity>
         </View>
         
@@ -1218,7 +1218,7 @@ const BasicEpicMap = () => {
           }}
         >
           <Text style={styles.journeyButtonText}>
-            {showJourney ? '🗺️ Hide Path' : '🗺️ Show Path'}
+            {showJourney ? '◦  Hide Path' : '◦  Show Path'}
           </Text>
         </TouchableOpacity>
         
@@ -1236,7 +1236,7 @@ const BasicEpicMap = () => {
           accessibilityHint={`Currently using ${panelAnimationType} animation. Tap to cycle to the next animation style.`}
         >
           <Text style={styles.journeyButtonText}>
-            ✨ {panelAnimationType.replace('-', ' ').toUpperCase()}
+            • {panelAnimationType.replace('-', ' ').toUpperCase()}
           </Text>
         </TouchableOpacity>
       </View>
@@ -1266,7 +1266,7 @@ const BasicEpicMap = () => {
         
         {/* Debug info to ensure map container is visible */}
         <Text style={{ color: '#FFD700', textAlign: 'center', marginTop: 10, fontSize: 12 }}>
-          📍 Map Debug: {locations.length} locations • Progress: {progressIndex + 1}/{locations.length}
+          • Map Debug: {locations.length} locations • Progress: {progressIndex + 1}/{locations.length}
           {selectedLocation && ` • Selected: ${selectedLocation.name}`}
         </Text>
         
@@ -1294,8 +1294,8 @@ const BasicEpicMap = () => {
                 accessibilityRole="header"
                 accessibilityLabel={`${selectedLocation.name} location details`}
               >
-                {selectedLocation.name.toLowerCase().includes('troy') ? '⚔️' : 
-                 selectedLocation.name.toLowerCase().includes('underworld') ? '👻' : '🏝️'} {selectedLocation.name}
+                {selectedLocation.name.toLowerCase().includes('troy') ? '◦ ' : 
+                 selectedLocation.name.toLowerCase().includes('underworld') ? '•' : '◦ '} {selectedLocation.name}
               </Text>
               <TouchableOpacity 
                 style={styles.closeButton}
@@ -1305,7 +1305,7 @@ const BasicEpicMap = () => {
                 accessibilityLabel="Close location details"
                 accessibilityHint="Tap to close the location details and return to the map"
               >
-                <Text style={styles.closeButtonText}>✕</Text>
+                <Text style={styles.closeButtonText}>•</Text>
               </TouchableOpacity>
             </View>
             
@@ -1343,9 +1343,9 @@ const BasicEpicMap = () => {
                         '#808080'
                     }
                   ]}>
-                    {state === 'visited' ? '✓ Visited' :
-                     state === 'current' ? '⚡ Current Location' :
-                     '🔒 Locked'} • Stop #{order}
+                    {state === 'visited' ? '• Visited' :
+                     state === 'current' ? '• Current Location' :
+                     '• Locked'} • Stop #{order}
                   </Text>
                 </View>
               );
@@ -1357,7 +1357,7 @@ const BasicEpicMap = () => {
               accessibilityRole="text"
               accessibilityLabel={`This location belongs to the ${selectedLocation.saga}`}
             >
-              📜 {selectedLocation.saga}
+              • {selectedLocation.saga}
             </Text>
             <Text 
               style={styles.detailsDescription}
@@ -1401,7 +1401,7 @@ const BasicEpicMap = () => {
                   style={styles.songsTitle}
                   accessible={false}
                 >
-                  🎵 Featured Songs:
+                  • Featured Songs:
                 </Text>
                 {selectedLocation.songs.map((song, idx) => (
                   <Text 
@@ -1409,7 +1409,7 @@ const BasicEpicMap = () => {
                     style={styles.songItem}
                     accessible={false}
                   >
-                    ♪ {song}
+                    • {song}
                   </Text>
                 ))}
               </View>
@@ -1433,15 +1433,15 @@ const BasicEpicMap = () => {
           style={styles.statusText}
           accessible={false}
         >
-          🟢 Backend Connected • {locations.length} Locations • Progress: {progressIndex + 1}/{locations.length}
+          • Backend Connected • {locations.length} Locations • Progress: {progressIndex + 1}/{locations.length}
         </Text>
         <Text 
           style={styles.statusSubText}
           accessible={false}
         >
-          {progressIndex === 0 ? '🚀 Journey begins!' : 
-           progressIndex === locations.length - 1 ? '🏆 Journey complete!' :
-           `✨ Continue to unlock the next location`}
+          {progressIndex === 0 ? '• Journey begins!' : 
+           progressIndex === locations.length - 1 ? '• Journey complete!' :
+           `• Continue to unlock the next location`}
         </Text>
       </View>
       
@@ -1480,13 +1480,13 @@ const BasicEpicMap = () => {
           onPress={() => {
             // Test endpoint health status
             const healthyCount = Object.keys(ApiErrorBoundary).length;
-            console.log('🏥 API Health Check:', {
+            console.log('• API Health Check:', {
               sagasHealthy: ApiErrorBoundary.isEndpointHealthy(`${API_BASE_URL}/api/sagas`),
               locationsHealthy: ApiErrorBoundary.isEndpointHealthy(`${API_BASE_URL}/api/locations`),
             });
           }}
         >
-          <Text style={styles.debugButtonText}>🏥 Check API Health</Text>
+          <Text style={styles.debugButtonText}>• Check API Health</Text>
         </TouchableOpacity>
       </View>
 

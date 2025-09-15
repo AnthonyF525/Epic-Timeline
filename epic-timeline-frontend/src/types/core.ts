@@ -13,7 +13,7 @@ import {
   LocationType
 } from './enums';
 
-// ✅ BASE ENTITY INTERFACE
+// ✓ BASE ENTITY INTERFACE
 export interface BaseEntity {
   id: number;
   createdAt: string;
@@ -21,7 +21,7 @@ export interface BaseEntity {
   version?: number;
 }
 
-// ✅ SAGA INTERFACE
+// ✓ SAGA INTERFACE
 export interface Saga extends BaseEntity {
   title: string;
   description: string;
@@ -48,7 +48,7 @@ export interface Saga extends BaseEntity {
   locations?: Location[];
 }
 
-// ✅ CHARACTER INTERFACE
+// ✓ CHARACTER INTERFACE
 export interface Character extends BaseEntity {
   name: string;
   description: string;
@@ -85,7 +85,7 @@ export interface Character extends BaseEntity {
   locations?: Location[];
 }
 
-// ✅ CHARACTER RELATIONSHIP INTERFACE
+// ✓ CHARACTER RELATIONSHIP INTERFACE
 export interface CharacterRelationship {
   relatedCharacterId: number;
   relatedCharacterName: string;
@@ -94,7 +94,7 @@ export interface CharacterRelationship {
   contextSagas: string[];
 }
 
-// ✅ SONG INTERFACE
+// ✓ SONG INTERFACE
 export interface Song extends BaseEntity {
   title: string;
   description: string;
@@ -138,7 +138,7 @@ export interface Song extends BaseEntity {
   locations?: Location[];
 }
 
-// ✅ LOCATION INTERFACE
+// ✓ LOCATION INTERFACE
 export interface Location extends BaseEntity {
   name: string;
   description: string;
@@ -176,7 +176,7 @@ export interface Location extends BaseEntity {
   events?: Event[];
 }
 
-// ✅ EVENT INTERFACE
+// ✓ EVENT INTERFACE
 export interface Event extends BaseEntity {
   title: string;
   description: string;

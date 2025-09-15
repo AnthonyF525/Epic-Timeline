@@ -12,7 +12,7 @@ export * from './SongService';
 export * from './LocationService';
 export * from './MapService';
 
-// ✅ Export all types
+// ✓ Export all types
 export * from '../types/enums';
 export * from '../types/core';
 export * from '../types/comparison';

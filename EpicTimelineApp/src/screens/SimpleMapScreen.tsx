@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 const SimpleMapScreen = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>🏛️ Epic Timeline Map</Text>
+      <Text style={styles.title}>◦  Epic Timeline Map</Text>
       <Text style={styles.subtitle}>Loading the Mediterranean...</Text>
       <View style={styles.placeholder}>
         <Text style={styles.placeholderText}>Map will appear here</Text>

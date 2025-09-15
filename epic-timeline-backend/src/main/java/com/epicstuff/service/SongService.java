@@ -23,7 +23,7 @@ public class SongService {
     @Autowired
     private CharacterRepository characterRepository;
 
-    // ✅ Get all songs with filtering (simplified)
+    // // [DONE] Get all songs with filtering (simplified)
     public Page<Song> findAllWithFilter(Long sagaId, Pageable pageable) {
         // For now, implement basic filtering by sagaId
         if (sagaId != null) {
@@ -35,23 +35,23 @@ public class SongService {
         return songRepository.findAll(pageable);
     }
 
-    // ✅ Get all songs
+    // // [DONE] Get all songs
     public List<Song> findAll() {
         return songRepository.findAll();
     }
 
-    // ✅ Get song by ID with populated relationships
+    // // [DONE] Get song by ID with populated relationships
     public Optional<Song> findByIdWithRelations(Long id) {
         return songRepository.findById(id);
     }
 
-    // ✅ Create new song with validation (removed for now)
+    // // [DONE] Create new song with validation (removed for now)
     // TODO: Implement createSong with proper DTO handling
 
-    // ✅ Update existing song (removed for now)
+    // // [DONE] Update existing song (removed for now)
     // TODO: Implement updateSong with proper DTO handling
 
-    // ✅ Delete song
+    // // [DONE] Delete song
     public boolean deleteSong(Long id) {
         if (songRepository.existsById(id)) {
             songRepository.deleteById(id);
@@ -60,13 +60,13 @@ public class SongService {
         return false;
     }
 
-    // ✅ Get all characters in song
+    // // [DONE] Get all characters in song
     public List<Character> getSongCharacters(Long id) {
         Optional<Song> song = songRepository.findById(id);
         return song.map(Song::getCharacters).orElse(new ArrayList<>());
     }
 
-    // ✅ Add character to song
+    // // [DONE] Add character to song
     public Optional<Song> addCharacterToSong(Long songId, Long characterId) {
         Optional<Song> songOpt = songRepository.findById(songId);
         Optional<Character> characterOpt = characterRepository.findById(characterId);
@@ -84,7 +84,7 @@ public class SongService {
         return Optional.empty();
     }
 
-    // ✅ Remove character from song
+    // // [DONE] Remove character from song
     public Optional<Song> removeCharacterFromSong(Long songId, Long characterId) {
         Optional<Song> songOpt = songRepository.findById(songId);
         Optional<Character> characterOpt = characterRepository.findById(characterId);
@@ -101,17 +101,17 @@ public class SongService {
         return Optional.empty();
     }
 
-    // ✅ Get all songs for a character
+    // // [DONE] Get all songs for a character
     public List<Song> findSongsByCharacter(Long characterId) {
         return songRepository.findByCharacterId(characterId);
     }
 
-    // ✅ Get all songs in a saga
+    // // [DONE] Get all songs in a saga
     public List<Song> findSongsBySaga(Long sagaId) {
         return songRepository.findBySagaId(sagaId);
     }
 
-    // ✅ Get song statistics - simplified
+    // // [DONE] Get song statistics - simplified
     public String getSongStats(Long id) {
         Optional<Song> song = songRepository.findById(id);
         if (song.isPresent()) {

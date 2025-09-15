@@ -193,17 +193,17 @@ export const calculateDistance = (point1: {latitude: number, longitude: number},
 // Add this helper function:
 export const getLocationIcon = (saga: string): string => {
   const sagaIcons: Record<string, string> = {
-    'troy-saga': '🏛️',
-    'cyclops-saga': '👁️',
-    'ocean-saga': '🌊',
-    'circe-saga': '🔮',
-    'underworld-saga': '💀',
-    'thunder-saga': '⚡',
-    'wisdom-saga': '🦉',
-    'vengeance-saga': '⚔️',
-    'ithaca-saga': '🏠',
+    'troy-saga': '◦ ',
+    'cyclops-saga': '◦ ',
+    'ocean-saga': '•',
+    'circe-saga': '•',
+    'underworld-saga': '•',
+    'thunder-saga': '•',
+    'wisdom-saga': '⚪',
+    'vengeance-saga': '◦ ',
+    'ithaca-saga': '•',
   };
-  return sagaIcons[saga] || '📍';
+  return sagaIcons[saga] || '•';
 };
 
 // Animation configuration

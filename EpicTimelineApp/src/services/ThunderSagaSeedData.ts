@@ -104,6 +104,36 @@ export const THUNDER_CHARACTERS: Character[] = [
     ]
   },
   {
+    id: 22,
+    name: 'Scylla',
+    description: 'The six-headed sea monster that guards the narrow strait opposite Charybdis. Once a beautiful nymph transformed by jealous gods into a terrifying creature, Scylla represents the inescapable price of passage through dangerous waters.',
+    characterType: 'Sea Monster',
+    isProtagonist: false,
+    aliases: ['Six-Headed Monster', 'Guardian of the Strait', 'The Devourer', 'Terror of the Passage'],
+    powers: [
+      'Multiple Heads',
+      'Lightning Speed',
+      'Precise Strikes',
+      'Territorial Control',
+      'Inevitable Hunger',
+      'Strategic Positioning'
+    ],
+    relationships: [
+      { 
+        characterId: 1, 
+        characterName: 'Odysseus', 
+        relationshipType: 'adversary', 
+        description: 'Hero who must sacrifice men to pass her lair' 
+      },
+      { 
+        characterId: 20, 
+        characterName: 'The Crew\'s Desperation', 
+        relationshipType: 'predator', 
+        description: 'Six sailors who become her victims' 
+      }
+    ]
+  },
+  {
     id: 21,
     name: 'Helios (The Sun God)',
     description: 'The radiant god of the sun whose sacred cattle were slaughtered by Odysseus\'s crew. Though not directly present, his divine anger and demand for justice drives Zeus to act against the mortals who committed sacrilege.',

@@ -679,7 +679,7 @@ const SagaInfoPanel: React.FC<SagaInfoPanelProps> = ({
   // Debug logging for loading state
   useEffect(() => {
     if (isVisible) {
-      console.log('🎭 SagaInfoPanel props:', { 
+      console.log('[ICON] SagaInfoPanel props:', { 
         sagaName: saga?.name || 'null',
         isLoading,
         isVisible,
@@ -898,10 +898,10 @@ const SagaInfoPanel: React.FC<SagaInfoPanelProps> = ({
       Animated.spring(tabContentAnim, {
         toValue: 1,
         tension: 100,
-        friction: 8,  console.log('🏛️ Loading Troy events for saga info panel...');
+        friction: 8,  console.log('[ICON][ICON] Loading Troy events for saga info panel...');
         useNativeDriver: true,ait EventService.getTroyEvents();
       }).start(() => {s);
-        setIsTabChanging(false);  console.log(`✅ Loaded ${troyEvents.length} Troy events`);
+        setIsTabChanging(false);  console.log(`[DONE] Loaded ${troyEvents.length} Troy events`);
       });ch (error) {
     });
   };n.');
@@ -914,12 +914,12 @@ const SagaInfoPanel: React.FC<SagaInfoPanelProps> = ({
     setEventsError(null);
     f (isVisible && saga && saga.name.toLowerCase().includes('troy')) {
     try {  loadTroyEvents();
-      console.log('🏛️ Loading Troy events for saga info panel...');    }
+      console.log('[ICON][ICON] Loading Troy events for saga info panel...');    }
       const troyEvents = await EventService.getTroyEvents();
       setEvents(troyEvents);
-      console.log(`✅ Loaded ${troyEvents.length} Troy events`);
+      console.log(`[DONE] Loaded ${troyEvents.length} Troy events`);
     } catch (error) {
-      console.error('❌ Error loading Troy events:', error);
+      console.error('[ICON] Error loading Troy events:', error);
       setEventsError('Failed to load events. Please try again.');
     } finally {  const handleSagaNavigation = (direction: 'prev' | 'next') => {
       setEventsLoading(false);Sagas.findIndex(s => s.id === saga.id);
@@ -979,7 +979,7 @@ gaSelect && newSaga) {
             accessible={true} 
             accessibilityRole="header"gress}%`,
           >backgroundColor: saga.color 
-            📈 Journey Progress
+            [ICON] Journey Progress
           </Text>
           
           {/* Overall Progress Bar */}
@@ -1012,7 +1012,7 @@ ssibilityLabel={`Song ${index + 1}: ${song.title}. ${isCompleted ? 'Completed' :
                 const isCurrent = index === saga.progress!.currentSong - 1;
                 return (
                   <View 
-                    key={index} <Text style={styles.currentIndicator}>♪</Text>
+                    key={index} <Text style={styles.currentIndicator}>[ICON]</Text>
                     style={styles.timelineItem}
                     accessible={true}
                     accessibilityRole="text"w style={styles.timelineContent}>
@@ -1025,10 +1025,10 @@ ssibilityLabel={`Song ${index + 1}: ${song.title}. ${isCompleted ? 'Completed' :
                       !isCompleted && !isCurrent && { backgroundColor: '#666' }
                     ]}>
                       {isCompleted && (/Text>
-                        <Text style={styles.checkmark}>✓</Text>
+                        <Text style={styles.checkmark}>[ICON]</Text>
                       )}
                       {isCurrent && (saga.songs.length - 1 && (
-                        <Text style={styles.currentIndicator}>♪</Text>
+                        <Text style={styles.currentIndicator}>[ICON]</Text>
                       )}
                     </View>isCompleted && { backgroundColor: saga.color }
                     <View style={styles.timelineContent}>
@@ -1068,7 +1068,7 @@ ssibilityLabel={`Song ${index + 1}: ${song.title}. ${isCompleted ? 'Completed' :
                     accessibilityRole="text"  accessible={true}
                     accessibilityLabel={`Completed moment: ${moment}`}          accessibilityRole="header"
                   >
-                    <Text style={styles.checkmark}>✓</Text>ore Theme
+                    <Text style={styles.checkmark}>[ICON]</Text>ore Theme
                     <Text style={[styles.momentText, { color: saga.color }]}>{moment}</Text>
                   </View>
                 ))}nt}
@@ -1084,7 +1084,7 @@ ssibilityLabel={`Song ${index + 1}: ${song.title}. ${isCompleted ? 'Completed' :
           accessible={true}={styles.sectionTitle}
           accessibilityRole="header"essible={true}
         >          accessibilityRole="header"
-          🎭 Core Theme
+          [ICON] Core Theme
         </Text>ey Characters
         <Text 
           style={styles.sectionContent}.characterList}>
@@ -1101,7 +1101,7 @@ ssibilityLabel={`Character: ${character}`}
           accessible={true}
           accessibilityRole="header"
         >
-          👥 Key Characters
+          [ICON] Key Characters
         </Text>
         <View style={styles.characterList}>
           {saga.keyCharacters.map((character, index) => (styles.infoSection}>
@@ -1126,7 +1126,7 @@ ssibilityLabel={`Character: ${character}`}
           accessible={true}={styles.sectionTitle}
           accessibilityRole="header"essible={true}
         >          accessibilityRole="header"
-          📍 Locations
+          [ICON] Locations
         </Text>usical Style
         <Text 
           style={styles.sectionContent}
@@ -1143,7 +1143,7 @@ ssibilityLabel={`Character: ${character}`}
           accessible={true}={styles.sectionTitle}
           accessibilityRole="header"essible={true}
         >          accessibilityRole="header"
-          🎵 Musical Style
+          [ICON] Musical Style
         </Text>motional Tone
         <Text 
           style={styles.sectionContent}
@@ -1160,7 +1160,7 @@ ssibilityLabel={`Character: ${character}`}
           accessible={true} 
           accessibilityRole="header"tyle={styles.sectionTitle}
         >            accessible={true}
-          💭 Emotional Toneole="header"
+          [ICON] Emotional Toneole="header"
         </Text>
         <Text ymbolism
           style={styles.sectionContent}
@@ -1178,7 +1178,7 @@ ssibilityLabel={`Character: ${character}`}
             accessible={true}
             accessibilityRole="header"ongsTab = () => {
           >et enhanced songs with perspective data from SongDataService
-            🔮 Symbolisms = SongDataService.getMockSongs();
+            [ICON] Symbolisms = SongDataService.getMockSongs();
           </Text>const sagaSongs = allSongs.filter(song => 
           <Text       song.saga.title === saga.name || song.saga.title.includes(saga.name.replace(' Saga', ''))
             style={styles.sectionContent}
@@ -1248,7 +1248,7 @@ ssibilityLabel={`Character: ${character}`}
           showDetails={true}
           showThemes={true}ainer}>
           searchQuery={songSearchQuery} // P2: Pass search query to SongList  <Text style={styles.tabText}>
-          onSongPress={(song) => {      🎵 No songs available for {saga.name}
+          onSongPress={(song) => {      [ICON] No songs available for {saga.name}
             console.log('Song pressed:', song.title);
           }}ext}>
           onSongPlay={(song) => {e released
@@ -1260,11 +1260,11 @@ ssibilityLabel={`Character: ${character}`}
           style={styles.songListContainer}Query.length > 0 && (
         />tyle={styles.searchResultsInfo}>
           <Text style={styles.searchResultsText}>
-        {/* Enhanced fallback with search context */}              🔍 Search: "{songSearchQuery}" in {saga.name}
+        {/* Enhanced fallback with search context */}              [ICON] Search: "{songSearchQuery}" in {saga.name}
         {sagaSongs.length === 0 && (
           <View style={styles.songListContainer}>
             <Text style={styles.tabText}>
-              🎵 No songs available for {saga.name}
+              [ICON] No songs available for {saga.name}
             </Text>
             <Text style={styles.tabText}>
               Songs will appear here when they are released
@@ -1276,7 +1276,7 @@ ssibilityLabel={`Character: ${character}`}
         {songSearchQuery.length > 0 && (
           <View style={styles.searchResultsInfo}>ityLabel={`Detailed information about ${saga.name}`}
             <Text style={styles.searchResultsText}>
-              🔍 Search: "{songSearchQuery}" in {saga.name}
+              [ICON] Search: "{songSearchQuery}" in {saga.name}
             </Text>
           </View>nTitle}
         )}
@@ -1320,7 +1320,7 @@ ssibilityLabel={`Character: ${character}`}
           accessible={true}ress={() => handleSagaNavigation('prev')}
           accessibilityRole="header"    accessible={true}
         >
-          📚 Saga Navigationbel="Go to previous saga"
+          [ICON] Saga Navigationbel="Go to previous saga"
         </Text> sequence"
         <Text 
           style={styles.sagaOrderText}les.navButtonText, { color: saga.color }]}>
@@ -1340,7 +1340,7 @@ ssibilityLabel={`Character: ${character}`}
             accessibilityHint="Navigate to the previous saga in the sequence"
           >
             <Text style={[styles.navButtonText, { color: saga.color }]}>
-              ⬅️ Previousiew>
+              ⬅[ICON] Previousiew>
             </Text>
           </TouchableOpacity>
           
@@ -1353,7 +1353,7 @@ ssibilityLabel={`Character: ${character}`}
             accessibilityHint="Navigate to the next saga in the sequence"ajor
           >
             <Text style={[styles.navButtonText, { color: saga.color }]}>y for unknown
-              Next ➡️
+              Next [ICON][ICON]
             </Text>
           </TouchableOpacity>
         </View>
@@ -1381,7 +1381,7 @@ ssibilityLabel={`Character: ${character}`}
       
       // Format as ancient date (e.g., "April 23, 1184 BCE")
       return `${month} ${day}, ${year} BCE`;yles.errorContainer}>
-    } catch (error) {errorText}>⚠️ {eventsError}</Text>
+    } catch (error) {errorText}>[WARNING][ICON] {eventsError}</Text>
       return 'Ancient Times';
     }       style={styles.retryButton} 
   };oadTroyEvents}
@@ -1397,20 +1397,20 @@ ssibilityLabel={`Character: ${character}`}
     >for this saga</Text>
       {eventsError ? (.emptySubtext}>
         <View style={styles.errorContainer}>nts will appear here when available for this location
-          <Text style={styles.errorText}>⚠️ {eventsError}</Text>
+          <Text style={styles.errorText}>[WARNING][ICON] {eventsError}</Text>
           <TouchableOpacity 
             style={styles.retryButton} 
             onPress={loadTroyEvents}
             accessible={true}
             accessibilityRole="button"tyle={styles.timelineHeader}>
-            accessibilityLabel="Retry loading events"xt style={styles.timelineTitle}>🏛️ Troy Saga Timeline</Text>
+            accessibilityLabel="Retry loading events"xt style={styles.timelineTitle}>[ICON][ICON] Troy Saga Timeline</Text>
           > <Text style={styles.timelineSubtitle}>
             <Text style={styles.retryButtonText}>Retry</Text>    {events.length} events in chronological order
           </TouchableOpacity>
         </View>r} />
       ) : events.length === 0 && !eventsLoading ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>🏛️ No events found for this saga</Text>
+          <Text style={styles.emptyText}>[ICON][ICON] No events found for this saga</Text>
           <Text style={styles.emptySubtext}>ap((event, index) => (
             Events will appear here when available for this locationlineContainer}>
           </Text> Timeline connector line */}
@@ -1419,7 +1419,7 @@ ssibilityLabel={`Character: ${character}`}
         <>
           {/* P2: Chronological Timeline Header */}
           <View style={styles.timelineHeader}>
-            <Text style={styles.timelineTitle}>🏛️ Troy Saga Timeline</Text>
+            <Text style={styles.timelineTitle}>[ICON][ICON] Troy Saga Timeline</Text>
             <Text style={styles.timelineSubtitle}>
               {events.length} events in chronological order{ backgroundColor: getImportanceColor(event.eventContext.importance) }
             </Text>]}>
@@ -1482,7 +1482,7 @@ ssibilityLabel={`Character: ${character}`}
                           <Text style={styles.characterTagText}>{character.name}</Text>
                         </TouchableOpacity>
                       ))}styles.eventFooter}>
-                    </View> style={styles.eventLocation}>📍 {event.location.name}</Text>
+                    </View> style={styles.eventLocation}>[ICON] {event.location.name}</Text>
                   </View>tyle={styles.eventSequence}>
                 )}  Event {event.sequenceOrder} of {events.length}
                   </Text>
@@ -1491,14 +1491,14 @@ ssibilityLabel={`Character: ${character}`}
                     <Text style={styles.eventSongsLabel}>Related Songs:</Text>
                     {event.songs.map(song => (
                       <Text key={song.id} style={styles.eventSongItem}>
-                        🎵 {song.title}completion marker */}
+                        [ICON] {song.title}completion marker */}
                       </Text>={styles.timelineCompletion}>
                     ))}tyle={styles.completionMarker}>
-                  </View> <Text style={styles.completionText}>🏁</Text>
+                  </View> <Text style={styles.completionText}>[FINISH]</Text>
                 )}            </View>
                 bel}>End of Troy Saga Timeline</Text>
                 <View style={styles.eventFooter}>
-                  <Text style={styles.eventLocation}>📍 {event.location.name}</Text>
+                  <Text style={styles.eventLocation}>[ICON] {event.location.name}</Text>
                   <Text style={styles.eventSequence}>
                     Event {event.sequenceOrder} of {events.length}
                   </Text>
@@ -1510,7 +1510,7 @@ ssibilityLabel={`Character: ${character}`}
           {/* Timeline completion marker */}        style,
           <View style={styles.timelineCompletion}>
             <View style={styles.completionMarker}> fadeAnim,
-              <Text style={styles.completionText}>🏁</Text>
+              <Text style={styles.completionText}>[FINISH]</Text>
             </View>
             <Text style={styles.completionLabel}>End of Troy Saga Timeline</Text>le={true}
           </View>essibilityRole="text"
@@ -1554,7 +1554,7 @@ ssibilityLabel={`Character: ${character}`}
           ]}bel="Close saga information panel"
         >close this panel and return to the map"
           <View style={styles.headerContent}>
-            <Text es.closeButtonText}>✕</Text>
+            <Text es.closeButtonText}>[ICON]</Text>
               style={styles.title}
               accessible={true}
               accessibilityRole="header"
@@ -1567,10 +1567,10 @@ ssibilityLabel={`Character: ${character}`}
               onPress={onClose}Saga information tabs"
               accessible={true}
               accessibilityRole="button"
-              accessibilityLabel="Close saga information panel"w', label: '📋 Overview' },
+              accessibilityLabel="Close saga information panel"w', label: '[ICON] Overview' },
               accessibilityHint="Tap to close this panel and return to the map" Songs' },
             >
-              <Text style={styles.closeButtonText}>✕</Text>   { key: 'events', label: '🏛️ Events' }
+              <Text style={styles.closeButtonText}>[ICON]</Text>   { key: 'events', label: '[ICON][ICON] Events' }
             </TouchableOpacity>map((tab) => (
           </View>
         </Animated.View>
@@ -1583,10 +1583,10 @@ ssibilityLabel={`Character: ${character}`}
           accessibilityLabel="Saga information tabs"Role="tab"
         >
           {[cessibilityState={{ selected: activeTab === tab.key }}
-            { key: 'overview', label: '📋 Overview' },it(' ')[1]} information`}
-            { key: 'songs', label: '🎵 Songs' },
-            { key: 'details', label: '📖 Details' },
-            { key: 'events', label: '🏛️ Events' }
+            { key: 'overview', label: '[ICON] Overview' },it(' ')[1]} information`}
+            { key: 'songs', label: '[ICON] Songs' },
+            { key: 'details', label: '[ICON] Details' },
+            { key: 'events', label: '[ICON][ICON] Events' }
           ].map((tab) => (r: saga.color }]
             <TouchableOpacity
               key={tab.key}   {tab.label}

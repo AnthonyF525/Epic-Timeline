@@ -1,5 +1,5 @@
 // Thunder Saga Seed Data Verification Script
-console.log('⚡ THUNDER SAGA SEED DATA VERIFICATION');
+console.log('• THUNDER SAGA SEED DATA VERIFICATION');
 console.log('=====================================');
 
 // This verification script checks the structure and content of Thunder Saga seed data
@@ -66,38 +66,38 @@ const thunderSagaVerification = {
   ]
 };
 
-console.log('🎭 Characters:', thunderSagaVerification.characters.count);
+console.log('• Characters:', thunderSagaVerification.characters.count);
 console.log('   Names:', thunderSagaVerification.characters.names.join(', '));
 console.log('   Focus:', thunderSagaVerification.characters.focus);
 
 console.log('');
-console.log('🗺️ Locations:', thunderSagaVerification.locations.count);
+console.log('◦  Locations:', thunderSagaVerification.locations.count);
 console.log('   Names:', thunderSagaVerification.locations.names.join(', '));
 console.log('   Focus:', thunderSagaVerification.locations.focus);
 
 console.log('');
-console.log('🎵 Songs:', thunderSagaVerification.songs.count);
+console.log('• Songs:', thunderSagaVerification.songs.count);
 console.log('   Titles:', thunderSagaVerification.songs.titles.join(', '));
 console.log('   Total Duration:', Math.floor(thunderSagaVerification.songs.totalDuration / 60) + 'm ' + (thunderSagaVerification.songs.totalDuration % 60) + 's');
 
 console.log('');
-console.log('⚡ Events:', thunderSagaVerification.events.count);
+console.log('• Events:', thunderSagaVerification.events.count);
 console.log('   Key Sequence:', thunderSagaVerification.events.sequence.slice(0, 3).join(' → ') + ' → ...');
 console.log('   Focus:', thunderSagaVerification.events.focus);
 
 console.log('');
-console.log('🎯 Key Themes:');
+console.log('• Key Themes:');
 thunderSagaVerification.themes.forEach(theme => {
-  console.log('   ⚡', theme);
+  console.log('   •', theme);
 });
 
 console.log('');
-console.log('💥 Dramatic Highlights:');
+console.log('• Dramatic Highlights:');
 thunderSagaVerification.keyMoments.forEach(moment => {
-  console.log('   🌩️', moment);
+  console.log('   ◦ ', moment);
 });
 
 console.log('');
-console.log('✅ Thunder Saga seed data structure verified!');
-console.log('🚀 Ready for integration into Epic Timeline app');
-console.log('⚡ Divine judgment and ultimate sacrifice themes implemented');
+console.log('• Thunder Saga seed data structure verified!');
+console.log('• Ready for integration into Epic Timeline app');
+console.log('• Divine judgment and ultimate sacrifice themes implemented');

@@ -78,7 +78,7 @@ const verificationChecks = [
   }
 ];
 
-console.log('🚀 Epic Timeline P2 Feature Verification');
+console.log('• Epic Timeline P2 Feature Verification');
 console.log('==========================================\n');
 
 let allChecksPassed = true;
@@ -87,7 +87,7 @@ verificationChecks.forEach(({ name, file, checks }) => {
   const filePath = path.join(projectRoot, file);
   
   if (!fs.existsSync(filePath)) {
-    console.log(`❌ ${name}: File not found - ${file}`);
+    console.log(`• ${name}: File not found - ${file}`);
     allChecksPassed = false;
     return;
   }
@@ -102,9 +102,9 @@ verificationChecks.forEach(({ name, file, checks }) => {
   });
   
   if (failedChecks.length === 0) {
-    console.log(`✅ ${name}: All checks passed`);
+    console.log(`• ${name}: All checks passed`);
   } else {
-    console.log(`⚠️  ${name}: Missing - ${failedChecks.join(', ')}`);
+    console.log(`◦   ${name}: Missing - ${failedChecks.join(', ')}`);
     allChecksPassed = false;
   }
 });
@@ -112,7 +112,7 @@ verificationChecks.forEach(({ name, file, checks }) => {
 console.log('\n==========================================');
 
 if (allChecksPassed) {
-  console.log('🎉 All P2 features verified successfully!');
+  console.log('• All P2 features verified successfully!');
   console.log('\nReady for final testing:');
   console.log('1. Open the app in browser/simulator');
   console.log('2. Navigate to Troy on the map');
@@ -120,7 +120,7 @@ if (allChecksPassed) {
   console.log('4. Verify song display with duration and perspective data');
   console.log('5. Test audio player integration');
 } else {
-  console.log('⚠️  Some features need attention. Check the details above.');
+  console.log('◦   Some features need attention. Check the details above.');
 }
 
-console.log('\n🌐 App running at: http://localhost:8082');
+console.log('\n• App running at: http://localhost:8082');

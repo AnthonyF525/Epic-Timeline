@@ -38,7 +38,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
         onPress={onResetToMediterranean}
         disabled={loadingState.isFocusing}
       >
-        <Text style={mapStyles.controlButtonText}>🌊 Reset View</Text>
+        <Text style={mapStyles.controlButtonText}>• Reset View</Text>
       </TouchableOpacity>
       
       <TouchableOpacity 
@@ -51,7 +51,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
         disabled={loadingState.isFocusing || !troyLocation}
       >
         <Text style={mapStyles.troyFocusButtonText}>
-          {loadingState.isFocusing ? '⏳ Focusing...' : '🏛️ Focus Troy'}
+          {loadingState.isFocusing ? '• Focusing...' : '◦  Focus Troy'}
         </Text>
       </TouchableOpacity>
       
@@ -63,7 +63,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
         onPress={onFitToLocations}
         disabled={loadingState.isLoadingLocations}
       >
-        <Text style={mapStyles.controlButtonText}>📍 Fit All</Text>
+        <Text style={mapStyles.controlButtonText}>• Fit All</Text>
       </TouchableOpacity>
       
       {/* Enhanced Zoom Controls with Loading States */}
@@ -107,9 +107,9 @@ export const MapControls: React.FC<MapControlsProps> = ({
       {/* Status indicator */}
       <View style={mapStyles.statusIndicator}>
         <Text style={mapStyles.statusText}>
-          {loadingState.isLoadingLocations ? '⏳ Loading...' : 
-           loadingState.error ? '⚠️ Error' : 
-           '✅ Ready'}
+          {loadingState.isLoadingLocations ? '• Loading...' : 
+           loadingState.error ? '◦  Error' : 
+           '• Ready'}
         </Text>
       </View>
     </View>

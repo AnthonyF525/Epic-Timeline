@@ -50,9 +50,9 @@ export const LocationCard: React.FC<LocationCardProps> = ({
           mapStyles.locationName,
           isTroy && styles.troyLocationName
         ]}>
-          {isTroy && "🏛️ "}
+          {isTroy && "◦  "}
           {index + 1}. {location.name}
-          {isTroy && " ⚔️"}
+          {isTroy && " ◦ "}
         </Text>
         <View style={[
           mapStyles.sagaBadge, 
@@ -63,7 +63,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
             mapStyles.sagaText,
             isTroy && styles.troySagaText
           ]}>
-            {isTroy ? "⚔️ TROY SAGA" : location.saga.replace('-saga', '').toUpperCase()}
+            {isTroy ? "◦  TROY SAGA" : location.saga.replace('-saga', '').toUpperCase()}
           </Text>
         </View>
       </View>
@@ -71,7 +71,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
       {/* Troy-specific subtitle */}
       {isTroy && (
         <Text style={styles.troySubtitle}>
-          🏛️ Ancient Citadel • 🗡️ Site of the Trojan War
+          ◦  Ancient Citadel • ◦  Site of the Trojan War
         </Text>
       )}
       
@@ -79,7 +79,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
         mapStyles.locationCoords,
         isTroy && styles.troyCoords
       ]}>
-        📐 {location.latitude.toFixed(2)}°N, {location.longitude.toFixed(2)}°E
+        • {location.latitude.toFixed(2)}°N, {location.longitude.toFixed(2)}°E
         {isTroy && " • Hisarlik, Turkey"}
       </Text>
       
@@ -95,7 +95,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
           mapStyles.significance,
           isTroy && styles.troySignificance
         ]}>
-          ✨ {location.significance}
+          • {location.significance}
         </Text>
       )}
       
@@ -104,7 +104,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
           mapStyles.songsPreview,
           isTroy && styles.troySongs
         ]}>
-          🎵 Songs: {location.songs.slice(0, 2).join(', ')}
+          • Songs: {location.songs.slice(0, 2).join(', ')}
           {location.songs.length > 2 ? ` +${location.songs.length - 2} more` : ''}
         </Text>
       )}
@@ -113,7 +113,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
       {isTroy && (
         <View style={styles.troyWarBadge}>
           <Text style={styles.troyWarBadgeText}>
-            ⚔️ JOURNEY BEGINS HERE
+            ◦  JOURNEY BEGINS HERE
           </Text>
         </View>
       )}

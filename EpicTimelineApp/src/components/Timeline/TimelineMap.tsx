@@ -70,7 +70,7 @@ export const TimelineMap: React.FC<TimelineMapProps> = ({
       
       {location.latitude && location.longitude && (
         <Text style={styles.locationCoords}>
-          📐 {location.latitude.toFixed(2)}°, {location.longitude.toFixed(2)}°
+          • {location.latitude.toFixed(2)}°, {location.longitude.toFixed(2)}°
         </Text>
       )}
       
@@ -80,13 +80,13 @@ export const TimelineMap: React.FC<TimelineMapProps> = ({
       
       {location.significance && (
         <Text style={styles.significance}>
-          ✨ {location.significance}
+          • {location.significance}
         </Text>
       )}
       
       {location.timestamp && (
         <Text style={styles.timestamp}>
-          🕐 {location.timestamp}
+          • {location.timestamp}
         </Text>
       )}
     </TouchableOpacity>
@@ -94,7 +94,7 @@ export const TimelineMap: React.FC<TimelineMapProps> = ({
 
   const defaultRenderCategoryLegend = () => (
     <View style={styles.legend}>
-      <Text style={styles.legendTitle}>📊 Timeline Categories</Text>
+      <Text style={styles.legendTitle}>• Timeline Categories</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={styles.legendItems}>
           {categories.map((category) => (
@@ -119,19 +119,19 @@ export const TimelineMap: React.FC<TimelineMapProps> = ({
         {/* Journey Route Indicator */}
         {showJourney && (
           <View style={styles.journeyIndicator}>
-            <Text style={styles.journeyText}>🛤️ Timeline Route Active</Text>
+            <Text style={styles.journeyText}>◦  Timeline Route Active</Text>
           </View>
         )}
         
         {/* Location List */}
         <View style={styles.locationsContainer}>
           <Text style={styles.locationsHeader}>
-            📍 {filteredLocations.length} Timeline Locations:
+            • {filteredLocations.length} Timeline Locations:
           </Text>
           <ScrollView style={styles.locationsList} showsVerticalScrollIndicator={true}>
             {filteredLocations.length === 0 ? (
               <View style={styles.noLocationsContainer}>
-                <Text style={styles.noLocationsText}>🔍 No locations found</Text>
+                <Text style={styles.noLocationsText}>• No locations found</Text>
                 <Text style={styles.noLocationsSubText}>
                   Try selecting a different category
                 </Text>

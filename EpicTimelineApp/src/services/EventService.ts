@@ -6,8 +6,14 @@
 
 import ApiRetryService, { ApiErrorBoundary, RetryConfig } from '../utils/apiRetry';
 import CacheService from './CacheService';
+import seedDataService from './SeedDataService';
 
 const API_BASE_URL = 'http://localhost:8080';
+
+// Initialize SeedDataService for comprehensive fallback data
+seedDataService.initialize().catch(error => {
+  console.warn('EventService: Failed to initialize SeedDataService:', error);
+});
 
 // Enhanced Character interface for character detail modals
 export interface Character {
@@ -105,7 +111,7 @@ export class EventService {
     // Check cache first
     const cachedEvents = CacheService.getCachedEvents(params);
     if (cachedEvents) {
-      console.log('🎯 Using cached events data');
+      console.log('• Using cached events data');
       return cachedEvents;
     }
 
@@ -125,12 +131,12 @@ export class EventService {
     const endpoint = `${API_BASE_URL}/api/events${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
     
     try {
-      console.log('🏛️ Fetching events from API:', endpoint);
+      console.log('◦  Fetching events from API:', endpoint);
       
       // Check endpoint health before attempting
       if (!ApiErrorBoundary.isEndpointHealthy(endpoint)) {
-        console.warn('⚠️ Endpoint unhealthy, using fallback data immediately');
-        return EventService.getFallbackEvents(params);
+        console.warn('◦  Endpoint unhealthy, using comprehensive fallback data immediately');
+        return EventService.getComprehensiveFallbackEvents(params);
       }
       
       const retryConfig: Partial<RetryConfig> = {
@@ -172,24 +178,24 @@ export class EventService {
       
       // Reset error count on success
       ApiErrorBoundary.resetErrors(endpoint);
-      console.log('✅ Successfully fetched events from API:', result.data.length);
+      console.log('✓ Successfully fetched events from API:', result.data.length);
       
       // Cache the successful result
       CacheService.cacheEvents(params, result.data);
-      console.log('📦 Events cached successfully');
+      console.log('• Events cached successfully');
       
       return result.data;
       
     } catch (error) {
-      console.error('❌ Error fetching events after retries:', error);
+      console.error('✗ Error fetching events after retries:', error);
       
       // Record error for endpoint health tracking
       ApiErrorBoundary.recordError(endpoint);
       
-      console.log('🔄 Using fallback data due to API error');
+      console.log('• Using comprehensive fallback data due to API error');
       
-      // Return fallback data if API is unavailable
-      return EventService.getFallbackEvents(params);
+      // Return comprehensive fallback data if API is unavailable
+      return EventService.getComprehensiveFallbackEvents(params);
     }
   }
 
@@ -198,12 +204,12 @@ export class EventService {
    * Convenience method for Troy location events
    */
   static async getTroyEvents(): Promise<ApiEvent[]> {
-    console.log('🏛️ Fetching Troy-specific events...');
+    console.log('◦  Fetching Troy-specific events...');
     
     // Check for cached Troy events first
     const cachedTroyEvents = CacheService.getCachedTroyEvents();
     if (cachedTroyEvents) {
-      console.log('🎯 Using cached Troy events');
+      console.log('• Using cached Troy events');
       return cachedTroyEvents;
     }
     
@@ -229,7 +235,7 @@ export class EventService {
     const endpoint = `${API_BASE_URL}/api/events/${id}`;
     
     try {
-      console.log('🎯 Fetching event by ID:', endpoint);
+      console.log('• Fetching event by ID:', endpoint);
       
       const retryConfig: Partial<RetryConfig> = {
         maxRetries: 2,
@@ -271,14 +277,14 @@ export class EventService {
         'getEventById'
       );
       
-      console.log('✅ Successfully fetched event by ID');
+      console.log('✓ Successfully fetched event by ID');
       return result.data;
       
     } catch (error) {
-      console.error('❌ Error fetching event by ID:', error);
+      console.error('✗ Error fetching event by ID:', error);
       
       // Try to find in fallback data
-      const fallbackEvents = EventService.getFallbackEvents({});
+      const fallbackEvents = EventService.getComprehensiveFallbackEvents({});
       return fallbackEvents.find(event => event.id === id) || null;
     }
   }
@@ -288,7 +294,7 @@ export class EventService {
    * Includes Troy-specific events for P2 testing
    */
   static getFallbackEvents(params: EventFilterParams = {}): ApiEvent[] {
-    console.log('📦 Using fallback event data');
+    console.log('• Using fallback event data');
     
     const allFallbackEvents: ApiEvent[] = [
       // Troy Saga Events
@@ -542,7 +548,7 @@ export class EventService {
         filteredEvents = filteredEvents.filter(event => 
           event.location.name.toLowerCase().includes('troy')
         );
-        console.log(`🏛️ Filtered for Troy events: ${filteredEvents.length} events found`);
+        console.log(`◦  Filtered for Troy events: ${filteredEvents.length} events found`);
       } else {
         // Filter by location ID or name
         filteredEvents = filteredEvents.filter(event => 
@@ -631,7 +637,7 @@ export class EventService {
         return result.data;
       }
     } catch (error) {
-      console.warn('🔍 Character API unavailable, using fallback data:', error);
+      console.warn('• Character API unavailable, using fallback data:', error);
     }
 
     // Fallback to static character data if API is unavailable
@@ -760,6 +766,259 @@ export class EventService {
   }
 
   /**
+   * Get comprehensive fallback events from SeedDataService for all sagas
+   * This replaces the limited hardcoded fallback data with full saga data
+   */
+  static getComprehensiveFallbackEvents(params: EventFilterParams = {}): ApiEvent[] {
+    console.log('• Using comprehensive fallback event data from SeedDataService');
+    
+    // Initialize SeedDataService if not already done
+    if (!seedDataService.isServiceInitialized()) {
+      console.log('• Initializing SeedDataService for fallback data...');
+      // Note: This is sync initialization for fallback scenario
+      seedDataService.initialize().catch(error => {
+        console.warn('• Failed to initialize SeedDataService:', error);
+      });
+    }
+
+    let allEvents: ApiEvent[] = [];
+
+    if (params.locationId) {
+      // First try direct location ID matching from SeedDataService
+      allEvents = seedDataService.getEventsByLocationId(params.locationId);
+      
+      // If no events found, try saga-based matching
+      if (allEvents.length === 0) {
+        const sagaMap: { [key: string]: string } = {
+          'troy': 'troy',
+          'cyclops-island': 'cyclops',
+          'ocean-saga': 'ocean',
+          'circe-island': 'circe',
+          'underworld': 'underworld',
+          'thunder-saga': 'thunder',
+          'wisdom-saga': 'wisdom',
+          'vengeance-saga': 'vengeance',
+          'ithaca': 'ithaca'
+        };
+        
+        const sagaId = sagaMap[params.locationId.toLowerCase()];
+        if (sagaId) {
+          console.log(`• Mapping locationId '${params.locationId}' to saga '${sagaId}'`);
+          allEvents = seedDataService.getSagaEvents(sagaId);
+        }
+      }
+    } else {
+      // Get all events from all sagas
+      const availableSagas = seedDataService.getAvailableSagas();
+      for (const sagaId of availableSagas) {
+        const sagaEvents = seedDataService.getSagaEvents(sagaId);
+        allEvents.push(...sagaEvents);
+      }
+    }
+
+    // Apply additional filtering
+    let filteredEvents = allEvents;
+
+    if (params.sagaId) {
+      filteredEvents = filteredEvents.filter(event => 
+        event.saga.id === params.sagaId
+      );
+    }
+
+    if (params.characterId) {
+      filteredEvents = filteredEvents.filter(event =>
+        event.characters.some(char => char.id === params.characterId)
+      );
+    }
+
+    if (params.search) {
+      const searchLower = params.search.toLowerCase();
+      filteredEvents = filteredEvents.filter(event =>
+        event.title.toLowerCase().includes(searchLower) ||
+        event.description.toLowerCase().includes(searchLower) ||
+        event.location.name.toLowerCase().includes(searchLower)
+      );
+    }
+
+    if (params.importance) {
+      filteredEvents = filteredEvents.filter(event =>
+        event.eventContext?.importance === params.importance
+      );
+    }
+
+    // Apply sorting
+    if (params.sortBy) {
+      filteredEvents.sort((a, b) => {
+        let aValue: any, bValue: any;
+        
+        switch (params.sortBy) {
+          case 'sequenceOrder':
+            aValue = a.sequenceOrder;
+            bValue = b.sequenceOrder;
+            break;
+          case 'timestamp':
+            aValue = new Date(a.eventTimestamp);
+            bValue = new Date(b.eventTimestamp);
+            break;
+          case 'title':
+            aValue = a.title;
+            bValue = b.title;
+            break;
+          default:
+            return 0;
+        }
+        
+        if (aValue < bValue) return params.sortDir === 'desc' ? 1 : -1;
+        if (aValue > bValue) return params.sortDir === 'desc' ? -1 : 1;
+        return 0;
+      });
+    }
+
+    // Apply pagination
+    if (params.page !== undefined && params.size !== undefined) {
+      const startIndex = params.page * params.size;
+      filteredEvents = filteredEvents.slice(startIndex, startIndex + params.size);
+    }
+
+    console.log(`◦  Comprehensive fallback events: ${filteredEvents.length} events found`);
+    return filteredEvents;
+  }
+
+  /**
+   * Legacy fallback events (keeping for compatibility)
+   * P2 Integration: Fetch Troy-specific events from fallback data
+   */
+  static getLegacyFallbackEvents(params: EventFilterParams = {}): ApiEvent[] {
+    console.log('• Using legacy fallback event data');
+    
+    const legacyFallbackEvents: ApiEvent[] = [
+      // Troy-specific fallback events
+      {
+        id: 1,
+        title: "The Fall of Troy",
+        description: "The city of Troy falls to the Greek invaders after a long siege, thanks to the cunning plan of the Trojan Horse.",
+        sequenceOrder: 1,
+        eventTimestamp: "1184-04-23T06:00:00",
+        location: {
+          id: 1,
+          name: "Troy",
+          latitude: 39.9570,
+          longitude: 26.2380,
+          description: "The legendary city of Troy, site of the famous siege",
+          saga: "Troy Saga",
+          significance: "The site where the greatest war in mythology took place"
+        },
+        saga: {
+          id: 1,
+          title: "The Troy Saga",
+          description: "The beginning of Odysseus's epic journey, starting with the fall of Troy"
+        },
+        characters: [
+          { 
+            id: 1, 
+            name: "Odysseus", 
+            description: "The cunning king of Ithaca, hero of the Trojan War known for his intelligence and tactical genius. Master of strategy and deception, he devised the plan for the Trojan Horse that ended the 10-year siege.",
+            characterType: "Hero",
+            isProtagonist: true,
+            aliases: ["King of Ithaca", "Son of Laertes", "The Cunning One"],
+            powers: ["Strategic Genius", "Master of Disguise", "Divine Favor (Athena)", "Exceptional Archery"]
+          },
+          { 
+            id: 2, 
+            name: "Athena", 
+            description: "Goddess of wisdom, warfare, and strategic combat. Patron deity of heroes and defender of justice. She is Odysseus's divine mentor and protector throughout his journey.",
+            characterType: "Goddess",
+            isProtagonist: false,
+            aliases: ["Pallas Athena", "Grey-Eyed Athena", "Goddess of Wisdom"],
+            powers: ["Divine Wisdom", "Strategic Warfare", "Shape-shifting", "Divine Protection", "Prophecy"]
+          }
+        ],
+        songs: [
+          { id: 1, title: "The Horse and the Infant", trackNumber: 1, durationSeconds: 252 }
+        ],
+        eventContext: {
+          importance: "pivotal"
+        }
+      },
+      {
+        id: 2,
+        title: "The Journey Home Begins",
+        description: "The Greek victors set sail from Troy, beginning their long and perilous journey home.",
+        sequenceOrder: 2,
+        eventTimestamp: "1184-04-25T08:00:00",
+        location: {
+          id: 1,
+          name: "Troy",
+          latitude: 39.9570,
+          longitude: 26.2380,
+          description: "The legendary city of Troy, site of the famous siege",
+          saga: "Troy Saga",
+          significance: "The site where the greatest war in mythology took place"
+        },
+        saga: {
+          id: 1,
+          title: "The Troy Saga",
+          description: "The beginning of Odysseus's epic journey, starting with the fall of Troy"
+        },
+        characters: [
+          { 
+            id: 1, 
+            name: "Odysseus", 
+            description: "The cunning king of Ithaca, hero of the Trojan War known for his intelligence and tactical genius. Master of strategy and deception, he devised the plan for the Trojan Horse that ended the 10-year siege.",
+            characterType: "Hero",
+            isProtagonist: true,
+            aliases: ["King of Ithaca", "Son of Laertes", "The Cunning One"],
+            powers: ["Strategic Genius", "Master of Disguise", "Divine Favor (Athena)", "Exceptional Archery"]
+          }
+        ],
+        songs: [
+          { id: 5, title: "Full Speed Ahead", trackNumber: 5, durationSeconds: 178 }
+        ],
+        eventContext: {
+          importance: "major"
+        }
+      }
+    ];
+
+    // Filter legacy fallback events based on parameters
+    let filteredLegacyEvents = legacyFallbackEvents;
+
+    if (params.locationId) {
+      filteredLegacyEvents = filteredLegacyEvents.filter(event => 
+        event.location.id.toString() === params.locationId ||
+        event.location.name.toLowerCase().includes(params.locationId?.toLowerCase() || '')
+      );
+    }
+
+    if (params.sagaId) {
+      filteredLegacyEvents = filteredLegacyEvents.filter(event => event.saga.id === params.sagaId);
+    }
+
+    if (params.characterId) {
+      filteredLegacyEvents = filteredLegacyEvents.filter(event => 
+        event.characters.some(char => char.id === params.characterId)
+      );
+    }
+
+    if (params.importance) {
+      filteredLegacyEvents = filteredLegacyEvents.filter(event => 
+        event.eventContext.importance === params.importance
+      );
+    }
+
+    if (params.search) {
+      const searchLower = params.search.toLowerCase();
+      filteredLegacyEvents = filteredLegacyEvents.filter(event => 
+        event.title.toLowerCase().includes(searchLower) ||
+        event.description.toLowerCase().includes(searchLower) ||
+        event.characters.some(char => char.name.toLowerCase().includes(searchLower))
+      );
+    }
+
+    return filteredLegacyEvents;
+  }
+
+  /**
    * P2 Cache Management Methods
    */
 
@@ -782,7 +1041,7 @@ export class EventService {
    */
   static clearCache(): void {
     CacheService.clear();
-    console.log('🧹 All EventService cache cleared');
+    console.log('• All EventService cache cleared');
   }
 
   /**
@@ -790,7 +1049,7 @@ export class EventService {
    */
   static async refreshTroyCache(): Promise<void> {
     await CacheService.refreshTroyData();
-    console.log('🔄 Troy cache refreshed');
+    console.log('• Troy cache refreshed');
   }
 
   /**
@@ -798,9 +1057,9 @@ export class EventService {
    */
   static async preloadTroyData(): Promise<void> {
     try {
-      console.log('⏳ Preloading Troy data...');
+      console.log('• Preloading Troy data...');
       const troyEvents = await this.getTroyEvents();
-      console.log(`✅ Preloaded ${troyEvents.length} Troy events`);
+      console.log(`• Preloaded ${troyEvents.length} Troy events`);
       
       // Preload key Troy characters
       const troyCharacterIds = [1, 4, 5, 6]; // Odysseus, Athena, Poseidon, Polyphemus
@@ -808,9 +1067,9 @@ export class EventService {
         await this.getCharacterDetails(characterId);
       }
       
-      console.log('✅ Troy data preloading complete');
+      console.log('• Troy data preloading complete');
     } catch (error) {
-      console.error('❌ Error preloading Troy data:', error);
+      console.error('✗ Error preloading Troy data:', error);
     }
   }
 

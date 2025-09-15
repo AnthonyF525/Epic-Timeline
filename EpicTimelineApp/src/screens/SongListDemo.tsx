@@ -50,7 +50,7 @@ const SongListDemo: React.FC = () => {
     
     Alert.alert(
       'Now Playing',
-      `🎵 ${song.title}\n\nThis would start audio playback if audio files were available.`,
+      `${song.title}\n\nThis would start audio playback if audio files were available.`,
       [{ text: 'OK' }]
     );
   };
@@ -137,14 +137,14 @@ const SongListDemo: React.FC = () => {
             onPress={() => setShowOnlyReleased(!showOnlyReleased)}
           >
             <Text style={[styles.filterButtonText, showOnlyReleased && styles.filterButtonTextActive]}>
-              {showOnlyReleased ? '✓ Released Only' : 'All Songs'}
+              {showOnlyReleased ? 'Released Only' : 'All Songs'}
             </Text>
           </TouchableOpacity>
         </View>
         
         {/* Stats Button */}
         <TouchableOpacity style={styles.statsButton} onPress={showStats}>
-          <Text style={styles.statsButtonText}>📊 View Statistics</Text>
+          <Text style={styles.statsButtonText}>View Statistics</Text>
         </TouchableOpacity>
       </View>
 

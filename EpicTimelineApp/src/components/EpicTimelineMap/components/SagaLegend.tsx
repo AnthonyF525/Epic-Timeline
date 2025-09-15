@@ -17,7 +17,7 @@ const EPIC_SAGAS = [
 export const SagaLegend: React.FC = () => {
   return (
     <View style={mapStyles.legend}>
-      <Text style={mapStyles.legendTitle}>🎭 EPIC: The Musical Sagas</Text>
+      <Text style={mapStyles.legendTitle}>• EPIC: The Musical Sagas</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={mapStyles.legendItems}>
           {EPIC_SAGAS.map((saga, index) => (

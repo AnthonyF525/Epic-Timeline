@@ -52,7 +52,7 @@ class CacheService {
    */
   public configure(config: Partial<CacheConfig>): void {
     this.config = { ...this.config, ...config };
-    console.log('📦 CacheService configured:', this.config);
+    console.log('• CacheService configured:', this.config);
   }
 
   /**
@@ -96,7 +96,7 @@ class CacheService {
     }
     
     if (removedCount > 0) {
-      console.log(`🧹 Cleaned ${removedCount} expired cache entries`);
+      console.log(`• Cleaned ${removedCount} expired cache entries`);
     }
   }
 
@@ -115,7 +115,7 @@ class CacheService {
       this.cache.delete(key);
     }
     
-    console.log(`📦 Enforced cache size limit, removed ${toRemove.length} entries`);
+    console.log(`• Enforced cache size limit, removed ${toRemove.length} entries`);
   }
 
   /**
@@ -136,7 +136,7 @@ class CacheService {
     this.cleanExpiredEntries();
     this.enforceSizeLimit();
     
-    console.log(`📦 Cached data with key: ${key} (TTL: ${ttl}ms)`);
+    console.log(`• Cached data with key: ${key} (TTL: ${ttl}ms)`);
   }
 
   /**
@@ -158,7 +158,7 @@ class CacheService {
     }
     
     this.cacheHits++;
-    console.log(`🎯 Cache hit: ${key}`);
+    console.log(`• Cache hit: ${key}`);
     return entry.data;
   }
 
@@ -168,7 +168,7 @@ class CacheService {
   public cacheTroyEvents(events: ApiEvent[]): void {
     const key = this.generateCacheKey('troy_events');
     this.set(key, events, this.config.troyDataTtl);
-    console.log('🏛️ Troy events cached successfully');
+    console.log('◦  Troy events cached successfully');
   }
 
   /**
@@ -179,7 +179,7 @@ class CacheService {
     const cached = this.get<ApiEvent[]>(key);
     
     if (cached) {
-      console.log('🏛️ Retrieved Troy events from cache');
+      console.log('◦  Retrieved Troy events from cache');
     }
     
     return cached;
@@ -208,7 +208,7 @@ class CacheService {
   public cacheCharacterDetails(characterId: number, character: Character): void {
     const key = this.generateCacheKey('character', { id: characterId });
     this.set(key, character, this.config.characterDataTtl);
-    console.log(`👤 Character ${character.name} cached successfully`);
+    console.log(`• Character ${character.name} cached successfully`);
   }
 
   /**
@@ -219,7 +219,7 @@ class CacheService {
     const cached = this.get<Character>(key);
     
     if (cached) {
-      console.log(`👤 Retrieved character ${cached.name} from cache`);
+      console.log(`• Retrieved character ${cached.name} from cache`);
     }
     
     return cached;
@@ -238,7 +238,7 @@ class CacheService {
       }
     }
     
-    console.log(`🗑️ Invalidated ${removedCount} cache entries matching: ${pattern}`);
+    console.log(`◦  Invalidated ${removedCount} cache entries matching: ${pattern}`);
     return removedCount;
   }
 
@@ -247,7 +247,7 @@ class CacheService {
    */
   public invalidateTroyData(): void {
     this.invalidate('troy');
-    console.log('🏛️ All Troy data cache invalidated');
+    console.log('◦  All Troy data cache invalidated');
   }
 
   /**
@@ -255,7 +255,7 @@ class CacheService {
    */
   public async refreshTroyData(): Promise<void> {
     this.invalidateTroyData();
-    console.log('🔄 Troy data cache refreshed');
+    console.log('• Troy data cache refreshed');
   }
 
   /**
@@ -266,7 +266,7 @@ class CacheService {
     this.cache.clear();
     this.cacheHits = 0;
     this.cacheMisses = 0;
-    console.log(`🧹 Cleared all cache entries (${entriesCleared} removed)`);
+    console.log(`• Cleared all cache entries (${entriesCleared} removed)`);
   }
 
   /**
@@ -303,7 +303,7 @@ class CacheService {
     const stats = this.getStats();
     const memoryMB = (stats.memoryUsage / (1024 * 1024)).toFixed(2);
     
-    return `📦 Cache: ${stats.totalEntries} entries, ${memoryMB}MB, ${stats.hitRate}% hit rate, Troy: ${stats.troyDataCached ? '✅' : '❌'}`;
+    return `• Cache: ${stats.totalEntries} entries, ${memoryMB}MB, ${stats.hitRate}% hit rate, Troy: ${stats.troyDataCached ? '•' : '•'}`;
   }
 
   /**

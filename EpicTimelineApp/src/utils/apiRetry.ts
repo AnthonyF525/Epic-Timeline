@@ -51,7 +51,7 @@ export class ApiRetryService {
     const errors: Error[] = [];
     const startTime = Date.now();
     
-    console.log(`🔄 Starting ${context} with retry config:`, {
+    console.log(`• Starting ${context} with retry config:`, {
       maxRetries: finalConfig.maxRetries,
       baseDelay: finalConfig.baseDelay,
       backoffMultiplier: finalConfig.backoffMultiplier
@@ -62,7 +62,7 @@ export class ApiRetryService {
         const result = await fn();
         const totalTime = Date.now() - startTime;
         
-        console.log(`✅ ${context} succeeded on attempt ${attempt + 1}`, {
+        console.log(`• ${context} succeeded on attempt ${attempt + 1}`, {
           totalTime: `${totalTime}ms`,
           wasRetried: attempt > 0
         });
@@ -78,7 +78,7 @@ export class ApiRetryService {
         const apiError = this.classifyError(error);
         errors.push(apiError);
         
-        console.warn(`⚠️ ${context} failed on attempt ${attempt + 1}:`, {
+        console.warn(`◦  ${context} failed on attempt ${attempt + 1}:`, {
           error: apiError.message,
           type: apiError.type,
           status: apiError.status,
@@ -88,7 +88,7 @@ export class ApiRetryService {
         // Don't retry if error is not retryable or we've reached max retries
         if (!apiError.retryable || attempt >= finalConfig.maxRetries) {
           const totalTime = Date.now() - startTime;
-          console.error(`❌ ${context} failed after ${attempt + 1} attempts`, {
+          console.error(`• ${context} failed after ${attempt + 1} attempts`, {
             totalTime: `${totalTime}ms`,
             finalError: apiError.message,
             allErrors: errors.map(e => ({ 
@@ -101,7 +101,7 @@ export class ApiRetryService {
 
         // Calculate delay for next retry
         const delay = this.calculateDelay(attempt, finalConfig);
-        console.log(`⏳ Retrying ${context} in ${delay}ms (attempt ${attempt + 2}/${finalConfig.maxRetries + 1})`);
+        console.log(`• Retrying ${context} in ${delay}ms (attempt ${attempt + 2}/${finalConfig.maxRetries + 1})`);
         
         await this.sleep(delay);
       }
@@ -277,7 +277,7 @@ export class ApiErrorBoundary {
     this.errorCounts.set(endpoint, currentCount + 1);
     this.lastErrors.set(endpoint, new Date());
     
-    console.warn(`🚨 Error recorded for ${endpoint}. Count: ${currentCount + 1}/${this.ERROR_THRESHOLD}`);
+    console.warn(`• Error recorded for ${endpoint}. Count: ${currentCount + 1}/${this.ERROR_THRESHOLD}`);
   }
 
   /**
@@ -285,7 +285,7 @@ export class ApiErrorBoundary {
    */
   static resetErrors(endpoint: string): void {
     if (this.errorCounts.has(endpoint)) {
-      console.log(`✅ Resetting error count for ${endpoint}`);
+      console.log(`• Resetting error count for ${endpoint}`);
       this.errorCounts.delete(endpoint);
       this.lastErrors.delete(endpoint);
     }

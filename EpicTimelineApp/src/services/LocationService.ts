@@ -30,11 +30,11 @@ export class LocationService {
     const endpoint = `${API_BASE_URL}/api/locations`;
     
     try {
-      console.log('🌐 Fetching locations from API with retry logic:', endpoint);
+      console.log('• Fetching locations from API with retry logic:', endpoint);
       
       // Check endpoint health before attempting
       if (!ApiErrorBoundary.isEndpointHealthy(endpoint)) {
-        console.warn('⚠️ Endpoint unhealthy, using fallback data immediately');
+        console.warn('◦  Endpoint unhealthy, using fallback data immediately');
         return LocationService.getFallbackLocations();
       }
       
@@ -77,17 +77,17 @@ export class LocationService {
       
       // Reset error count on success
       ApiErrorBoundary.resetErrors(endpoint);
-      console.log('✅ Successfully fetched locations from API:', result.data.length);
+      console.log('✓ Successfully fetched locations from API:', result.data.length);
       
       return result.data;
       
     } catch (error) {
-      console.error('❌ Error fetching locations after retries:', error);
+      console.error('✗ Error fetching locations after retries:', error);
       
       // Record error for endpoint health tracking
       ApiErrorBoundary.recordError(endpoint);
       
-      console.log('🔄 Using fallback data due to API error');
+      console.log('• Using fallback data due to API error');
       
       // Return fallback data if API is unavailable
       return LocationService.getFallbackLocations();
@@ -107,7 +107,7 @@ export class LocationService {
       
       return await response.json();
     } catch (error) {
-      console.error('❌ Error fetching location by ID:', error);
+      console.error('✗ Error fetching location by ID:', error);
       return null;
     }
   }
@@ -164,17 +164,17 @@ export class LocationService {
    */
   static async checkApiHealth(): Promise<boolean> {
     try {
-      console.log('🔍 Checking API health...');
+      console.log('• Checking API health...');
       const response = await fetch(`${API_BASE_URL}/api/health`, {
         method: 'GET',
         timeout: 5000,
       } as any);
       
       const isHealthy = response.ok;
-      console.log(`${isHealthy ? '✅' : '❌'} API health check: ${isHealthy ? 'OK' : 'Failed'} (${response.status})`);
+      console.log(`${isHealthy ? '•' : '•'} API health check: ${isHealthy ? 'OK' : 'Failed'} (${response.status})`);
       return isHealthy;
     } catch (error) {
-      console.log('🔴 Backend API health check failed:', error);
+      console.log('• Backend API health check failed:', error);
       return false;
     }
   }

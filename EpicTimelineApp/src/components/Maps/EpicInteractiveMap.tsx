@@ -353,7 +353,7 @@ const EpicInteractiveMap: React.FC<EpicInteractiveMapProps> = ({
                 <>
                   <Text style={styles.modalSectionTitle}>Songs ({selectedLocation.songs.length})</Text>
                   {selectedLocation.songs.map(song => (
-                    <Text key={song.id} style={styles.modalListItem}>♪ {song.title}</Text>
+                    <Text key={song.id} style={styles.modalListItem}>• {song.title}</Text>
                   ))}
                 </>
               )}

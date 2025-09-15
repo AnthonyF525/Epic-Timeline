@@ -20,7 +20,7 @@ public class EventUpdateRequest {
              message = "Event date must be in ISO format (yyyy-MM-ddTHH:mm:ssZ)")
     private String eventDate;
     
-    // ✅ Boolean flag updates (optional)
+    // // [DONE] Boolean flag updates (optional)
     private Boolean isHistorical;
     private Boolean isMythological;
     private Boolean hasWitnesses;
@@ -30,7 +30,7 @@ public class EventUpdateRequest {
     @Valid
     private EventContextRequest eventContext;
     
-    // ✅ Relationship array updates (with validation)
+    // // [DONE] Relationship array updates (with validation)
     @Size(min = 1, max = 50, message = "Must have between 1 and 50 characters")
     private List<@NotNull Long> characterIds;
     
@@ -43,7 +43,7 @@ public class EventUpdateRequest {
     @Size(max = 30, message = "Cannot have more than 30 related songs")
     private List<@NotNull Long> songIds;
     
-    // ✅ Content array updates
+    // // [DONE] Content array updates
     @Size(max = 25, message = "Cannot have more than 25 key details")
     private List<@NotBlank @Size(max = 300) String> keyDetails;
     

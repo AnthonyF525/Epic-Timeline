@@ -16,11 +16,11 @@ public class LocationUpdateRequest {
     @Size(min = 10, max = 2000, message = "Description must be between 10 and 2000 characters")
     private String description;
     
-    // ✅ Coordinate update (optional)
+    // // [DONE] Coordinate update (optional)
     @Valid
     private CoordinatesRequest coordinates;
     
-    // ✅ Boolean flag updates (optional)
+    // // [DONE] Boolean flag updates (optional)
     private Boolean isRealPlace;
     private Boolean isMythological;
     private Boolean isModernLocation;
@@ -39,7 +39,7 @@ public class LocationUpdateRequest {
     @Valid
     private GeographicRegionRequest region;
     
-    // ✅ Array updates (with validation)
+    // // [DONE] Array updates (with validation)
     @Size(max = 15, message = "Cannot have more than 15 alternative names")
     private List<@NotBlank @Size(max = 100) String> alternativeNames;
     

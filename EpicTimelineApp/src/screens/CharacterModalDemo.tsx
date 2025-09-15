@@ -112,7 +112,7 @@ const CharacterModalDemo: React.FC = () => {
 
         {/* Instructions */}
         <View style={styles.instructionsContainer}>
-          <Text style={styles.instructionsTitle}>✨ How it works:</Text>
+          <Text style={styles.instructionsTitle}>• How it works:</Text>
           <Text style={styles.instructionsText}>
             • Character tags in event timelines are now clickable{'\n'}
             • Tap any character below to see detailed information{'\n'}
@@ -173,13 +173,13 @@ const CharacterModalDemo: React.FC = () => {
 
         {/* Integration Info */}
         <View style={styles.integrationSection}>
-          <Text style={styles.integrationTitle}>🔗 Integration Status</Text>
+          <Text style={styles.integrationTitle}>• Integration Status</Text>
           <Text style={styles.integrationText}>
-            ✅ CharacterDetailModal component created{'\n'}
-            ✅ Enhanced Character interface with detailed properties{'\n'}
-            ✅ EventService updated with character details{'\n'}
-            ✅ Modal integration ready for SagaInfoPanel{'\n'}
-            ✅ Clickable character tags implementation
+            • CharacterDetailModal component created{'\n'}
+            • Enhanced Character interface with detailed properties{'\n'}
+            • EventService updated with character details{'\n'}
+            • Modal integration ready for SagaInfoPanel{'\n'}
+            • Clickable character tags implementation
           </Text>
         </View>
       </ScrollView>

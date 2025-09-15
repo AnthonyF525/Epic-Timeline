@@ -80,11 +80,11 @@ class SeedDataService {
    */
   public async initialize(): Promise<void> {
     if (this.isInitialized) {
-      console.log('📊 SeedDataService already initialized');
+      console.log('• SeedDataService already initialized');
       return;
     }
 
-    console.log('🌱 Initializing SeedDataService with comprehensive saga data...');
+    console.log('• Initializing SeedDataService with comprehensive saga data...');
 
     try {
       // Load Troy Saga seed data
@@ -142,13 +142,13 @@ class SeedDataService {
       });
 
       this.isInitialized = true;
-      console.log('✅ SeedDataService initialized successfully');
-      console.log(`📊 Loaded seed data for ${this.seedData.size} sagas`);
+      console.log('• SeedDataService initialized successfully');
+      console.log(`• Loaded seed data for ${this.seedData.size} sagas`);
       
       this.logSeedDataSummary();
 
     } catch (error) {
-      console.error('❌ Failed to initialize SeedDataService:', error);
+      console.error('✗ Failed to initialize SeedDataService:', error);
     }
   }
 
@@ -165,10 +165,10 @@ class SeedDataService {
   public getSagaSeedData(sagaId: string): SagaSeedData | null {
     const data = this.seedData.get(sagaId);
     if (data) {
-      console.log(`🌱 Retrieved seed data for ${sagaId} saga`);
+      console.log(`• Retrieved seed data for ${sagaId} saga`);
       return data;
     }
-    console.warn(`⚠️ No seed data available for saga: ${sagaId}`);
+    console.warn(`◦  No seed data available for saga: ${sagaId}`);
     return null;
   }
 
@@ -211,11 +211,11 @@ class SeedDataService {
     for (const sagaData of this.seedData.values()) {
       const character = sagaData.characters.find(c => c.id === characterId);
       if (character) {
-        console.log(`👤 Found character ${character.name} in seed data`);
+        console.log(`• Found character ${character.name} in seed data`);
         return character;
       }
     }
-    console.warn(`⚠️ Character with ID ${characterId} not found in seed data`);
+    console.warn(`◦  Character with ID ${characterId} not found in seed data`);
     return null;
   }
 
@@ -226,11 +226,11 @@ class SeedDataService {
     for (const sagaData of this.seedData.values()) {
       const song = sagaData.songs.find(s => s.id === songId);
       if (song) {
-        console.log(`🎵 Found song "${song.title}" in seed data`);
+        console.log(`• Found song "${song.title}" in seed data`);
         return song;
       }
     }
-    console.warn(`⚠️ Song with ID ${songId} not found in seed data`);
+    console.warn(`◦  Song with ID ${songId} not found in seed data`);
     return null;
   }
 
@@ -241,11 +241,11 @@ class SeedDataService {
     for (const sagaData of this.seedData.values()) {
       const event = sagaData.events.find(e => e.id === eventId);
       if (event) {
-        console.log(`📅 Found event "${event.title}" in seed data`);
+        console.log(`• Found event "${event.title}" in seed data`);
         return event;
       }
     }
-    console.warn(`⚠️ Event with ID ${eventId} not found in seed data`);
+    console.warn(`◦  Event with ID ${eventId} not found in seed data`);
     return null;
   }
 
@@ -266,7 +266,7 @@ class SeedDataService {
       results.push(...matchingSongs);
     }
 
-    console.log(`🔍 Found ${results.length} songs matching "${query}"`);
+    console.log(`• Found ${results.length} songs matching "${query}"`);
     return results;
   }
 
@@ -287,7 +287,7 @@ class SeedDataService {
       results.push(...matchingCharacters);
     }
 
-    console.log(`🔍 Found ${results.length} characters matching "${query}"`);
+    console.log(`• Found ${results.length} characters matching "${query}"`);
     return results;
   }
 
@@ -305,7 +305,7 @@ class SeedDataService {
       results.push(...matchingEvents);
     }
 
-    console.log(`📍 Found ${results.length} events for location "${locationId}"`);
+    console.log(`• Found ${results.length} events for location "${locationId}"`);
     return results;
   }
 
@@ -356,7 +356,7 @@ class SeedDataService {
       exportData[sagaId] = data;
     }
 
-    console.log('📤 Exported all seed data');
+    console.log('• Exported all seed data');
     return exportData;
   }
 
@@ -410,14 +410,14 @@ class SeedDataService {
     }
 
     const isValid = errors.length === 0;
-    console.log(`🔍 Seed data validation: ${isValid ? 'PASSED' : 'FAILED'}`);
+    console.log(`• Seed data validation: ${isValid ? 'PASSED' : 'FAILED'}`);
     
     if (errors.length > 0) {
-      console.error('❌ Validation errors:', errors);
+      console.error('✗ Validation errors:', errors);
     }
     
     if (warnings.length > 0) {
-      console.warn('⚠️ Validation warnings:', warnings);
+      console.warn('◦  Validation warnings:', warnings);
     }
 
     return { isValid, errors, warnings };
@@ -429,7 +429,7 @@ class SeedDataService {
   private logSeedDataSummary(): void {
     const stats = this.getStatistics();
     
-    console.log('📊 Seed Data Summary:');
+    console.log('• Seed Data Summary:');
     console.log(`   Total Sagas: ${stats.totalSagas}`);
     console.log(`   Total Songs: ${stats.totalSongs}`);
     console.log(`   Total Events: ${stats.totalEvents}`);
@@ -438,10 +438,10 @@ class SeedDataService {
     
     stats.sagaBreakdown.forEach(saga => {
       console.log(`   ${saga.sagaName}:`);
-      console.log(`     🎵 Songs: ${saga.songs}`);
-      console.log(`     📅 Events: ${saga.events}`);
-      console.log(`     👤 Characters: ${saga.characters}`);
-      console.log(`     📍 Locations: ${saga.locations}`);
+      console.log(`     • Songs: ${saga.songs}`);
+      console.log(`     • Events: ${saga.events}`);
+      console.log(`     • Characters: ${saga.characters}`);
+      console.log(`     • Locations: ${saga.locations}`);
     });
   }
 

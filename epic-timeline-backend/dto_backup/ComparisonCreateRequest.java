@@ -19,18 +19,18 @@ public class ComparisonCreateRequest {
     @Size(min = 10, max = 2000, message = "Description must be between 10 and 2000 characters")
     private String description;
     
-    // ✅ Comparison type enum validation (required)
+    // // [DONE] Comparison type enum validation (required)
     @NotNull(message = "Comparison type is required")
     private ComparisonType comparisonType;
     
-    // ✅ Entity validation (both entities required)
+    // // [DONE] Entity validation (both entities required)
     @NotNull(message = "Entity one ID is required")
     private Long entityOneId;
     
     @NotNull(message = "Entity two ID is required")
     private Long entityTwoId;
     
-    // ✅ Analysis metadata (required)
+    // // [DONE] Analysis metadata (required)
     @NotNull(message = "Analysis type is required")
     @Pattern(regexp = "similarities|differences|strengths_weaknesses|historical_impact|character_development|thematic_analysis", 
              message = "Analysis type must be: similarities, differences, strengths_weaknesses, historical_impact, character_development, or thematic_analysis")
@@ -41,36 +41,36 @@ public class ComparisonCreateRequest {
              message = "Conclusion must be: entity_one_superior, entity_two_superior, equivalent, incomparable, or context_dependent")
     private String conclusion;
     
-    // ✅ Boolean flags validation (required)
+    // // [DONE] Boolean flags validation (required)
     @NotNull(message = "isPublic flag is required")
     private Boolean isPublic;
     
     @NotNull(message = "isDetailed flag is required")
     private Boolean isDetailed;
     
-    // ✅ Array validation - comparison criteria (at least 3 required)
+    // // [DONE] Array validation - comparison criteria (at least 3 required)
     @NotEmpty(message = "At least 3 comparison criteria are required")
     @Size(min = 3, max = 20, message = "Must have between 3 and 20 comparison criteria")
     private List<@Valid ComparisonCriteriaRequest> criteria;
     
-    // ✅ Array validation - themes (at least 1 required)
+    // // [DONE] Array validation - themes (at least 1 required)
     @NotEmpty(message = "At least one theme is required")
     @Size(max = 10, message = "Cannot have more than 10 themes")
     private List<@NotBlank @Size(max = 50) String> themes;
     
-    // ✅ Array validation - tags (optional)
+    // // [DONE] Array validation - tags (optional)
     @Size(max = 15, message = "Cannot have more than 15 tags")
     private List<@NotBlank @Size(max = 30) String> tags;
     
-    // ✅ Array validation - sources (optional but recommended)
+    // // [DONE] Array validation - sources (optional but recommended)
     @Size(max = 20, message = "Cannot have more than 20 sources")
     private List<@NotBlank @Size(max = 200) String> sources;
     
-    // ✅ Array validation - key insights (optional)
+    // // [DONE] Array validation - key insights (optional)
     @Size(max = 15, message = "Cannot have more than 15 key insights")
     private List<@NotBlank @Size(max = 300) String> keyInsights;
     
-    // ✅ Array validation - related entities (optional)
+    // // [DONE] Array validation - related entities (optional)
     @Size(max = 10, message = "Cannot have more than 10 related character IDs")
     private List<@NotNull Long> relatedCharacterIds;
     
@@ -83,7 +83,7 @@ public class ComparisonCreateRequest {
     @Size(max = 5, message = "Cannot have more than 5 related saga IDs")
     private List<@NotNull Long> relatedSagaIds;
     
-    // ✅ Nested object validation (optional)
+    // // [DONE] Nested object validation (optional)
     @Valid
     private ComparisonMetricsRequest metrics;
     

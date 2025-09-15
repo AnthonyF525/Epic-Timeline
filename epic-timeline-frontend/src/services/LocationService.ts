@@ -28,12 +28,12 @@ export class LocationService {
    */
   static async getAllLocations(): Promise<Location[]> {
     try {
-      console.log('🗺️ Fetching all Epic Timeline locations...');
+      console.log('•• Fetching all Epic Timeline locations...');
       const response = await apiClient.get<BackendLocation[]>(this.BASE_PATH);
-      console.log(`✅ Retrieved ${response.data.length} Epic Timeline locations`);
+      console.log(`✓ Retrieved ${response.data.length} Epic Timeline locations`);
       return response.data.map(this.transformToMapLocation);
     } catch (error) {
-      console.error('🚨 Error fetching Epic Timeline locations:', error);
+      console.error('ERROR Error fetching Epic Timeline locations:', error);
       throw new Error('Failed to fetch Epic Timeline locations');
     }
   }
@@ -43,12 +43,12 @@ export class LocationService {
    */
   static async getLocationById(id: number): Promise<Location> {
     try {
-      console.log(`🗺️ Fetching Epic Timeline location with ID: ${id}...`);
+      console.log(`•• Fetching Epic Timeline location with ID: ${id}...`);
       const response = await apiClient.get<BackendLocation>(`${this.BASE_PATH}/${id}`);
-      console.log(`✅ Retrieved Epic Timeline location: ${response.data.name}`);
+      console.log(`✓ Retrieved Epic Timeline location: ${response.data.name}`);
       return this.transformToMapLocation(response.data);
     } catch (error) {
-      console.error(`🚨 Error fetching Epic Timeline location ${id}:`, error);
+      console.error(`ERROR Error fetching Epic Timeline location ${id}:`, error);
       throw new Error(`Failed to fetch Epic Timeline location with ID: ${id}`);
     }
   }
@@ -58,14 +58,14 @@ export class LocationService {
    */
   static async searchLocations(searchTerm: string): Promise<Location[]> {
     try {
-      console.log(`🔍 Searching Epic Timeline locations for: "${searchTerm}"...`);
+      console.log(`SEARCH Searching Epic Timeline locations for: "${searchTerm}"...`);
       const response = await apiClient.get<BackendLocation[]>(`${this.BASE_PATH}/search`, {
         params: { q: searchTerm }
       });
-      console.log(`✅ Found ${response.data.length} Epic Timeline locations matching "${searchTerm}"`);
+      console.log(`✓ Found ${response.data.length} Epic Timeline locations matching "${searchTerm}"`);
       return response.data.map(this.transformToMapLocation);
     } catch (error) {
-      console.error(`🚨 Error searching Epic Timeline locations for "${searchTerm}":`, error);
+      console.error(`ERROR Error searching Epic Timeline locations for "${searchTerm}":`, error);
       throw new Error(`Failed to search Epic Timeline locations for: ${searchTerm}`);
     }
   }
@@ -75,12 +75,12 @@ export class LocationService {
    */
   static async getRealPlaces(): Promise<Location[]> {
     try {
-      console.log('🏛️ Fetching real Epic Timeline places...');
+      console.log('•• Fetching real Epic Timeline places...');
       const response = await apiClient.get<BackendLocation[]>(`${this.BASE_PATH}/real`);
-      console.log(`✅ Retrieved ${response.data.length} real Epic Timeline places`);
+      console.log(`✓ Retrieved ${response.data.length} real Epic Timeline places`);
       return response.data.map(this.transformToMapLocation);
     } catch (error) {
-      console.error('🚨 Error fetching real Epic Timeline places:', error);
+      console.error('ERROR Error fetching real Epic Timeline places:', error);
       throw new Error('Failed to fetch real Epic Timeline places');
     }
   }
@@ -90,12 +90,12 @@ export class LocationService {
    */
   static async getMythologicalPlaces(): Promise<Location[]> {
     try {
-      console.log('🐉 Fetching mythological Epic Timeline places...');
+      console.log('MYTH Fetching mythological Epic Timeline places...');
       const response = await apiClient.get<BackendLocation[]>(`${this.BASE_PATH}/mythological`);
-      console.log(`✅ Retrieved ${response.data.length} mythological Epic Timeline places`);
+      console.log(`✓ Retrieved ${response.data.length} mythological Epic Timeline places`);
       return response.data.map(this.transformToMapLocation);
     } catch (error) {
-      console.error('🚨 Error fetching mythological Epic Timeline places:', error);
+      console.error('ERROR Error fetching mythological Epic Timeline places:', error);
       throw new Error('Failed to fetch mythological Epic Timeline places');
     }
   }
@@ -105,19 +105,19 @@ export class LocationService {
    */
   static async getTroyLocation(): Promise<Location | null> {
     try {
-      console.log('🏰 Fetching Troy location for Epic Timeline...');
+      console.log('LOCATION Fetching Troy location for Epic Timeline...');
       const locations = await this.searchLocations('Troy');
       const troy = locations.find(loc => loc.name.toLowerCase().includes('troy'));
       
       if (troy) {
-        console.log(`✅ Found Troy at coordinates: ${troy.coordinates?.x}, ${troy.coordinates?.y}`);
+        console.log(`✓ Found Troy at coordinates: ${troy.coordinates?.x}, ${troy.coordinates?.y}`);
         return troy;
       } else {
-        console.warn('⚠️ Troy location not found in Epic Timeline data');
+        console.warn('⚠• Troy location not found in Epic Timeline data');
         return null;
       }
     } catch (error) {
-      console.error('🚨 Error fetching Troy location:', error);
+      console.error('ERROR Error fetching Troy location:', error);
       throw new Error('Failed to fetch Troy location');
     }
   }

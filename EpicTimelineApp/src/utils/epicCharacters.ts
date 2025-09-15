@@ -122,6 +122,105 @@ export const EPIC_CHARACTERS: {[key: string]: Character} = {
     relationships: [
       { characterId: 1, characterName: 'Odysseus', relationshipType: 'friend', description: 'Best friend and loyal companion' }
     ]
+  },
+  'Antinous': {
+    id: 10,
+    name: 'Antinous',
+    description: 'The leader of the suitors vying for Penelope\'s hand in marriage. Arrogant and aggressive, he represents the greatest threat to Odysseus\' household and kingdom.',
+    characterType: 'Suitor Leader',
+    isProtagonist: false,
+    aliases: ['Leader of Suitors', 'Chief Suitor'],
+    powers: ['Political Influence', 'Swordsmanship', 'Charismatic Leadership'],
+    relationships: [
+      { characterId: 2, characterName: 'Penelope', relationshipType: 'suitor', description: 'Unwanted pursuer of the queen' },
+      { characterId: 1, characterName: 'Odysseus', relationshipType: 'enemy', description: 'Rival for the throne of Ithaca' }
+    ]
+  },
+  'Aeolus': {
+    id: 11,
+    name: 'Aeolus',
+    description: 'The divine keeper of the winds, who gives Odysseus a bag containing all the winds except the west wind to help him sail home quickly.',
+    characterType: 'Wind God',
+    isProtagonist: false,
+    aliases: ['Lord of the Winds', 'Wind Keeper'],
+    powers: ['Wind Control', 'Divine Gifts', 'Storm Mastery'],
+    relationships: [
+      { characterId: 1, characterName: 'Odysseus', relationshipType: 'benefactor', description: 'Provides divine assistance for the journey home' }
+    ]
+  },
+  'Hermes': {
+    id: 12,
+    name: 'Hermes',
+    description: 'The messenger god and divine trickster. In EPIC, he serves as a guide and mentor, helping Odysseus with wisdom and divine tools.',
+    characterType: 'Messenger God',
+    isProtagonist: false,
+    aliases: ['Divine Messenger', 'God of Travelers', 'The Trickster'],
+    powers: ['Divine Speed', 'Shape-shifting', 'Divine Wisdom', 'Magical Items'],
+    relationships: [
+      { characterId: 1, characterName: 'Odysseus', relationshipType: 'mentor', description: 'Divine guide and teacher' },
+      { characterId: 7, characterName: 'Circe', relationshipType: 'relative', description: 'Divine family connection' }
+    ]
+  },
+  'Tiresias': {
+    id: 13,
+    name: 'Tiresias',
+    description: 'The blind prophet of Thebes who retains his prophetic powers even in death. In the Underworld, he reveals crucial prophecies about Odysseus\' future.',
+    characterType: 'Prophet Spirit',
+    isProtagonist: false,
+    aliases: ['The Blind Prophet', 'Seer of Thebes'],
+    powers: ['Divine Prophecy', 'Future Sight', 'Underworld Wisdom'],
+    relationships: [
+      { characterId: 1, characterName: 'Odysseus', relationshipType: 'oracle', description: 'Provides crucial prophecy about the journey home' }
+    ]
+  },
+  'Anticlea': {
+    id: 14,
+    name: 'Anticlea',
+    description: 'Odysseus\' mother, who appears as a spirit in the Underworld. Her presence represents the personal cost of Odysseus\' long journey.',
+    characterType: 'Mother Spirit',
+    isProtagonist: false,
+    aliases: ['Mother of Odysseus'],
+    powers: ['Maternal Love', 'Spiritual Presence'],
+    relationships: [
+      { characterId: 1, characterName: 'Odysseus', relationshipType: 'family', description: 'Beloved son who she died waiting for' }
+    ]
+  },
+  'Calypso': {
+    id: 15,
+    name: 'Calypso',
+    description: 'The immortal nymph who holds Odysseus captive on her island for seven years, offering him immortality in exchange for staying with her.',
+    characterType: 'Immortal Nymph',
+    isProtagonist: false,
+    aliases: ['Island Nymph', 'The Captivating Goddess'],
+    powers: ['Immortality', 'Divine Beauty', 'Island Magic', 'Time Manipulation'],
+    relationships: [
+      { characterId: 1, characterName: 'Odysseus', relationshipType: 'captor', description: 'Holds him captive while offering love and immortality' }
+    ]
+  },
+  'Scylla': {
+    id: 18,
+    name: 'Scylla',
+    description: 'The six-headed sea monster that guards the narrow strait. Once a beautiful nymph, now a terrifying creature that demands sacrifice from all who pass.',
+    characterType: 'Sea Monster',
+    isProtagonist: false,
+    aliases: ['Six-Headed Monster', 'Guardian of the Strait'],
+    powers: ['Multiple Heads', 'Lightning Speed', 'Territorial Control'],
+    relationships: [
+      { characterId: 1, characterName: 'Odysseus', relationshipType: 'adversary', description: 'Forces him to sacrifice six men to pass' }
+    ]
+  },
+  'Zeus': {
+    id: 16,
+    name: 'Zeus',
+    description: 'The king of the gods and ruler of Mount Olympus. In EPIC, Zeus appears as the ultimate divine judge who tests Odysseus with impossible choices and delivers devastating consequences.',
+    characterType: 'King of Gods',
+    isProtagonist: false,
+    aliases: ['Lord of Thunder', 'King of Olympus', 'Sky Father', 'Thunder Bringer'],
+    powers: ['Divine Thunder', 'Lightning Mastery', 'Divine Judgment', 'Weather Control', 'Absolute Authority'],
+    relationships: [
+      { characterId: 1, characterName: 'Odysseus', relationshipType: 'judge', description: 'Mortal hero who faces divine judgment' },
+      { characterId: 4, characterName: 'Athena', relationshipType: 'family', description: 'Daughter and fellow Olympian' }
+    ]
   }
 };
 

@@ -123,7 +123,7 @@ export class EpicApiService {
     return response.data;
   }
 
-  // 🎓 EDUCATIONAL ENDPOINTS - Your sophisticated comparison system
+  // EDUCATIONAL ENDPOINTS - Your sophisticated comparison system
   static async getEducationalComparisons() {
     const response = await epicRequest.get('/comparisons/educational');
     return response.data;
@@ -139,7 +139,7 @@ export class EpicApiService {
     return response.data;
   }
 
-  // 🔍 SEARCH ENDPOINTS
+  // SEARCH ENDPOINTS
   static async searchSongs(query: string) {
     const response = await epicRequest.get(`/songs/search?q=${encodeURIComponent(query)}`);
     return response.data;
@@ -150,7 +150,7 @@ export class EpicApiService {
     return response.data;
   }
 
-  // 📊 STATS ENDPOINTS
+  // STATS ENDPOINTS
   static async getEpicStats() {
     const response = await epicRequest.get('/stats');
     return response.data;

@@ -17,14 +17,14 @@ public class SagaStatsResponse {
     private Double averageSongDuration;
     private Integer totalDurationSeconds;
     
-    // ✅ Array statistics
+    // // [DONE] Array statistics
     private List<String> allGenres;
     private List<String> allThemes; 
     private List<String> allInspirations;
     private Map<String, Integer> genreCount;
     private Map<String, Integer> themeCount;
     
-    // ✅ Relationship statistics
+    // // [DONE] Relationship statistics
     private Map<String, Integer> characterTypeCount;
     private List<String> mostFeaturedCharacters;
     private List<String> keyLocations;

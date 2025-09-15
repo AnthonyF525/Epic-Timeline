@@ -78,7 +78,7 @@ public class DataSeedService implements CommandLineRunner {
         underworld.setCulturalSignificance(new Location.CulturalSignificance("SECONDARY"));
         locationRepository.save(underworld);
 
-        System.out.println("✅ Seeded EPIC: The Musical location data - Troy, Ithaca, and The Underworld");
+        System.out.println("// [DONE] Seeded EPIC: The Musical location data - Troy, Ithaca, and The Underworld");
     }
     
     private void seedEpicSagaData() {
@@ -146,14 +146,14 @@ public class DataSeedService implements CommandLineRunner {
         
         sagaRepository.save(circeSaga);
         
-        System.out.println("✅ Seeded EPIC: The Musical saga data - Troy, Cyclops, Ocean, and Circe Sagas");
+        System.out.println("// [DONE] Seeded EPIC: The Musical saga data - Troy, Cyclops, Ocean, and Circe Sagas");
     }
     
     private void seedTroySagaSongs() {
         // Get the Troy Saga (should be the first one)
         Saga troySaga = sagaRepository.findById(1L).orElse(null);
         if (troySaga == null) {
-            System.out.println("❌ Troy Saga not found, skipping song seeding");
+            System.out.println("[ICON] Troy Saga not found, skipping song seeding");
             return;
         }
         
@@ -207,6 +207,6 @@ public class DataSeedService implements CommandLineRunner {
         song5.setSaga(troySaga);
         songRepository.save(song5);
         
-        System.out.println("✅ Seeded 5 Troy Saga songs");
+        System.out.println("// [DONE] Seeded 5 Troy Saga songs");
     }
 }

@@ -14,9 +14,11 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
+  Linking,
 } from 'react-native';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import { useAudioPlayer } from '../../contexts/AudioPlayerContext';
+import SpotifyService from '../../services/SpotifyService';
 
 export interface Song {
   id: number;
@@ -247,7 +249,7 @@ const SongItem: React.FC<{
               <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
               <Text style={styles.playButtonText}>
-                {isPlaying ? '⏸️' : '▶️'}
+                {isPlaying ? '◦ ' : '▶•'}
               </Text>
             )}
           </TouchableOpacity>
@@ -314,17 +316,34 @@ const SongItem: React.FC<{
                 style={[styles.linkButton, styles.youtubeButton]}
                 onPress={() => Alert.alert('YouTube', 'Open in YouTube app')}
               >
-                <Text style={styles.linkButtonText}>📺 YouTube</Text>
+                <Text style={styles.linkButtonText}>• YouTube</Text>
               </TouchableOpacity>
             )}
-            {song.spotifyUrl && (
-              <TouchableOpacity
-                style={[styles.linkButton, styles.spotifyButton]}
-                onPress={() => Alert.alert('Spotify', 'Open in Spotify app')}
-              >
-                <Text style={styles.linkButtonText}>🎵 Spotify</Text>
-              </TouchableOpacity>
-            )}
+            {/* Always show Spotify button for EPIC songs */}
+            <TouchableOpacity
+              style={[styles.linkButton, styles.spotifyButton]}
+              onPress={async () => {
+                try {
+                  let spotifyUrl = song.spotifyUrl;
+                  
+                  // If no URL in song data, try to get from our service
+                  if (!spotifyUrl) {
+                    spotifyUrl = SpotifyService.getSpotifyUrl(song.title);
+                  }
+                  
+                  if (spotifyUrl) {
+                    await Linking.openURL(spotifyUrl);
+                  } else {
+                    Alert.alert('Spotify', 'Song not available on Spotify');
+                  }
+                } catch (error) {
+                  console.error('Failed to open Spotify URL:', error);
+                  Alert.alert('Error', 'Failed to open Spotify link');
+                }
+              }}
+            >
+              <Text style={styles.linkButtonText}>• Spotify</Text>
+            </TouchableOpacity>
           </View>
 
           {song.saga.releaseDate && (
@@ -593,7 +612,7 @@ const SongList: React.FC<SongListProps> = ({
       {isPlaying && currentSong && (
         <View style={styles.nowPlaying}>
           <Text style={styles.nowPlayingText}>
-            🎵 Now Playing: {currentSong.title}
+            • Now Playing: {currentSong.title}
           </Text>
         </View>
       )}

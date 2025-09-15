@@ -18,11 +18,11 @@ public class LocationCreateRequest {
     @Size(min = 10, max = 2000, message = "Description must be between 10 and 2000 characters")
     private String description;
     
-    // ✅ Coordinate validation (optional)
+    // // [DONE] Coordinate validation (optional)
     @Valid
     private CoordinatesRequest coordinates;
     
-    // ✅ Boolean flags validation (all required with defaults)
+    // // [DONE] Boolean flags validation (all required with defaults)
     @NotNull(message = "isRealPlace flag is required")
     private Boolean isRealPlace;
     
@@ -47,39 +47,39 @@ public class LocationCreateRequest {
     @NotNull(message = "hasModernName flag is required")
     private Boolean hasModernName;
     
-    // ✅ Names validation
+    // // [DONE] Names validation
     @Size(max = 200, message = "Modern name cannot exceed 200 characters")
     private String modernName;
     
     @Size(max = 200, message = "Ancient name cannot exceed 200 characters")
     private String ancientName;
     
-    // ✅ Region validation (required)
+    // // [DONE] Region validation (required)
     @NotNull(message = "Region is required")
     @Valid
     private GeographicRegionRequest region;
     
-    // ✅ Array validation - alternative names
+    // // [DONE] Array validation - alternative names
     @Size(max = 15, message = "Cannot have more than 15 alternative names")
     private List<@NotBlank @Size(max = 100) String> alternativeNames;
     
-    // ✅ Array validation - notable features
+    // // [DONE] Array validation - notable features
     @Size(max = 20, message = "Cannot have more than 20 notable features")
     private List<@NotBlank @Size(max = 150) String> notableFeatures;
     
-    // ✅ Array validation - historical periods
+    // // [DONE] Array validation - historical periods
     @Size(max = 10, message = "Cannot have more than 10 historical periods")
     private List<@NotBlank @Size(max = 100) String> historicalPeriods;
     
-    // ✅ Array validation - mythological events
+    // // [DONE] Array validation - mythological events
     @Size(max = 15, message = "Cannot have more than 15 mythological events")
     private List<@NotBlank @Size(max = 200) String> mythologicalEvents;
     
-    // ✅ Array validation - modern landmarks
+    // // [DONE] Array validation - modern landmarks
     @Size(max = 25, message = "Cannot have more than 25 modern landmarks")
     private List<@NotBlank @Size(max = 150) String> modernLandmarks;
     
-    // ✅ Entity relationships
+    // // [DONE] Entity relationships
     @Size(max = 50, message = "Cannot have more than 50 characters")
     private List<@NotNull Long> characterIds;
     
@@ -89,11 +89,11 @@ public class LocationCreateRequest {
     @Size(max = 10, message = "Cannot have more than 10 sagas")
     private List<@NotNull Long> sagaIds;
     
-    // ✅ Travel info validation (optional)
+    // // [DONE] Travel info validation (optional)
     @Valid
     private TravelInfoRequest travelInfo;
     
-    // ✅ Cultural significance validation (required)
+    // // [DONE] Cultural significance validation (required)
     @NotNull(message = "Cultural significance is required")
     @Valid
     private CulturalSignificanceRequest culturalSignificance;

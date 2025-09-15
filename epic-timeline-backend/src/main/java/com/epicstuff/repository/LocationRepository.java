@@ -9,13 +9,13 @@ import java.util.List;
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
     
-    // ✅ Find by name (case insensitive)
+    // // [DONE] Find by name (case insensitive)
     List<Location> findByNameContainingIgnoreCase(String name);
     
-    // ✅ Find by boolean flags
+    // // [DONE] Find by boolean flags
     List<Location> findByIsRealPlace(Boolean isRealPlace);
     List<Location> findByIsMythological(Boolean isMythological);
     
-    // ✅ Find by modern name
+    // // [DONE] Find by modern name
     List<Location> findByModernName(String modernName);
 }

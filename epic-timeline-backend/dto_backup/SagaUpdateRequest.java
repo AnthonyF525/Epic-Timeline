@@ -23,7 +23,7 @@ public class SagaUpdateRequest {
     @Max(value = 100, message = "Episode count cannot exceed 100")
     private Integer episodeCount;
     
-    // ✅ Update arrays - validation only if provided
+    // // [DONE] Update arrays - validation only if provided
     @Size(min = 1, max = 10, message = "Must have between 1 and 10 genres")
     private List<@NotBlank @Size(max = 50) String> genres;
     

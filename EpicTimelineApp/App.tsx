@@ -1,54 +1,32 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { useEffect } from 'react';
-import BasicEpicMap from './src/screens/BasicEpicMap';
-import InteractiveMapScreen from './src/screens/InteractiveMapScreen';
-import CharacterModalDemo from './src/screens/CharacterModalDemo';
+import MapScreen from './src/screens/MapScreen';
 import { AudioPlayerProvider, useAudioPlayer } from './src/contexts/AudioPlayerContext';
 import AudioPlayer from './src/components/Audio/AudioPlayer';
-import CacheInitializer from './src/services/CacheInitializer';
 
 const AppContent = () => {
   const { currentSong, playlist, isPlayerVisible, playSong, hidePlayer } = useAudioPlayer();
 
-  // Initialize cache system when app starts
+  // Initialize app
   useEffect(() => {
-    const initializeCache = async () => {
+    const initializeApp = async () => {
       try {
-        console.log('🚀 Initializing Epic Timeline cache system...');
-        
-        // Configure cache for optimal Troy data performance
-        await CacheInitializer.configure({
-          preloadTroyData: true,
-          backgroundRefresh: true,
-          refreshIntervalMinutes: 30,
-          enableDevelopmentMode: __DEV__,
-        });
-        
-        await CacheInitializer.initialize();
-        
-        // Log cache status
-        const health = CacheInitializer.getCacheHealth();
-        console.log(`📦 Cache initialized: ${health.status}`, health.details.summary);
-        
+        console.log('• Starting Epic Timeline app...');
+        // App initialization can happen here if needed
       } catch (error) {
-        console.error('❌ Cache initialization failed:', error);
+        console.error('✗ App initialization failed:', error);
       }
     };
 
-    initializeCache();
-
-    // Cleanup on unmount
-    return () => {
-      CacheInitializer.stop();
-    };
+    initializeApp();
   }, []);
 
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      {/* Enhanced Interactive Map with all 9 sagas */}
-      <InteractiveMapScreen />
+      {/* Enhanced Three-Panel Layout with MapScreen */}
+      <MapScreen />
       
       {/* Global Audio Player - overlays on top of everything */}
       <AudioPlayer

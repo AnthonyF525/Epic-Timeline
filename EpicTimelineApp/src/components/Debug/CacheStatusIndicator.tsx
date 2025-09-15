@@ -72,10 +72,10 @@ const CacheStatusIndicator: React.FC<CacheStatusIndicatorProps> = ({
         onPress={() => setShowDebugPanel(true)}
       >
         <Text style={styles.indicatorText}>
-          📦 {cacheStats.totalEntries}
+          • {cacheStats.totalEntries}
         </Text>
         <Text style={styles.subText}>
-          {cacheStats.troyDataCached ? '🏛️' : '❌'}
+          {cacheStats.troyDataCached ? '◦ ' : '•'}
         </Text>
       </TouchableOpacity>
 

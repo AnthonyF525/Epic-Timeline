@@ -128,15 +128,15 @@ export class SagaService {
   static getReleaseStatusDisplay(status: 'released' | 'upcoming' | 'in-production' | 'unknown'): string {
     switch (status) {
       case 'released':
-        return '✅ Released';
+        return '• Released';
       case 'upcoming':
-        return '🔜 Coming Soon';
+        return '• Coming Soon';
       case 'in-production':
-        return '🎬 In Production';
+        return '• In Production';
       case 'unknown':
-        return '❓ Status Unknown';
+        return '• Status Unknown';
       default:
-        return '❓ Status Unknown';
+        return '• Status Unknown';
     }
   }
 
@@ -340,11 +340,11 @@ export class SagaService {
     const endpoint = `${API_BASE_URL}/api/sagas`;
     
     try {
-      console.log('🌐 Fetching sagas from API with retry logic:', endpoint);
+      console.log('• Fetching sagas from API with retry logic:', endpoint);
       
       // Check endpoint health before attempting
       if (!ApiErrorBoundary.isEndpointHealthy(endpoint)) {
-        console.warn('⚠️ Endpoint unhealthy, using fallback data immediately');
+        console.warn('◦  Endpoint unhealthy, using fallback data immediately');
         return SagaService.getFallbackSagas();
       }
       
@@ -387,17 +387,17 @@ export class SagaService {
       
       // Reset error count on success
       ApiErrorBoundary.resetErrors(endpoint);
-      console.log('✅ Successfully fetched sagas from API:', result.data.length);
+      console.log('✓ Successfully fetched sagas from API:', result.data.length);
       
       return result.data;
       
     } catch (error) {
-      console.error('❌ Error fetching sagas after retries:', error);
+      console.error('✗ Error fetching sagas after retries:', error);
       
       // Record error for endpoint health tracking
       ApiErrorBoundary.recordError(endpoint);
       
-      console.log('🔄 Using fallback saga data due to API error');
+      console.log('• Using fallback saga data due to API error');
       
       // Return fallback data if API is unavailable
       return SagaService.getFallbackSagas();
@@ -411,11 +411,11 @@ export class SagaService {
     const endpoint = `${API_BASE_URL}/api/sagas/${id}`;
     
     try {
-      console.log(`🎭 Fetching saga by ID with retry logic: ${id}`);
+      console.log(`• Fetching saga by ID with retry logic: ${id}`);
       
       // Check endpoint health before attempting
       if (!ApiErrorBoundary.isEndpointHealthy(endpoint)) {
-        console.warn('⚠️ Endpoint unhealthy, using fallback data immediately');
+        console.warn('◦  Endpoint unhealthy, using fallback data immediately');
         const fallbackSagas = SagaService.getFallbackSagas();
         return fallbackSagas.find(saga => saga.id === Number(id)) || null;
       }
@@ -445,7 +445,7 @@ export class SagaService {
           
           if (!response.ok) {
             if (response.status === 404) {
-              console.log(`⚠️ Saga with ID ${id} not found`);
+              console.log(`◦  Saga with ID ${id} not found`);
               return null;
             }
             const error = new Error(`HTTP ${response.status}: ${response.statusText}`) as any;
@@ -465,13 +465,13 @@ export class SagaService {
       ApiErrorBoundary.resetErrors(endpoint);
       
       if (result.data) {
-        console.log('✅ Successfully fetched saga:', result.data.title);
+        console.log('✓ Successfully fetched saga:', result.data.title);
       }
       
       return result.data;
       
     } catch (error) {
-      console.error('❌ Error fetching saga by ID after retries:', error);
+      console.error('✗ Error fetching saga by ID after retries:', error);
       
       // Record error for endpoint health tracking
       ApiErrorBoundary.recordError(endpoint);
@@ -481,7 +481,7 @@ export class SagaService {
       const fallbackSaga = fallbackSagas.find(saga => saga.id === Number(id));
       
       if (fallbackSaga) {
-        console.log('🔄 Using fallback saga data for ID:', id);
+        console.log('• Using fallback saga data for ID:', id);
         return fallbackSaga;
       }
       
@@ -498,14 +498,14 @@ export class SagaService {
       const saga = allSagas.find(s => s.title === title || s.title.toLowerCase() === title.toLowerCase());
       
       if (saga) {
-        console.log('✅ Found saga by title:', title);
+        console.log('• Found saga by title:', title);
         return saga;
       }
       
-      console.log(`⚠️ Saga with title "${title}" not found`);
+      console.log(`◦  Saga with title "${title}" not found`);
       return null;
     } catch (error) {
-      console.error('❌ Error fetching saga by title:', error);
+      console.error('✗ Error fetching saga by title:', error);
       return null;
     }
   }
@@ -525,7 +525,7 @@ export class SagaService {
       // Fallback: search by title
       return await SagaService.getSagaByTitle('The Troy Saga');
     } catch (error) {
-      console.error('❌ Error fetching Troy Saga:', error);
+      console.error('✗ Error fetching Troy Saga:', error);
       return SagaService.getFallbackTroySaga();
     }
   }
@@ -625,7 +625,7 @@ export class SagaService {
       
       return response.ok;
     } catch (error) {
-      console.log('🔴 Backend Saga API health check failed:', error);
+      console.log('• Backend Saga API health check failed:', error);
       return false;
     }
   }
@@ -690,4 +690,4 @@ export class SagaService {
       return [];
     }
   }
-}console.log('🐛 Debug: SagaService loaded');
+}console.log('• Debug: SagaService loaded');

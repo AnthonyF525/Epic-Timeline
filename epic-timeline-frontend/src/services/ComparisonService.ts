@@ -4,7 +4,7 @@ import { ArrayOperation, ArrayUpdatePayload, BatchArrayUpdate, EpicArrayHelpers 
 
 export class ComparisonService {
   
-  // ✅ BASIC COMPARISON OPERATIONS
+  // ✓ BASIC COMPARISON OPERATIONS
   static async getAllComparisons(): Promise<Comparison[]> {
     const response = await epicRequest.get<Comparison[]>('/comparisons');
     return response.data;
@@ -15,7 +15,7 @@ export class ComparisonService {
     return response.data;
   }
 
-  // ✅ SIMILARITIES UPDATES
+  // ✓ SIMILARITIES UPDATES
   static async updateComparisonSimilarities(comparisonId: number, operation: ArrayOperation, similarities: string[]): Promise<Comparison> {
     const updatedSimilarities = EpicArrayHelpers.updateComparisonPoints([], operation, similarities);
     
@@ -31,7 +31,7 @@ export class ComparisonService {
     return response.data;
   }
 
-  // ✅ DIFFERENCES UPDATES
+  // ✓ DIFFERENCES UPDATES
   static async updateComparisonDifferences(comparisonId: number, operation: ArrayOperation, differences: string[]): Promise<Comparison> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -45,7 +45,7 @@ export class ComparisonService {
     return response.data;
   }
 
-  // ✅ ORIGINAL ELEMENTS UPDATES
+  // ✓ ORIGINAL ELEMENTS UPDATES
   static async updateComparisonOriginalElements(comparisonId: number, operation: ArrayOperation, elements: string[]): Promise<Comparison> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -59,7 +59,7 @@ export class ComparisonService {
     return response.data;
   }
 
-  // ✅ ADAPTATION CHOICES UPDATES
+  // ✓ ADAPTATION CHOICES UPDATES
   static async updateComparisonAdaptationChoices(comparisonId: number, operation: ArrayOperation, choices: string[]): Promise<Comparison> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -73,7 +73,7 @@ export class ComparisonService {
     return response.data;
   }
 
-  // ✅ ACADEMIC SOURCES UPDATES
+  // ✓ ACADEMIC SOURCES UPDATES
   static async updateComparisonAcademicSources(comparisonId: number, operation: ArrayOperation, sources: string[]): Promise<Comparison> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -87,7 +87,7 @@ export class ComparisonService {
     return response.data;
   }
 
-  // ✅ LEARNING OBJECTIVES UPDATES
+  // ✓ LEARNING OBJECTIVES UPDATES
   static async updateComparisonLearningObjectives(comparisonId: number, operation: ArrayOperation, objectives: string[]): Promise<Comparison> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -101,7 +101,7 @@ export class ComparisonService {
     return response.data;
   }
 
-  // ✅ DISCUSSION QUESTIONS UPDATES
+  // ✓ DISCUSSION QUESTIONS UPDATES
   static async updateComparisonDiscussionQuestions(comparisonId: number, operation: ArrayOperation, questions: string[]): Promise<Comparison> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -115,7 +115,7 @@ export class ComparisonService {
     return response.data;
   }
 
-  // ✅ TAGS UPDATES
+  // ✓ TAGS UPDATES
   static async updateComparisonTags(comparisonId: number, operation: ArrayOperation, tags: string[]): Promise<Comparison> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -129,7 +129,7 @@ export class ComparisonService {
     return response.data;
   }
 
-  // ✅ KEYWORDS UPDATES
+  // ✓ KEYWORDS UPDATES
   static async updateComparisonKeywords(comparisonId: number, operation: ArrayOperation, keywords: string[]): Promise<Comparison> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -143,7 +143,7 @@ export class ComparisonService {
     return response.data;
   }
 
-  // ✅ BATCH ARRAY UPDATES
+  // ✓ BATCH ARRAY UPDATES
   static async batchUpdateComparisonArrays(comparisonId: number, updates: ArrayUpdatePayload[]): Promise<Comparison> {
     const batchPayload: BatchArrayUpdate = {
       entityType: 'comparison',
@@ -156,7 +156,7 @@ export class ComparisonService {
     return response.data;
   }
 
-  // ✅ EPIC TIMELINE HELPERS
+  // ✓ EPIC TIMELINE HELPERS
   static async addSimilarityToHomerComparisons(similarity: string): Promise<Comparison[]> {
     const homerComparisons = await this.getHomerComparisons();
     const updatedComparisons: Comparison[] = [];

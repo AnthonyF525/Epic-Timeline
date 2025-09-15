@@ -11,7 +11,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ loadingState }) =>
   return (
     <View style={mapStyles.loadingContainer}>
       <View style={mapStyles.loadingContent}>
-        <Text style={mapStyles.loadingTitle}>🗺️ Loading Epic Timeline Map</Text>
+        <Text style={mapStyles.loadingTitle}>◦  Loading Epic Timeline Map</Text>
         <Text style={mapStyles.loadingSubtitle}>Preparing Odysseus's Journey</Text>
         
         {/* Progress bar */}
@@ -31,25 +31,25 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ loadingState }) =>
             mapStyles.loadingStep,
             loadingState.loadingProgress >= 25 && mapStyles.loadingStepComplete
           ]}>
-            🌊 Mediterranean Bounds
+            • Mediterranean Bounds
           </Text>
           <Text style={[
             mapStyles.loadingStep,
             loadingState.loadingProgress >= 50 && mapStyles.loadingStepComplete
           ]}>
-            🎭 EPIC Theme
+            • EPIC Theme
           </Text>
           <Text style={[
             mapStyles.loadingStep,
             loadingState.loadingProgress >= 75 && mapStyles.loadingStepComplete
           ]}>
-            🏛️ Troy Configuration
+            ◦  Troy Configuration
           </Text>
           <Text style={[
             mapStyles.loadingStep,
             loadingState.loadingProgress >= 100 && mapStyles.loadingStepComplete
           ]}>
-            ⚡ Finalizing Setup
+            • Finalizing Setup
           </Text>
         </View>
       </View>

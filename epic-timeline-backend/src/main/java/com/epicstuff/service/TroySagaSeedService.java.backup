@@ -87,7 +87,7 @@ public class TroySagaSeedService implements CommandLineRunner {
             Arrays.asList("increased_agency", "questioning_love", "active_role", "realistic_concerns"),
             Arrays.asList("modernized_relationship", "added_complexity", "realistic_psychology"));
 
-        // ✅ SAGA ADAPTATIONS: How EPIC sagas differ from Homer's books
+        // // [DONE] SAGA ADAPTATIONS: How EPIC sagas differ from Homer's books
         updateSagaWithHomerComparison(sagas, "The Troy Saga",
             "Homer barely covers Troy's fall. EPIC creates entire saga with moral dilemmas, Athena's guidance, crew dynamics, and philosophical foundation",
             Arrays.asList("expanded_prequel", "moral_foundation", "character_establishment", "divine_relationships"),
@@ -123,14 +123,14 @@ public class TroySagaSeedService implements CommandLineRunner {
             Arrays.asList("realistic_reunion", "relationship_healing", "questioning_love", "family_dynamics"),
             Arrays.asList("psychological_realism", "modern_relationships", "emotional_complexity"));
 
-        // ✅ THEMATIC DIFFERENCES
+        // // [DONE] THEMATIC DIFFERENCES
         createThematicComparisons();
 
-        // ✅ STRUCTURAL DIFFERENCES  
+        // // [DONE] STRUCTURAL DIFFERENCES  
         createStructuralComparisons();
     }
 
-    // ✅ HELPER: Update Character with Homer Comparison
+    // // [DONE] HELPER: Update Character with Homer Comparison
     private void updateCharacterWithHomerComparison(List<Character> characters, String characterName, 
             String comparisonDescription, List<String> epicAdaptations, List<String> keyDifferences) {
         
@@ -151,7 +151,7 @@ public class TroySagaSeedService implements CommandLineRunner {
         }
     }
 
-    // ✅ HELPER: Update Saga with Homer Comparison  
+    // // [DONE] HELPER: Update Saga with Homer Comparison  
     private void updateSagaWithHomerComparison(List<Saga> sagas, String sagaTitle,
             String comparisonDescription, List<String> epicAdaptations, List<String> keyDifferences) {
         
@@ -172,7 +172,7 @@ public class TroySagaSeedService implements CommandLineRunner {
         }
     }
 
-    // ✅ THEMATIC COMPARISON DATA
+    // // [DONE] THEMATIC COMPARISON DATA
     private void createThematicComparisons() {
         // Store as comparison entities or metadata
         
@@ -187,7 +187,7 @@ public class TroySagaSeedService implements CommandLineRunner {
         System.out.println(" EPIC: Crew members have personalities, relationships, moral weight");
     }
 
-    // ✅ STRUCTURAL COMPARISON DATA
+    // // [DONE] STRUCTURAL COMPARISON DATA
     private void createStructuralComparisons() {
         System.out.println(" EPIC vs Homer - Structural Adaptations:");
         System.out.println(" Homer: Epic poem, 24 books, retrospective narrative");
@@ -200,7 +200,7 @@ public class TroySagaSeedService implements CommandLineRunner {
         System.out.println(" EPIC: Focused on key episodes, streamlined for musical narrative");
     }
 
-    // ✅ UPDATE SONG METADATA WITH HOMER COMPARISONS
+    // // [DONE] UPDATE SONG METADATA WITH HOMER COMPARISONS
     private void addSongHomerComparisons() {
         // Example for key songs that have no Homer equivalent
         
@@ -215,7 +215,7 @@ public class TroySagaSeedService implements CommandLineRunner {
     private List<Saga> createAllSagas() {
         List<Saga> sagas = new ArrayList<>();
 
-        // ✅ 1. The Troy Saga
+        // // [DONE] 1. The Troy Saga
         sagas.add(sagaRepository.save(Saga.builder()
             .title("The Troy Saga")
             .description("The fall of Troy and Odysseus's first moral challenges")
@@ -230,7 +230,7 @@ public class TroySagaSeedService implements CommandLineRunner {
             .createdAt(LocalDateTime.now())
             .build()));
 
-        // ✅ 2. The Cyclops Saga
+        // // [DONE] 2. The Cyclops Saga
         sagas.add(sagaRepository.save(Saga.builder()
             .title("The Cyclops Saga")
             .description("Encounter with Polyphemus and the consequences of pride")
@@ -245,7 +245,7 @@ public class TroySagaSeedService implements CommandLineRunner {
             .createdAt(LocalDateTime.now())
             .build()));
 
-        // ✅ 3. The Ocean Saga
+        // // [DONE] 3. The Ocean Saga
         sagas.add(sagaRepository.save(Saga.builder()
             .title("The Ocean Saga")
             .description("Poseidon's wrath and the storm that scatters the fleet")
@@ -260,7 +260,7 @@ public class TroySagaSeedService implements CommandLineRunner {
             .createdAt(LocalDateTime.now())
             .build()));
 
-        // ✅ 4. The Circe Saga
+        // // [DONE] 4. The Circe Saga
         sagas.add(sagaRepository.save(Saga.builder()
             .title("The Circe Saga")
             .description("Magical encounters and the cost of crew's betrayal")
@@ -275,7 +275,7 @@ public class TroySagaSeedService implements CommandLineRunner {
             .createdAt(LocalDateTime.now())
             .build()));
 
-        // ✅ 5. The Underworld Saga
+        // // [DONE] 5. The Underworld Saga
         sagas.add(sagaRepository.save(Saga.builder()
             .title("The Underworld Saga")
             .description("Journey to Hades and confronting the past")
@@ -290,7 +290,7 @@ public class TroySagaSeedService implements CommandLineRunner {
             .createdAt(LocalDateTime.now())
             .build()));
 
-        // ✅ 6. The Thunder Saga
+        // // [DONE] 6. The Thunder Saga
         sagas.add(sagaRepository.save(Saga.builder()
             .title("The Thunder Saga")
             .description("Zeus's judgment and ultimate sacrifice")
@@ -305,7 +305,7 @@ public class TroySagaSeedService implements CommandLineRunner {
             .createdAt(LocalDateTime.now())
             .build()));
 
-        // ✅ 7. The Wisdom Saga
+        // // [DONE] 7. The Wisdom Saga
         sagas.add(sagaRepository.save(Saga.builder()
             .title("The Wisdom Saga")
             .description("Athena's guidance and the path to redemption")
@@ -320,7 +320,7 @@ public class TroySagaSeedService implements CommandLineRunner {
             .createdAt(LocalDateTime.now())
             .build()));
 
-        // ✅ 8. The Vengeance Saga
+        // // [DONE] 8. The Vengeance Saga
         sagas.add(sagaRepository.save(Saga.builder()
             .title("The Vengeance Saga")
             .description("Return to Ithaca and confronting the suitors")
@@ -335,7 +335,7 @@ public class TroySagaSeedService implements CommandLineRunner {
             .createdAt(LocalDateTime.now())
             .build()));
 
-        // ✅ 9. The Ithaca Saga
+        // // [DONE] 9. The Ithaca Saga
         sagas.add(sagaRepository.save(Saga.builder()
             .title("The Ithaca Saga")
             .description("Reunion, forgiveness, and the end of the journey")
@@ -353,11 +353,11 @@ public class TroySagaSeedService implements CommandLineRunner {
         return sagas;
     }
 
-    // ✅ Add Eurylochus to main characters first
+    // // [DONE] Add Eurylochus to main characters first
     private List<Character> createMainCharacters() {
         List<Character> characters = new ArrayList<>();
 
-        // ✅ Odysseus - Appears in ALL sagas
+        // // [DONE] Odysseus - Appears in ALL sagas
         characters.add(characterRepository.save(Character.builder()
             .name("Odysseus")
             .characterType(CharacterType.MORTAL)
@@ -371,11 +371,11 @@ public class TroySagaSeedService implements CommandLineRunner {
             .traits(Arrays.asList("cunning", "determined", "proud", "evolving", "ruthless", "loving"))
             .abilities(Arrays.asList("strategic_thinking", "combat_skills", "leadership", "archery", "persuasion"))
             .culturalSignificance("legendary")
-            .appearanceInSagas(Arrays.asList("The Troy Saga", "The Cyclops Saga", "The Ocean Saga", "The Circe Saga", "The Underworld Saga", "The Thunder Saga", "The Wisdom Saga", "The Vengeance Saga", "The Ithaca Saga")) // ✅ All 9 sagas
+            .appearanceInSagas(Arrays.asList("The Troy Saga", "The Cyclops Saga", "The Ocean Saga", "The Circe Saga", "The Underworld Saga", "The Thunder Saga", "The Wisdom Saga", "The Vengeance Saga", "The Ithaca Saga")) // // [DONE] All 9 sagas
             .createdAt(LocalDateTime.now())
             .build()));
 
-        // ✅ Athena - Divine character (not mortal, but still needs appearanceInSagas)
+        // // [DONE] Athena - Divine character (not mortal, but still needs appearanceInSagas)
         characters.add(characterRepository.save(Character.builder()
             .name("Athena")
             .characterType(CharacterType.GOD)
@@ -388,11 +388,11 @@ public class TroySagaSeedService implements CommandLineRunner {
             .traits(Arrays.asList("wise", "strategic", "caring", "powerful", "protective"))
             .abilities(Arrays.asList("divine_wisdom", "battle_strategy", "shape_shifting", "divine_intervention", "prophecy"))
             .culturalSignificance("legendary")
-            .appearanceInSagas(Arrays.asList("The Troy Saga", "The Cyclops Saga", "The Wisdom Saga")) // ✅ Key divine intervention moments
+            .appearanceInSagas(Arrays.asList("The Troy Saga", "The Cyclops Saga", "The Wisdom Saga")) // // [DONE] Key divine intervention moments
             .createdAt(LocalDateTime.now())
             .build()));
 
-        // ✅ Poseidon - Divine antagonist
+        // // [DONE] Poseidon - Divine antagonist
         characters.add(characterRepository.save(Character.builder()
             .name("Poseidon")
             .characterType(CharacterType.GOD)
@@ -405,14 +405,14 @@ public class TroySagaSeedService implements CommandLineRunner {
             .traits(Arrays.asList("wrathful", "powerful", "unforgiving", "prideful", "vengeful"))
             .abilities(Arrays.asList("sea_control", "storm_creation", "earthquakes", "divine_wrath", "water_manipulation"))
             .culturalSignificance("legendary")
-            .appearanceInSagas(Arrays.asList("The Ocean Saga", "The Vengeance Saga")) // ✅ Major antagonist role
+            .appearanceInSagas(Arrays.asList("The Ocean Saga", "The Vengeance Saga")) // // [DONE] Major antagonist role
             .createdAt(LocalDateTime.now())
             .build()));
 
-        // ✅ Penelope - MORTAL character
+        // // [DONE] Penelope - MORTAL character
         characters.add(characterRepository.save(Character.builder()
             .name("Penelope")
-            .characterType(CharacterType.MORTAL) // ✅ Type: "mortal"
+            .characterType(CharacterType.MORTAL) // // [DONE] Type: "mortal"
             .description("Queen of Ithaca, Odysseus's faithful wife who waits for his return")
             .origin("Ithaca")
             .isImmortal(false)
@@ -422,14 +422,14 @@ public class TroySagaSeedService implements CommandLineRunner {
             .traits(Arrays.asList("faithful", "clever", "strong", "patient", "loving", "wise"))
             .abilities(Arrays.asList("weaving", "strategic_thinking", "leadership", "emotional_strength"))
             .culturalSignificance("legendary")
-            .appearanceInSagas(Arrays.asList("The Ithaca Saga")) // ✅ Primary appearance in final saga
+            .appearanceInSagas(Arrays.asList("The Ithaca Saga")) // // [DONE] Primary appearance in final saga
             .createdAt(LocalDateTime.now())
             .build()));
 
-        // ✅ Telemachus - MORTAL character
+        // // [DONE] Telemachus - MORTAL character
         characters.add(characterRepository.save(Character.builder()
             .name("Telemachus")
-            .characterType(CharacterType.MORTAL) // ✅ Type: "mortal"
+            .characterType(CharacterType.MORTAL) // // [DONE] Type: "mortal"
             .description("Prince of Ithaca, son of Odysseus and Penelope, coming of age during his father's absence")
             .origin("Ithaca")
             .isImmortal(false)
@@ -439,16 +439,16 @@ public class TroySagaSeedService implements CommandLineRunner {
             .traits(Arrays.asList("brave", "determined", "young", "eager", "loyal", "growing"))
             .abilities(Arrays.asList("archery", "swordsmanship", "leadership_potential", "quick_learning"))
             .culturalSignificance("high")
-            .appearanceInSagas(Arrays.asList("The Wisdom Saga", "The Ithaca Saga")) // ✅ Training and homecoming
+            .appearanceInSagas(Arrays.asList("The Wisdom Saga", "The Ithaca Saga")) // // [DONE] Training and homecoming
             .createdAt(LocalDateTime.now())
             .build()));
 
-        // ✅ IMPORTANT SUPPORTING MORTAL CHARACTERS
+        // // [DONE] IMPORTANT SUPPORTING MORTAL CHARACTERS
         
-        // ✅ Polites - MORTAL character
+        // // [DONE] Polites - MORTAL character
         characters.add(characterRepository.save(Character.builder()
             .name("Polites")
-            .characterType(CharacterType.MORTAL) // ✅ Type: "mortal"
+            .characterType(CharacterType.MORTAL) // // [DONE] Type: "mortal"
             .description("Odysseus's best friend and moral compass, whose philosophy of kindness deeply influences the narrative")
             .origin("Ithaca")
             .isImmortal(false)
@@ -458,14 +458,14 @@ public class TroySagaSeedService implements CommandLineRunner {
             .traits(Arrays.asList("optimistic", "kind", "loyal", "compassionate", "wise", "encouraging"))
             .abilities(Arrays.asList("moral_guidance", "emotional_support", "diplomacy"))
             .culturalSignificance("high")
-            .appearanceInSagas(Arrays.asList("The Troy Saga", "The Cyclops Saga")) // ✅ Dies in Cyclops Saga, but influence continues
+            .appearanceInSagas(Arrays.asList("The Troy Saga", "The Cyclops Saga")) // // [DONE] Dies in Cyclops Saga, but influence continues
             .createdAt(LocalDateTime.now())
             .build()));
 
-        // ✅ Eurylochus - MORTAL character
+        // // [DONE] Eurylochus - MORTAL character
         characters.add(characterRepository.save(Character.builder()
             .name("Eurylochus")
-            .characterType(CharacterType.MORTAL) // ✅ Type: "mortal"
+            .characterType(CharacterType.MORTAL) // // [DONE] Type: "mortal"
             .description("Odysseus's second-in-command and brother-in-law, voice of pragmatic skepticism and crew loyalty")
             .origin("Ithaca")
             .isImmortal(false)
@@ -475,7 +475,7 @@ public class TroySagaSeedService implements CommandLineRunner {
             .traits(Arrays.asList("skeptical", "practical", "loyal", "protective", "honest", "conflicted"))
             .abilities(Arrays.asList("military_leadership", "combat_skills", "crew_management", "strategic_thinking"))
             .culturalSignificance("high")
-            .appearanceInSagas(Arrays.asList("The Troy Saga", "The Ocean Saga", "The Circe Saga", "The Thunder Saga")) // ✅ Major role until Thunder Saga
+            .appearanceInSagas(Arrays.asList("The Troy Saga", "The Ocean Saga", "The Circe Saga", "The Thunder Saga")) // // [DONE] Major role until Thunder Saga
             .createdAt(LocalDateTime.now())
             .build()));
 
@@ -524,31 +524,31 @@ public class TroySagaSeedService implements CommandLineRunner {
     }
 
     private void createAllSongs(List<Saga> sagas, List<Character> characters, List<Location> locations) {
-        // ✅ THE TROY SAGA
+        // // [DONE] THE TROY SAGA
         createTroySagaSongs(sagas.get(0), characters, locations);
         
-        // ✅ THE CYCLOPS SAGA
+        // // [DONE] THE CYCLOPS SAGA
         createCyclopsSagaSongs(sagas.get(1), characters, locations);
         
-        // ✅ THE OCEAN SAGA
+        // // [DONE] THE OCEAN SAGA
         createOceanSagaSongs(sagas.get(2), characters, locations);
         
-        // ✅ THE CIRCE SAGA
+        // // [DONE] THE CIRCE SAGA
         createCirceSagaSongs(sagas.get(3), characters, locations);
         
-        // ✅ THE UNDERWORLD SAGA
+        // // [DONE] THE UNDERWORLD SAGA
         createUnderworldSagaSongs(sagas.get(4), characters, locations);
         
-        // ✅ THE THUNDER SAGA
+        // // [DONE] THE THUNDER SAGA
         createThunderSagaSongs(sagas.get(5), characters, locations);
         
-        // ✅ THE WISDOM SAGA
+        // // [DONE] THE WISDOM SAGA
         createWisdomSagaSongs(sagas.get(6), characters, locations);
         
-        // ✅ THE VENGEANCE SAGA
+        // // [DONE] THE VENGEANCE SAGA
         createVengeanceSagaSongs(sagas.get(7), characters, locations);
         
-        // ✅ THE ITHACA SAGA
+        // // [DONE] THE ITHACA SAGA
         createIthacaSagaSongs(sagas.get(8), characters, locations);
     }
 
@@ -674,7 +674,7 @@ public class TroySagaSeedService implements CommandLineRunner {
             .build());
     }
 
-    // ✅ Continue with remaining sagas...
+    // // [DONE] Continue with remaining sagas...
     private void createOceanSagaSongs(Saga saga, List<Character> characters, List<Location> locations) {
         // 10. Storm
         songRepository.save(Song.builder()

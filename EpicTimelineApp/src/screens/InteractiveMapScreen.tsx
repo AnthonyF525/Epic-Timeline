@@ -154,7 +154,7 @@ const InteractiveMapScreen: React.FC = () => {
         </Text>
         {item.songs && item.songs.length > 0 && (
           <Text style={styles.eventSongs}>
-            ♪ {item.songs.map(song => song.title).join(', ')}
+            • {item.songs.map(song => song.title).join(', ')}
           </Text>
         )}
       </View>
@@ -218,7 +218,7 @@ const InteractiveMapScreen: React.FC = () => {
             disabled={selectedLocation.songs.length === 0}
           >
             <Text style={styles.actionButtonText}>
-              ♪ Songs ({selectedLocation.songs.length})
+              • Songs ({selectedLocation.songs.length})
             </Text>
           </TouchableOpacity>
 
@@ -228,7 +228,7 @@ const InteractiveMapScreen: React.FC = () => {
             disabled={selectedLocation.events.length === 0}
           >
             <Text style={styles.actionButtonText}>
-              📅 Events ({selectedLocation.events.length})
+              • Events ({selectedLocation.events.length})
             </Text>
           </TouchableOpacity>
 
@@ -238,7 +238,7 @@ const InteractiveMapScreen: React.FC = () => {
             disabled={selectedLocation.characters.length === 0}
           >
             <Text style={styles.actionButtonText}>
-              👥 Characters ({selectedLocation.characters.length})
+              • Characters ({selectedLocation.characters.length})
             </Text>
           </TouchableOpacity>
         </View>
@@ -269,7 +269,7 @@ const InteractiveMapScreen: React.FC = () => {
           style={styles.statsButton}
           onPress={() => setShowStatsModal(true)}
         >
-          <Text style={styles.statsButtonText}>📊 Saga Statistics</Text>
+          <Text style={styles.statsButtonText}>• Saga Statistics</Text>
         </TouchableOpacity>
       </View>
 
@@ -292,7 +292,7 @@ const InteractiveMapScreen: React.FC = () => {
               Songs at {selectedLocation?.name}
             </Text>
             <TouchableOpacity onPress={() => setShowSongModal(false)}>
-              <Text style={styles.modalCloseButton}>✕</Text>
+              <Text style={styles.modalCloseButton}>•</Text>
             </TouchableOpacity>
           </View>
           <FlatList
@@ -316,7 +316,7 @@ const InteractiveMapScreen: React.FC = () => {
               Events at {selectedLocation?.name}
             </Text>
             <TouchableOpacity onPress={() => setShowEventModal(false)}>
-              <Text style={styles.modalCloseButton}>✕</Text>
+              <Text style={styles.modalCloseButton}>•</Text>
             </TouchableOpacity>
           </View>
           <FlatList
@@ -340,7 +340,7 @@ const InteractiveMapScreen: React.FC = () => {
               Characters at {selectedLocation?.name}
             </Text>
             <TouchableOpacity onPress={() => setShowCharacterModal(false)}>
-              <Text style={styles.modalCloseButton}>✕</Text>
+              <Text style={styles.modalCloseButton}>•</Text>
             </TouchableOpacity>
           </View>
           <FlatList
@@ -362,7 +362,7 @@ const InteractiveMapScreen: React.FC = () => {
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>EPIC Saga Statistics</Text>
             <TouchableOpacity onPress={() => setShowStatsModal(false)}>
-              <Text style={styles.modalCloseButton}>✕</Text>
+              <Text style={styles.modalCloseButton}>•</Text>
             </TouchableOpacity>
           </View>
           <FlatList

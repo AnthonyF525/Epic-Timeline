@@ -28,7 +28,7 @@ export const MapScreen: React.FC = () => {
       const sagaData = await SagaService.getAllSagas();
       setSagas(sagaData);
     } catch (error) {
-      console.error('🚨 Error loading sagas:', error);
+      console.error('Error loading sagas:', error);
       Alert.alert('Error', 'Failed to load Epic Timeline sagas');
     }
   };
@@ -48,7 +48,7 @@ export const MapScreen: React.FC = () => {
           text: 'Learn More', 
           onPress: () => {
             // Navigate to location details screen
-            console.log('🎭 Navigate to location details:', location.name);
+            console.log('Navigate to location details:', location.name);
           }
         }
       ]
@@ -57,13 +57,13 @@ export const MapScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* ✅ Epic Timeline Header */}
+      {/* Epic Timeline Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>🎭 Epic Timeline Map</Text>
+        <Text style={styles.title}>Epic Timeline Map</Text>
         <Text style={styles.subtitle}>Follow Odysseus's Journey</Text>
       </View>
 
-      {/* ✅ Saga Filter Buttons */}
+      {/* Saga Filter Buttons */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
         <TouchableOpacity
           style={[styles.filterButton, !selectedSaga && styles.filterButtonActive]}
@@ -87,19 +87,19 @@ export const MapScreen: React.FC = () => {
         ))}
       </ScrollView>
 
-      {/* ✅ Journey Toggle */}
+      {/* Journey Toggle */}
       <View style={styles.toggleContainer}>
         <TouchableOpacity
           style={[styles.toggleButton, showJourney && styles.toggleButtonActive]}
           onPress={() => setShowJourney(!showJourney)}
         >
           <Text style={[styles.toggleButtonText, showJourney && styles.toggleButtonTextActive]}>
-            {showJourney ? '🗺️ Hide Journey' : '🗺️ Show Journey'}
+            {showJourney ? 'Hide Journey' : 'Show Journey'}
           </Text>
         </TouchableOpacity>
       </View>
 
-      {/* ✅ Epic Timeline Map */}
+      {/* Epic Timeline Map */}
       <EpicTimelineMap
         selectedSaga={selectedSaga}
         showJourney={showJourney}
@@ -107,7 +107,7 @@ export const MapScreen: React.FC = () => {
         onLocationPress={handleLocationPress}
       />
 
-      {/* ✅ Location Info Panel */}
+      {/* Location Info Panel */}
       {selectedLocation && (
         <View style={styles.locationInfo}>
           <Text style={styles.locationName}>{selectedLocation.name}</Text>

@@ -48,7 +48,7 @@ export const LocationDetailsModal: React.FC<LocationDetailsModalProps> = ({
         <View style={styles.header}>
           <Text style={styles.title}>{location.name}</Text>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>✕</Text>
+            <Text style={styles.closeButtonText}>•</Text>
           </TouchableOpacity>
         </View>
 
@@ -95,7 +95,7 @@ export const LocationDetailsModal: React.FC<LocationDetailsModalProps> = ({
               <Text style={styles.sectionTitle}>Featured Songs</Text>
               {location.songs.map((song, index) => (
                 <Text key={index} style={styles.songItem}>
-                  🎵 {song}
+                  • {song}
                 </Text>
               ))}
             </View>

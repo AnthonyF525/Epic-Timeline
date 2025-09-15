@@ -12,10 +12,10 @@ public class CharacterStatsResponse {
     private Long characterId;
     private String characterName;
     
-    // ✅ Character type enum
+    // // [DONE] Character type enum
     private CharacterType characterType;
     
-    // ✅ Boolean flag statistics
+    // // [DONE] Boolean flag statistics
     private Boolean isAlive;
     private Boolean isImmortal;
     private Boolean hasSpokenLines;
@@ -24,13 +24,13 @@ public class CharacterStatsResponse {
     private Boolean isProtagonist;
     private Boolean isHistoricalFigure;
     
-    // ✅ Relationship counts
+    // // [DONE] Relationship counts
     private Integer songCount;
     private Integer locationCount;
     private Integer sagaCount;
     private Integer relationshipCount;
     
-    // ✅ Array statistics
+    // // [DONE] Array statistics
     private Integer roleCount;
     private Integer traitCount;
     private Integer abilityCount;
@@ -42,7 +42,7 @@ public class CharacterStatsResponse {
     private Integer weaponCount;
     private Integer memorableQuoteCount;
     
-    // ✅ Array content (for analysis)
+    // // [DONE] Array content (for analysis)
     private List<String> allRoles;
     private List<String> allTraits;
     private List<String> allAbilities;
@@ -51,27 +51,27 @@ public class CharacterStatsResponse {
     private Map<String, Long> roleFrequency;
     private Map<String, Long> traitFrequency;
     
-    // ✅ Physical description stats
+    // // [DONE] Physical description stats
     private String height;
     private String build;
     private String hairColor;
     private String eyeColor;
     private Boolean hasPortrait;
     
-    // ✅ Voice information stats
+    // // [DONE] Voice information stats
     private String voiceActorName;
     private Double vocalRangeMin;
     private Double vocalRangeMax;
     private Boolean hasVoiceInfo;
     
-    // ✅ Background information stats
+    // // [DONE] Background information stats
     private String birthPlace;
     private String familyOrigin;
     private Integer familyMemberCount;
     private Integer historicalEventCount;
     private Boolean hasOriginStory;
     
-    // ✅ Related entities
+    // // [DONE] Related entities
     private List<String> songTitles;
     private List<String> locationNames;
     private List<String> sagaTitles;

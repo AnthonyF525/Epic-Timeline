@@ -24,7 +24,7 @@ public class SongUpdateRequest {
     @Max(value = 1800, message = "Duration cannot exceed 30 minutes")
     private Integer durationSeconds;
 
-    // ✅ Update arrays - validation only if provided
+    // // [DONE] Update arrays - validation only if provided
     @Size(min = 1, max = 10, message = "Must have between 1 and 10 themes")
     private List<@NotBlank @Size(max = 50) String> themes;
 

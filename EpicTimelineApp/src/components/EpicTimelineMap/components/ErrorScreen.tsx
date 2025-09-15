@@ -19,7 +19,7 @@ export const ErrorScreen: React.FC<ErrorScreenProps> = ({
   return (
     <View style={mapStyles.errorContainer}>
       <View style={mapStyles.errorContent}>
-        <Text style={mapStyles.errorIcon}>⚠️</Text>
+        <Text style={mapStyles.errorIcon}>◦ </Text>
         <Text style={mapStyles.errorTitle}>Map Loading Failed</Text>
         <Text style={mapStyles.errorMessage}>{loadingState.error}</Text>
         
@@ -35,11 +35,11 @@ export const ErrorScreen: React.FC<ErrorScreenProps> = ({
         )}
         
         <TouchableOpacity style={mapStyles.retryButton} onPress={onRetry}>
-          <Text style={mapStyles.retryButtonText}>🔄 Retry Loading</Text>
+          <Text style={mapStyles.retryButtonText}>• Retry Loading</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={mapStyles.clearErrorsButton} onPress={onClearErrors}>
-          <Text style={mapStyles.clearErrorsButtonText}>✨ Clear Errors</Text>
+          <Text style={mapStyles.clearErrorsButtonText}>• Clear Errors</Text>
         </TouchableOpacity>
       </View>
     </View>

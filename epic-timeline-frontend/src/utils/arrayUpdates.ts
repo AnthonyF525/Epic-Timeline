@@ -1,4 +1,4 @@
-// ✅ ARRAY UPDATE OPERATIONS
+// ✓ ARRAY UPDATE OPERATIONS
 export enum ArrayOperation {
   REPLACE = 'REPLACE',      // Replace entire array
   ADD = 'ADD',              // Add items to array
@@ -8,7 +8,7 @@ export enum ArrayOperation {
   MERGE = 'MERGE'           // Smart merge with deduplication
 }
 
-// ✅ ARRAY UPDATE PAYLOAD
+// ✓ ARRAY UPDATE PAYLOAD
 export interface ArrayUpdatePayload<T = any> {
   operation: ArrayOperation;
   field: string;
@@ -20,7 +20,7 @@ export interface ArrayUpdatePayload<T = any> {
   mergeKey?: keyof T; // For deduplication in MERGE operations
 }
 
-// ✅ BATCH ARRAY UPDATES
+// ✓ BATCH ARRAY UPDATES
 export interface BatchArrayUpdate {
   entityType: 'saga' | 'character' | 'song' | 'event' | 'location' | 'comparison';
   entityId: number;
@@ -28,7 +28,7 @@ export interface BatchArrayUpdate {
   validateBeforeUpdate?: boolean;
 }
 
-// ✅ ARRAY UPDATE UTILITIES
+// ✓ ARRAY UPDATE UTILITIES
 export class ArrayUpdateUtils {
   
   // Replace entire array
@@ -133,7 +133,7 @@ export class ArrayUpdateUtils {
   }
 }
 
-// ✅ EPIC TIMELINE SPECIFIC ARRAY HELPERS
+// ✓ EPIC TIMELINE SPECIFIC ARRAY HELPERS
 export class EpicArrayHelpers {
   
   // Character appearance in sagas

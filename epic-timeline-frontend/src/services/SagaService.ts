@@ -29,7 +29,7 @@ export class SagaService {
     await epicRequest.delete(`/sagas/${id}`);
   }
 
-  // ✅ EPIC TIMELINE SPECIFIC SAGAS
+  // ✓ EPIC TIMELINE SPECIFIC SAGAS
   static async getTroySaga(): Promise<Saga> {
     return this.getSagaById(1); // Troy Saga
   }
@@ -66,7 +66,7 @@ export class SagaService {
     return this.getSagaById(9); // Ithaca Saga
   }
 
-  // ✅ ENUM-BASED FILTERING
+  // ✓ ENUM-BASED FILTERING
   static async getSagasByImportance(importance: NarrativeImportance): Promise<Saga[]> {
     const response = await epicRequest.get<Saga[]>(`/sagas/importance/${importance}`);
     return response.data;
@@ -89,7 +89,7 @@ export class SagaService {
     return this.getSagasByCulturalSignificance(CulturalSignificance.LEGENDARY);
   }
 
-  // ✅ THEME-BASED OPERATIONS
+  // ✓ THEME-BASED OPERATIONS
   static async getSagasByTheme(theme: string): Promise<Saga[]> {
     const response = await epicRequest.get<Saga[]>(`/sagas/theme/${encodeURIComponent(theme)}`);
     return response.data;
@@ -102,13 +102,13 @@ export class SagaService {
     return response.data;
   }
 
-  // ✅ MUSICAL STYLE FILTERING
+  // ✓ MUSICAL STYLE FILTERING
   static async getSagasByMusicalStyle(style: string): Promise<Saga[]> {
     const response = await epicRequest.get<Saga[]>(`/sagas/musical-style/${encodeURIComponent(style)}`);
     return response.data;
   }
 
-  // ✅ COMPLETION STATUS
+  // ✓ COMPLETION STATUS
   static async getCompletedSagas(): Promise<Saga[]> {
     const response = await epicRequest.get<Saga[]>('/sagas/completed');
     return response.data;
@@ -119,7 +119,7 @@ export class SagaService {
     return response.data;
   }
 
-  // ✅ SAGA STATISTICS
+  // ✓ SAGA STATISTICS
   static async getSagaStats(): Promise<SagaStats> {
     const response = await epicRequest.get<SagaStats>('/sagas/stats');
     return response.data;
@@ -130,7 +130,7 @@ export class SagaService {
     return response.data;
   }
 
-  // ✅ SEARCH AND DISCOVERY
+  // ✓ SEARCH AND DISCOVERY
   static async searchSagas(query: string): Promise<Saga[]> {
     const response = await epicRequest.get<Saga[]>(`/sagas/search?q=${encodeURIComponent(query)}`);
     return response.data;
@@ -141,7 +141,7 @@ export class SagaService {
     return response.data;
   }
 
-  // ✅ SAGA RELATIONSHIPS
+  // ✓ SAGA RELATIONSHIPS
   static async getSagaSequence(): Promise<Saga[]> {
     const response = await epicRequest.get<Saga[]>('/sagas/sequence');
     return response.data;
@@ -157,13 +157,13 @@ export class SagaService {
     return response.data;
   }
 
-  // ✅ HOMER COMPARISON INTEGRATION
+  // ✓ HOMER COMPARISON INTEGRATION
   static async getSagaWithHomerComparison(sagaId: number): Promise<Saga & { homerComparison?: any }> {
     const response = await epicRequest.get(`/sagas/${sagaId}/with-homer-comparison`);
     return response.data;
   }
 
-  // ✅ SAGA FILTERING WITH MULTIPLE CRITERIA
+  // ✓ SAGA FILTERING WITH MULTIPLE CRITERIA
   static async filterSagas(filter: SagaFilter): Promise<Saga[]> {
     const params = new URLSearchParams();
     
@@ -180,7 +180,7 @@ export class SagaService {
     return response.data;
   }
 
-  // ✅ ARRAY FIELD UPDATES
+  // ✓ ARRAY FIELD UPDATES
   static async updateSagaThemes(sagaId: number, operation: ArrayOperation, themes: string[]): Promise<Saga> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -206,7 +206,7 @@ export class SagaService {
     return this.updateSagaThemes(sagaId, ArrayOperation.REPLACE, themes);
   }
 
-  // ✅ MUSICAL STYLES UPDATES
+  // ✓ MUSICAL STYLES UPDATES
   static async updateSagaMusicalStyles(sagaId: number, operation: ArrayOperation, styles: string[]): Promise<Saga> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -220,7 +220,7 @@ export class SagaService {
     return response.data;
   }
 
-  // ✅ KEY EVENTS UPDATES
+  // ✓ KEY EVENTS UPDATES
   static async updateSagaKeyEvents(sagaId: number, operation: ArrayOperation, events: string[]): Promise<Saga> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -245,7 +245,7 @@ export class SagaService {
     return response.data;
   }
 
-  // ✅ EDUCATIONAL TOPICS UPDATES
+  // ✓ EDUCATIONAL TOPICS UPDATES
   static async updateSagaEducationalTopics(sagaId: number, operation: ArrayOperation, topics: string[]): Promise<Saga> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -259,7 +259,7 @@ export class SagaService {
     return response.data;
   }
 
-  // ✅ HOMER REFERENCES UPDATES
+  // ✓ HOMER REFERENCES UPDATES
   static async updateSagaHomerReferences(sagaId: number, operation: ArrayOperation, references: string[]): Promise<Saga> {
     const payload: ArrayUpdatePayload<string> = {
       operation,
@@ -273,7 +273,7 @@ export class SagaService {
     return response.data;
   }
 
-  // ✅ BATCH ARRAY UPDATES
+  // ✓ BATCH ARRAY UPDATES
   static async batchUpdateSagaArrays(sagaId: number, updates: ArrayUpdatePayload[]): Promise<Saga> {
     const batchPayload: BatchArrayUpdate = {
       entityType: 'saga',
@@ -286,7 +286,7 @@ export class SagaService {
     return response.data;
   }
 
-  // ✅ HELPER: UPDATE TROY SAGA THEMES
+  // ✓ HELPER: UPDATE TROY SAGA THEMES
   static async updateTroySagaThemes(operation: ArrayOperation, themes: string[]): Promise<Saga> {
     return this.updateSagaThemes(1, operation, themes); // Troy Saga ID: 1
   }

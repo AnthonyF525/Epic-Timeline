@@ -1,7 +1,7 @@
 package com.epicstuff.dto;
 
 public class LocationFilterRequest {
-    // ✅ Boolean flag filters
+    // // [DONE] Boolean flag filters
     private Boolean isRealPlace;
     private Boolean isMythological;
     private Boolean isModernLocation;
@@ -11,17 +11,17 @@ public class LocationFilterRequest {
     private String regionType;
     private String culturalImportance;
     
-    // ✅ Relationship filters
+    // // [DONE] Relationship filters
     private Long characterId;
     private Long sagaId;
     
-    // ✅ Search and geographic filters
+    // // [DONE] Search and geographic filters
     private String search;
     private Double centerLat;
     private Double centerLng;
     private Double radiusKm;
     
-    // ✅ Array content filters
+    // // [DONE] Array content filters
     private String alternativeName;
     private String feature;
     private String historicalPeriod;

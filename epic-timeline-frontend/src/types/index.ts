@@ -1,20 +1,20 @@
-// ✅ Export all enums
+// ✓ Export all enums
 export * from './enums';
 
-// ✅ Export all core types
+// ✓ Export all core types
 export * from './core';
 
-// ✅ Export comparison system
+// ✓ Export comparison system
 export * from './comparison';
 
-// ✅ Export filters and responses
+// ✓ Export filters and responses
 export * from './filters';
 export * from './responses';
 
-// ✅ Export array update utilities
+// ✓ Export array update utilities
 export * from '../utils/arrayUpdates';
 
-// ✅ Convenience re-exports for main entities
+// ✓ Convenience re-exports for main entities
 export type {
   Saga,
   Character,
@@ -45,7 +45,7 @@ export type {
   EpicTimelineStats
 } from './responses';
 
-// ✅ Array update types
+// ✓ Array update types
 export type {
   ArrayUpdatePayload,
   BatchArrayUpdate

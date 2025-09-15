@@ -25,7 +25,7 @@ export const EpicTimelineMap: React.FC<EpicTimelineMapProps> = ({
 }) => {
   
   // Debug the props coming in
-  console.log('🎭 EPIC TIMELINE MAP:', {
+  console.log('▶ EPIC TIMELINE MAP:', {
     locationsCount: locations?.length || 0,
     selectedLocation: selectedLocation?.name,
     showJourney,
@@ -81,12 +81,12 @@ export const EpicTimelineMap: React.FC<EpicTimelineMapProps> = ({
       <View style={mapStyles.mapPlaceholder}>
         {/* Enhanced Map Header with Loading/Error States */}
         <View style={mapStyles.mapHeader}>
-          <Text style={mapStyles.placeholderTitle}>🗺️ EPIC: The Musical Map</Text>
+          <Text style={mapStyles.placeholderTitle}>◦  EPIC: The Musical Map</Text>
           <Text style={mapStyles.placeholderSubtitle}>
             Mediterranean Sea • Odysseus's Journey Through {locations.length} Locations
           </Text>
           <Text style={mapStyles.boundsInfo}>
-            📍 {currentBounds.center.latitude.toFixed(1)}°N, {currentBounds.center.longitude.toFixed(1)}°E
+            • {currentBounds.center.latitude.toFixed(1)}°N, {currentBounds.center.longitude.toFixed(1)}°E
             • Zoom: {zoomLevel}x
           </Text>
           
@@ -102,7 +102,7 @@ export const EpicTimelineMap: React.FC<EpicTimelineMapProps> = ({
           {loadingState.error && (
             <View style={mapStyles.errorIndicator}>
               <Text style={mapStyles.errorIndicatorText}>
-                ⚠️ {loadingState.error} (Tap to dismiss)
+                ◦  {loadingState.error} (Tap to dismiss)
               </Text>
             </View>
           )}
@@ -110,7 +110,7 @@ export const EpicTimelineMap: React.FC<EpicTimelineMapProps> = ({
           {/* Troy Focus Indicator */}
           {troyLocation && (
             <Text style={mapStyles.troyFocusIndicator}>
-              🏛️ Troy Location Ready • Ancient City of Heroes
+              ◦  Troy Location Ready • Ancient City of Heroes
             </Text>
           )}
         </View>
@@ -133,7 +133,7 @@ export const EpicTimelineMap: React.FC<EpicTimelineMapProps> = ({
         {locations.length === 0 ? (
           <View style={mapStyles.noLocationsContainer}>
             <Text style={mapStyles.noLocationsText}>
-              {loadingState.isLoadingLocations ? '⏳ Loading EPIC Locations...' : '📍 No Locations Found'}
+              {loadingState.isLoadingLocations ? '• Loading EPIC Locations...' : '• No Locations Found'}
             </Text>
             <Text style={mapStyles.noLocationsSubText}>
               {loadingState.isLoadingLocations ? 
@@ -142,7 +142,7 @@ export const EpicTimelineMap: React.FC<EpicTimelineMapProps> = ({
             </Text>
             {!loadingState.isLoadingLocations && (
               <View style={mapStyles.retryButton}>
-                <Text style={mapStyles.retryButtonText}>🔄 Retry Loading</Text>
+                <Text style={mapStyles.retryButtonText}>• Retry Loading</Text>
               </View>
             )}
           </View>
@@ -164,7 +164,7 @@ export const EpicTimelineMap: React.FC<EpicTimelineMapProps> = ({
               showsScale={true}
               mapType="standard"
               onRegionChangeComplete={(region) => {
-                console.log('🗺️ Map region changed:', region);
+                console.log('◦  Map region changed:', region);
               }}
             >
               {/* Render location markers on the real map */}
@@ -208,7 +208,7 @@ export const EpicTimelineMap: React.FC<EpicTimelineMapProps> = ({
                     title={location.name}
                     description={`${location.saga} • ${location.description || 'Epic location from The Musical'}`}
                     onPress={() => {
-                      console.log('🎯 MAP MARKER CLICKED:', location.name);
+                      console.log('• MAP MARKER CLICKED:', location.name);
                       handleLocationPress(location);
                     }}
                   >
@@ -222,7 +222,7 @@ export const EpicTimelineMap: React.FC<EpicTimelineMapProps> = ({
                       selectedLocation?.id === location.id && mapStyles.selectedMarker,
                     ]}>
                       <Text style={mapStyles.markerIcon}>
-                        {isTroy ? '🏛️' : getLocationIcon(location.saga)}
+                        {isTroy ? '◦ ' : getLocationIcon(location.saga)}
                       </Text>
                       <View style={mapStyles.markerNumber}>
                         <Text style={mapStyles.markerNumberText}>
@@ -253,7 +253,7 @@ export const EpicTimelineMap: React.FC<EpicTimelineMapProps> = ({
             
             {/* Map Header Overlay */}
             <View style={mapStyles.mapHeaderOverlay}>
-              <Text style={mapStyles.mapTitle}>🗺️ EPIC: The Musical Journey</Text>
+              <Text style={mapStyles.mapTitle}>◦  EPIC: The Musical Journey</Text>
               <Text style={mapStyles.mapSubtitle}>
                 Mediterranean Sea • {locations.length} Locations
               </Text>
